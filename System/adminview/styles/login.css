@@ -112,3 +112,30 @@ body {
 .login-footer strong {
     color: #495057;
 }
+
+.role-selection {
+    display: flex;
+    background-color: #f1f3f5;
+    padding: 4px;
+    border-radius: 50px; 
+    margin-bottom: 25px;
+}
+
+.role-selection button {
+    flex: 1;
+    border: none;
+    padding: 10px;
+    background: transparent;
+    cursor: pointer;
+    font-size: 14px;
+    color: #6c757d;
+    border-radius: 50px;
+    transition: all 0.2s ease;
+}
+
+.role-selection button.active {
+    background-color: #ffffff;
+    color: #000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    font-weight: 500;
+}
