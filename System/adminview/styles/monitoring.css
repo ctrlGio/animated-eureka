@@ -1,0 +1,160 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #d8dee6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.dashboard-body {
+    background-color: #f8fafd;
+    display: block;
+    height: auto;
+}
+
+.dashboard-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 260px;
+    background: white;
+    border-right: 1px solid #eef2f6;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: fixed;
+    height: 100vh;
+}
+
+.brand {
+    padding: 30px 25px;
+}
+
+.brand h2 {
+    font-size: 20px;
+    color: #333;
+}
+
+.brand p {
+    font-size: 13px;
+    color: #888;
+}
+
+.nav-menu {
+    margin-top: 20px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 25px;
+    color: #6c757d;
+    text-decoration: none;
+    gap: 12px;
+    transition: 0.15s;
+}
+
+.nav-item:hover {
+    background: #f0f4ff;
+    color: #4361ee;
+    border-right: 3px solid #4361ee;
+}
+
+.nav-item.active {
+    background: #f0f4ff;
+    color: #4361ee;
+    border-right: 3px solid #4361ee;
+
+}
+
+.logout-btn {
+    padding: 25px;
+    border-top: 1px solid #f0f0f0;
+    text-decoration: none;
+    color: #6c757d;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.logout-btn:hover {
+    background-color: #6c757d;
+    color: #f0f0f0;
+}
+
+.main-content {
+    margin-left: 260px;
+    flex: 1;
+    padding: 40px;
+}
+
+.content-header h1 {
+    font-size: 28px;
+    margin-bottom: 5px;
+}
+
+.content-header p {
+    color: #888;
+    margin-bottom: 30px;
+}
+
+.profile-picture{
+    width: 27px;
+    display: inline-block;
+    vertical-align: text-bottom;
+    cursor: pointer;
+    margin-right: 3px;
+    border-radius: 20px;
+}
+.user {
+    display:inline-block;
+    cursor: pointer;
+}
+
+.monitoring-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.monitoring-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #f0f0f0;
+}
+
+.monitoring-header {
+    display: flex;
+    justify-content: space-between;
+    color: #888;
+    font-size: 13px;
+}
+
+.monitoring-value {
+    font-size: 32px;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.requisition-card{
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #f0f0f0;
+    max-width:1400%;
+}
+.requisition-grid{
+     display: grid;
+    grid-template-columns: (1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+}

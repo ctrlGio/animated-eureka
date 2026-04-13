@@ -1,0 +1,11 @@
+.header{
+    display:flex;
+}
+.left-header{
+    width: 20%;
+    align-items:center;
+    justify-content:center;
+}
+.student-header{
+    
+}

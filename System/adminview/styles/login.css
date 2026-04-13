@@ -1,0 +1,114 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #d8dee6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.login-container {
+    background-color: #ffffff;
+    width: 100%;
+    max-width: 420px;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.login-header h2 {
+    color: #333;
+    font-size: 26px;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.login-header p {
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    color: #495057;
+    font-size: 14px;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.input-wrapper {
+    display: flex;
+    align-items: center;
+    background-color: #f1f3f5;
+    border-radius: 8px;
+    padding: 12px 16px;
+    transition: background-color 0.2s ease;
+}
+
+.input-wrapper:focus-within {
+    background-color: #e9ecef;
+    box-shadow: 0 0 0 2px rgba(43, 50, 64, 0.1);
+}
+
+.input-wrapper i {
+    color: #aeb5bd;
+    font-size: 16px;
+    margin-right: 12px;
+}
+
+.input-wrapper input {
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    font-size: 14px;
+    color: #333;
+}
+
+.input-wrapper input::placeholder {
+    color: #aeb5bd;
+}
+
+.sign-in-btn {
+    width: 100%;
+    background-color: #2b3240;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 15px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.2s;
+}
+
+.sign-in-btn:hover {
+    background-color: #1e232d;
+}
+
+.login-footer {
+    margin-top: 35px;
+    text-align: center;
+    font-size: 12px;
+    color: #6c757d;
+    line-height: 1.6;
+}
+
+.login-footer strong {
+    color: #495057;
+}

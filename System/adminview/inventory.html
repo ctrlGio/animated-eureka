@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventory Management</title>
+
+  <link rel="stylesheet" href="styles/inventory.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="dashboard-body">
+  <div class="dashboard-wrapper">
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div class="brand">
+          <img class="profile-picture" src="pictures/profile.webp ">
+          <h2 class="user">Admin</h2>
+          <p>Welcome, admin</p>
+        </div>
+        <nav class="nav-menu">
+          <a href="homepage.html" class="nav-item">
+            <i class="fa-solid fa-table-columns"></i> Dashboard
+          </a>
+          <a href="inventory.html" class="nav-item active">
+            <i class="fa-solid fa-box-archive"></i> Inventory
+          </a>
+          <a href="monitoring.html" class="nav-item">
+            <i class="fa-solid fa-chart-line"></i> Monitoring
+          </a>
+          <a href="studentinfo.html" class="nav-item">
+            <i class="fa-solid fa-user-group"></i> Student Information
+          </a>
+        </nav>
+      </div>
+      <a href="loginpage.html" class="logout-btn">
+        <i class="fa-solid fa-right-from-bracket"></i> Logout
+      </a>
+    </aside>
+    <main class="main-content">
+      <header class="content-header">
+        <h1>Inventory Management</h1>
+        <p>Track and manage school resources</p>
+      </header>
+      <div class="button-container">
+        <button class="add-item-button"><span class="add-icon"><i class="fa fa-plus"
+              aria-hidden="true"></i></span><strong>
+            Add Item
+          </strong></button>
+      </div>
+      <section class="inventory-grid">
+        <div class="search-container">
+          <div class="search-wrapper">
+            <span class="material-symbols-outlined search-icon"></span>
+            <input type="text" class="search-input" placeholder="&#x1F50D; Search by student name, ID, or item...">
+          </div>
+      </section>
+      </section>
+      <section class="inventory-container">
+        <div class="inventory-card">
+          <h4>All Items</h4>
+        </div>
+        <div></div>
+      </section>
+    </main>
+  </div>
+</body>
+
+</html>

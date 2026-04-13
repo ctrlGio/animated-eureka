@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="styles/dashboard.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="dashboard-body">
+  <div class="dashboard-wrapper">
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div class="brand">
+          <img class="profile-picture" src="pictures/profile.webp ">
+          <h2 class="user">Admin</h2>
+          <p>Welcome, admin</p>
+        </div>
+        <nav class="nav-menu">
+          <a href="homepage.html" class="nav-item active">
+            <i class="fa-solid fa-table-columns"></i> Dashboard
+          </a>
+
+          <a href="inventory.html" class="nav-item">
+            <i class="fa-solid fa-box-archive"></i> Inventory
+          </a>
+
+          <a href="monitoring.html" class="nav-item">
+            <i class="fa-solid fa-chart-line"></i> Monitoring
+          </a>
+
+          <a href="studentinfo.html" class="nav-item">
+            <i class="fa-solid fa-user-group"></i> Student Information
+          </a>
+        </nav>
+      </div>
+      <a href="loginpage.html" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+    </aside>
+
+    <main class="main-content">
+      <header class="content-header">
+        <h1>Dashboard</h1>
+        <p>Welcome back! Here's your BSHM inventory overview.</p>
+      </header>
+
+      <section class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-header"><span>Active Borrows</span><i class="fa-solid fa-users"></i></div>
+          <div class="stat-value">7</div>
+          <div class="stat-trend positive">+3 from last week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header"><span>Total Inventory Items</span><i class="fa-solid fa-boxes"></i></div>
+          <div class="stat-value">342</div>
+          <div class="stat-trend positive">+12 from last week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header"><span>Pending Requisitions</span><i class="fa-solid fa-clipboard-list"></i>
+          </div>
+          <div class="stat-value">3</div>
+          <div class="stat-trend">-2 from last week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header"><span>Overdue Items</span><i class="fa-solid fa-circle-exclamation"></i>
+          </div>
+          <div class="stat-value">2</div>
+          <div class="stat-trend negative">+1 from last week</div>
+        </div>
+      </section>
+
+      <div class="dashboard-grid">
+        <section class="activity-panel">
+          <h3>Recent Activities</h3>
+          <div class="activity-list">
+            <div class="activity-item">
+              <span class="dot blue"></span>
+              <div class="activity-info">
+                <strong>Item borrowed</strong>
+                <p>Emma Wilson - Chef Knife Set</p>
+              </div>
+              <span class="activity-time">2 hours ago</span>
+            </div>
+            <div class="activity-item">
+              <span class="dot blue"></span>
+              <div class="activity-info">
+                <strong>Requisition approved</strong>
+                <p>Culinary Arts Dept - Espresso Machine</p>
+              </div>
+              <span class="activity-time">4 hours ago</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="actions-panel">
+          <h3>Quick Actions</h3>
+          <div class="action-grid">
+            <a href="studentinfo.html" class="action-card">
+              <strong>New Borrow</strong>
+              <span>Record student borrow</span>
+            </a>
+            <br>
+            <a href="" class="action-card">
+              <strong>Add Inventory</strong>
+              <span>Add new equipment</span>
+            </a>
+            <br>
+            <a href="monitoring.html" class="action-card">
+              <strong>View Requisitions</strong>
+              <span>Review pending forms</span>
+            </a>
+          </div>
+      </div>
+      </section>
+  </div>
+  </main>
+  </div>
+</body>
+
+</html>
