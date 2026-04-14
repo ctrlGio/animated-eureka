@@ -205,8 +205,29 @@ body {
 }
 
 .inventory-card{
-    background: white;
+    background-color: #ffffff;
     padding: 20px;
     border-radius: 12px;
     border: 1px solid #f0f0f0;
+}
+
+.inventory-table {
+    width: 100%;
+    border-collapse: collapse; 
+    background: white;
+    border-radius: 12px;
+    overflow: hidden; 
+    border: 1px solid #f0f0f0;
+}
+
+.inventory-table th {
+    padding: 15px 20px; 
+    text-align: left;
+    color: #252728b2;
+    font-weight: bold;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.inventory-table-header {
+    background-color: #fafafa;
 }
