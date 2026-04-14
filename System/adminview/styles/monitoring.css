@@ -158,3 +158,24 @@ body {
     gap: 20px;
     margin-bottom: 30px;
 }
+
+.requisition-table {
+    width: 100%;
+    border-collapse: collapse; 
+    background: white;
+    border-radius: 12px;
+    overflow: hidden; 
+    border: 1px solid #f0f0f0;
+}
+
+.requisition-table th {
+    padding: 15px 20px; 
+    text-align: left;
+    color: #252728b2;
+    font-weight: bold;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.requisition-table-header{
+    background-color: #fafafa;
+}
