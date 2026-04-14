@@ -42,7 +42,17 @@ loginForm.addEventListener('submit', function (e) {
     }
 
     if (username === activeRole && password === activeRole + '123') {
-        window.location.href = 'homepage.html';
+        
+        if (activeRole === 'admin') {
+            window.location.href = '/System/adminview/admin_homepage.html';
+        }
+        else if (activeRole === 'instructor') {
+            window.location.href = '/System/instructorview/instructor_homepage.html';
+        }
+        else if (activeRole === 'student') {
+            window.location.href = '/System/studentview/student_homepage.html';
+        }
+
     } else {
         alert(`Invalid ${activeRole} credentials. Please try again!`);
     }
