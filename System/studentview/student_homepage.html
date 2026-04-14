@@ -6,30 +6,40 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Student Dashboard</title>
   <link rel="stylesheet" href="studentstyles/dashboard.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
-  <div class="dashboard-body"></div>
-    <div class = left-header>
-      <div class="student-header">
-        <h2>Student Portal</h2>
-      </div>
-      <div class="student-paraghraph">
-        <p>
-          Student
-        </p>
-        <p>
-          STU001
-        </p>
-      </div>
-    </div>
-    <div class=right-header>
-      <div class =dashboard-header>
-        <h1>My Dashboard</h1>
-      </div>
-      <div class =dashboard-paraghraph>
-        <p>Welcome to your dashboard!</p>
-      </div>
+  <div class="dashboard-body">
+    <div class="dashboard-wrapper">
+      <aside class="sidebar">
+        <div class="sidebar-top">
+          <div class="brand">
+            <img class="profile-picture" src="pictures/profile.webp">
+            <h2 class="user">Student</h2>
+            <p>Welcome, student</p>
+          </div>
+          <nav class="nav-menu">
+            <a href="student_homepage.html" class="nav-item active">
+              <i class="fa-solid fa-table-columns"></i> Dashboard
+            </a>
+
+            <a href="student_browse.html" class="nav-item">
+              <i class="fa-solid fa-box-archive"></i> Browse Equipment
+            </a>
+
+            <a href="student_borrow.html" class="nav-item">
+              <i class="fa-solid fa-file"></i> My Borrows
+            </a>
+
+            <a href="student_request.html" class="nav-item">
+              <i class="fa-solid fa-file"></i> Request Equipment
+            </a>
+          </nav>
+        </div>
+        <a href="/System/homepage/loginpage.html" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+      </aside>
+
     </div>
   </div>
 </body>
