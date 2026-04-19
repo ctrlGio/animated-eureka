@@ -1,11 +1,19 @@
 const openButton = document.getElementById('openButton');
-const addButtonModal = document.getElementById('addButton');
+const container = document.getElementById('addButton');
 const closeButton = document.getElementById('closeButton');
 
+
 openButton.addEventListener("click", () => {
-  addButton.classList.add("open");
+  container.classList.add("open");
 });
 
+
 closeButton.addEventListener("click", () => {
-  addButton.classList.remove("open");
+  container.classList.remove("open");
+});
+
+window.addEventListener("click", (event) => {
+  if (event.target === container) {
+    container.classList.remove("open");
+  }
 });
