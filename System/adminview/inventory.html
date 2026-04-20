@@ -37,6 +37,7 @@
       <a href="/System/homepage/loginpage.html" class="logout-btn">
         <i class="fa-solid fa-right-from-bracket"></i> Logout
       </a>
+
     </aside>
     <main class="main-content">
       <header class="content-header">
@@ -51,37 +52,44 @@
       </div>
 
       <div class="add-button-modal" id="addButton">
-        <div class="container-content">
+            <div class="container-content">
+               
+              <h2><i class="fa-solid fa-box-archive"></i> Add New Item</h2>
+              <p>Fill in the details below to add a new item to the inventory.</p>
+              <form id="addItemForm">
+                <div class="form-grid">
+                <label for="itemName">Item Name:</label>
+                <input type="text" id="itemName" name="itemName" required>
 
-          <h2>Add New Item</h2>
-          <form id="addItemForm">
-            <label for="itemName">Item Name:</label>
-            <input type="text" id="itemName" name="itemName" required>
+                <label for="category">Category:</label>
+                <select id="category" name="category" required>
+                  <option value="">Select category</option>
+                  <option value="kitchen-equipmet">Kitchen Equipment</option>
+                  <option value="kitchen-tools">Kitchen Tools</option>
+                  <option value="beverage-equipment">Beverage Equipment</option>
+                  <option value="tableware">Tableware</option>
+                  <option value="furniture">Furniture</option>
+                  <option value="linen">Linen</option>
+                  <option value="software">Software</option>
+                  <option value="books">Books</option>
+                </select>
 
-            <label for="category">Category:</label>
-            <select id="category" name="category" required>
-              <option value="">Select Category</option>
-              <option value="kitchen-equipment">Kitchen Equipment</option>
-              <option value="kitchen-tools">Kitchen Tools</option>
-              <option value="beverage=equipment">Beverage Equipment</option>
-              <option value="furniture">Furniture</option>
-              <option value="table-ware">Tableware</option>
-              <option value="linen">Linen</option>
-            </select>
-            <label for="quantity">Quantity:</label>
-            <input type="number" id="quantity" name="quantity" required>
-            <label for="status">Status:</label>
-            <select id="status" name="status" required>
-              <option value="">Select status</option>
-              <option value="available">Available</option>
-              <option value="borrowed">Borrowed</option>
-              <option value="maintenance">Maintenance</option>
-            </select>
-            <button type="submit">Add Item</button>
-            <button id="closeButton" type="button">Cancel</button>
-          </form>
-        </div>
-      </div>
+                <label for="quantity">Quantity:</label>
+                <input type="number" id="quantity" name="quantity" required>
+
+                <label for="status">Status:</label>
+                <select id="status" name="status" required>
+                  <option value="">Select status</option>
+                  <option value="available">Available</option>
+                  <option value="borrowed">Borrowed</option>
+                  <option value="maintenance">Maintenance</option>
+                </select>
+                <button type="submit">Add Item</button>
+                <button id="closeButton" type="button">Cancel</button>
+              </form>
+              </div>
+            </div>
+          </div>
       <section class="inventory-grid">
         <div class="search-container">
           <div class="search-wrapper">
