@@ -1,6 +1,6 @@
-const openButton = document.getElementById('openButton');
-const container = document.getElementById('addButton');
-const closeButton = document.getElementById('closeButton');
+const openButton = document.getElementById('openBorrow');
+const container = document.getElementById('newBorrowModal');
+const closeButton = document.getElementById('closeNewBorrowModal');
 
 
 openButton.addEventListener("click", () => {

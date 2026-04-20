@@ -271,22 +271,3 @@ body {
   gap: 15px 20px;                
   margin-bottom: 20px;
 }
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  text-align: left;
-}
-
-.form-group label {
-  font-weight: 600;
-  font-size: 0.9rem;
-  margin-bottom: 5px;
-}
-
-.form-group input, .form-group select {
-  padding: 10px;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  background-color: #f8fafc;
-}
