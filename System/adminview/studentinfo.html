@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,8 +14,11 @@
     <aside class="sidebar">
       <div class="sidebar-top">
         <div class="brand">
-          <a href="https://youtu.be/dQw4w9WgXcQ" target="_blank"><img class="profile-picture" src="pictures/profile.webp " ></a>
-          <a href="https://youtu.be/dQw4w9WgXcQ" target="_blank"><h2 class="user">Admin</h2></a>
+          <a href="https://youtu.be/dQw4w9WgXcQ" target="_blank"><img class="profile-picture"
+              src="pictures/profile.webp "></a>
+          <a href="https://youtu.be/dQw4w9WgXcQ" target="_blank">
+            <h2 class="user">Admin</h2>
+          </a>
           <p>Welcome, admin</p>
         </div>
         <nav class="nav-menu">
@@ -42,9 +46,49 @@
         <p>Track students who borrowed equipments and materials</p>
       </header>
       <div class="button-container">
-        <button class="add-item-button"><span class="add-icon"><i class="fa fa-plus"
-              aria-hidden="true"></i></span><strong>
-            New Borrow Record</strong></button>
+        <button class="add-item-button"><span class="add-icon"><i class="fa fa-plus" aria-hidden="true"></i></span>
+          <strong>New Borrow Record</strong>
+        </button>
+      </div>
+      <div class="new-borrow-modal" id="newBorrowModal">
+        <div class="container-content">
+          <div class="header-text">
+              <h2><span>&#128100;</span> Create New Borrow Record</h2>
+              <p>Record a new equipment borrowing transaction for a BSHM student</p>
+            </div>
+            <form id="newBorrowForm">
+              <label for="studentId">Student ID:</label>
+              <input type="text" id="studentId" name="studentId" placeholder="e.g., STU001"  required>
+
+              <label for="studentName">Student Name:</label>
+              <input type="text" id="studentName" name="studentName" placeholder="e.g., Aron John Returan" required>
+
+              <label for="yearLevel">Year Level:</label>
+              <select id="yearLevel" name="yearLevel" required>
+                <option value="">Select Year Level</option>
+                <option value="1st Year">1st Year</option>
+                <option value="2nd Year">2nd Year</option>
+                <option value="3rd Year">3rd Year</option>
+                <option value="4th Year">4th Year</option>
+              </select>
+
+              <label for="itemBorrowed">Item Borrowed:</label>
+              <input type="text" id="itemBorrowed" name="itemBorrowed" required>
+
+              <label for="quantity">Quantity:</label>
+              <input type="number" id="quantity" name="quantity" required>
+
+              <label for="borrowDate">Borrow Date:</label>
+              <input type="date" id="borrowDate" name="borrowDate" required>
+
+              <label for="dueDate">Due Date:</label>
+              <input type="date" id="dueDate" name="dueDate" required>
+
+              <div class="form-buttons">
+                <button type="submit"><span>&#128190;</span> Save Record</button>
+                <button id="closeNewBorrowModal" type="button"><span>&#10060;</span> Cancel</button>
+              </div>
+        </div>
       </div>
       <section class="student-info-grid">
         <div class="student-cards">
@@ -73,7 +117,7 @@
           <h4>Borrowing Records</h4>
           <table class="student-table">
             <thead>
-              <tr class ="table-card">
+              <tr class="table-card">
                 <th>Student ID</th>
                 <th>Student Name</th>
                 <th>Year Level</th>
@@ -93,4 +137,5 @@
     </main>
   </div>
 </body>
+
 </html>

@@ -49,6 +49,7 @@
             Add Item
           </strong></button>
       </div>
+      
       <div class="add-button-modal" id="addButton">
             <div class="container-content">
               
@@ -58,7 +59,15 @@
                 <input type="text" id="itemName" name="itemName" required>
 
                 <label for="category">Category:</label>
-                <input type="text" id="category" name="category" required>
+                <select id="category" name="category" required>
+                  <option value="">Select Category</option>
+                  <option value="kitchen-equipment">Kitchen Equipment</option>
+                  <option value="kitchen-tools">Kitchen Tools</option>
+                  <option value="beverage=equipment">Beverage Equipment</option>
+                  <option value="furniture">Furniture</option>
+                  <option value="table-ware">Tableware</option>
+                  <option value="linen">Linen</option>
+                </select>
 
                 <label for="quantity">Quantity:</label>
                 <input type="number" id="quantity" name="quantity" required>
@@ -74,7 +83,7 @@
                 <button id="closeButton" type="button">Cancel</button>
               </form>
             </div>
-          </div>
+          </div> 
       <section class="inventory-grid">
         <div class="search-container">
           <div class="search-wrapper">
