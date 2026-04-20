@@ -280,15 +280,11 @@ body {
   font-weight: 600;
   font-size: 0.9rem;
   margin-bottom: 5px;
-<<<<<<< HEAD
-}
-=======
 }
 
 .form-group input, .form-group select {
-  padding: 10px;
-  border: 1px solid #e2e8f0;
+  padding: 8px 12px;
+  border: 1px solid #cbd5e1;
   border-radius: 6px;
   background-color: #f8fafc;
 }
->>>>>>> 1fc542bc102b8ca35d828965c036c03bf8402271
