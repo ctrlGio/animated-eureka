@@ -254,8 +254,8 @@ body {
 .container-content {
   background-color: white;
   padding: 2rem;
-  border-radius: 8px;
-  width: 400px;
+  border-radius: 12px;
+  width: 550px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   animation: fadeIn 0.3s ease;
 }
@@ -267,7 +267,26 @@ body {
 
 .form-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr; 
+  grid-template-columns: repeat(2, 1fr); 
   gap: 15px 20px;                
   margin-bottom: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.form-group label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+}
+
+.form-group input, .form-group select {
+  padding: 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background-color: #f8fafc;
 }
