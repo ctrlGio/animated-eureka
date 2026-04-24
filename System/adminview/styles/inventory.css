@@ -288,3 +288,31 @@ body {
   border-radius: 6px;
   background-color: #f8fafc;
 }
+
+.add-confirm {
+  background-color: #000000;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.add-cancel{
+    background-color: #e2e8f0;
+    color: #333;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.add-confirm:hover {
+  background-color: #333;
+}
+.add-cancel:hover {
+  background-color: #cbd5e1;
+}
+
