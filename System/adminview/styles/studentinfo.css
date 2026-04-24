@@ -255,102 +255,96 @@ body {
     opacity: 0.7;
 }
 
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5); /* Dimmed background */
-    display: none; /* Hidden by default */
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
+.new-borrow-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  justify-content: center;
+  align-items: center;
 }
 
-/* Show the modal when this class is added via JS */
-.modal-overlay.active {
-    display: flex;
-}
-
-/* Modal Box Styling */
-.add-button-modal {
-    background: white;
-    width: 95%;
-    max-width: 500px;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
+.container-content {
+  background: #f5f5f5;
+  width: 600px;
+  max-width: 90%;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
 .header-text h2 {
-    font-size: 1.2rem;
-    margin-bottom: 4px;
+  font-size: 24px;
+  margin-bottom: 5px;
 }
 
 .header-text p {
-    font-size: 0.85rem;
-    color: #666;
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 20px;
 }
 
-.form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* Two columns like the picture */
-    gap: 15px;
+#newBorrowForm {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
 }
 
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+#newBorrowForm label {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 3px;
 }
 
-label {
-    font-size: 0.85rem;
-    font-weight: 600;
+#newBorrowForm input,
+#newBorrowForm select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #e9ecef;
 }
 
-input, select {
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background-color: #f9fafb;
+.form-buttons {
+  grid-column: span 2; /* full width */
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
 }
 
-.modal-footer {
-    margin-top: 25px;
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
+.form-buttons button {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
 }
 
-.btn-submit {
-    background: #0a0a0b;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
+.form-buttons button[type="submit"] {
+  background: black;
+  color: white;
 }
 
-.btn-cancel {
-    background: white;
-    border: 1px solid #ddd;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
+#closeNewBorrowModal {
+  background: #cfd4da;
+  color: #333;
 }
 
-.close-btn {
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: #999;
+.container-content {
+  animation: fadeIn 0.25s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }

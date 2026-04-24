@@ -1,19 +1,19 @@
-const openButton = document.getElementById('openBorrow');
-const container = document.getElementById('newBorrowModal');
-const closeButton = document.getElementById('closeNewBorrowModal');
+const openBtn = document.getElementById("openBorrow");
+const modal = document.getElementById("newBorrowModal");
+const closeBtn = document.getElementById("closeNewBorrowModal");
 
+
+openBtn.addEventListener("click", () => {
+  openBtn.onclick = () => modal.style.display = "flex";
+});
+
+
+closeBtn.addEventListener("click", () => {
+  modal.style.display = "none";
+});
 
 openButton.addEventListener("click", () => {
   container.classList.add("open");
 });
 
-
-closeButton.addEventListener("click", () => {
-  container.classList.remove("open");
-});
-
-window.addEventListener("click", (event) => {
-  if (event.target === container) {
-    container.classList.remove("open");
-  }
-});
+console.log(openBtn, modal);
