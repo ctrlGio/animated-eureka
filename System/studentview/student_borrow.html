@@ -48,19 +48,42 @@
         
         <section class="stats-grid">
           <div class="stat-card">
-            <div class="stat-header"><span>My Borrows</span><i class="fa-solid fa-box-archive"></i></div>
+            <div class="stat-header"><span>Active Borrows</span><i class="fa-solid fa-calendar"></i></div>
           </div>
           <div class="stat-card">
-            <div class="stat-header"><span>Overdue Items</span><i class="fa-solid fa-exclamation-triangle"></i></div>
+            <div class="stat-header"><span>Returned Items</span><i class="fa-solid fa-check-circle"></i></div>
           </div>
           <div class="stat-card">
-            <div class="stat-header"><span>Pending Requests</span><i class="fa-solid fa-file"></i></div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-header"><span>Good Standing</span><i class="fa-solid fa-check-circle"></i></div>
+            <div class="stat-header"><span>Total Borrows</span><i class="fa-solid fa-calendar"></i></div>
           </div>
         </section>
+
+        <div class="borrow-toggle-wrapper">
+            <div class="pill-container">
+              <button class="pill-item active" onclick="switchTab(this, 'active')">Active Borrowings</button>
+              <button class="pill-item" onclick="switchTab(this, 'history')">History</button>
+                    <script src="/System/studentview/studentjs/studentborrow.js"></script>
+            </div>
+        </div>
+
+        <div id="active-borrowings" class="tab-content">
+          <!-- Place your Active Borrowings table or list here -->
+          <div class="inventory-card">
+          <h4>Current Items</h4>
+        <p>This is where your active borrows will appear.</p>
+    </div>
+</div>
+
+      <div id="history" class="tab-content" style="display: none;">
+    <!-- Place your History table or list here -->
+    <div class="inventory-card">
+        <h4>Past History</h4>
+        <p>This is where your completed borrows will appear.</p>
+    </div>
+</div>
       </main>
+
+
 
     </div>
   </div>
