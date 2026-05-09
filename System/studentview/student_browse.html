@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Browse</title>
+  <link rel="stylesheet" href="/System/studentview/styles/student_browse.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+  <div class="dashboard-body">
+    <div class="dashboard-wrapper">
+      <aside class="sidebar">
+        <div class="sidebar-top">
+          <div class="brand">
+            <img class="profile-picture" src="/System/studentview/pictures/profile.webp">
+            <h2 class="user">Student</h2>
+            <p>Welcome, student</p>
+          </div>
+          <nav class="nav-menu">
+            <a href="/System/studentview/student_homepage.html" class="nav-item">
+              <i class="fa-solid fa-table-columns"></i> Dashboard
+            </a>
+
+            <a href="/System/studentview/student_browse.html" class="nav-item active">
+              <i class="fa-solid fa-box-archive"></i> Browse Equipment
+            </a>
+
+            <a href="/System/studentview/student_borrow.html" class="nav-item">
+              <i class="fa-solid fa-file"></i> My Borrows
+            </a>
+
+            <a href="/System/studentview/student_request.html" class="nav-item">
+              <i class="fa-solid fa-file"></i> Request Equipment
+            </a>
+          </nav>
+        </div>
+        <a href="/System/homepage/loginpage.html" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+      </aside>
+
+      <main class="main-content">
+        <header class="content-header">
+          <h1>Browse Equipment</h1>
+          <p>Welcome to the equipment browsing page!</p>
+        </header>
+        
+        <section class="search-section">
+            <div class="search-container">
+              <div class="search-wrapper">
+                <span class="material-symbols-outlined search-icon"></span>
+                <input type="text" class="search-input" placeholder="&#x1F50D; Search equipment by name or description...">
+              </div>
+
+              <select class="category-filter">
+                <option>All Categories</option>
+                <option>Kitchen Tools</option>
+                <option>Kitchen Equipment</option>
+                <option>Beverage Equipment</option>
+                <option>Safety Equipment</option>
+                <option>Dining Equipment</option>
+                <option>Learning Materials</option>
+              </select>
+            </div>
+          </section>
+
+        <section class="equipment-grid">
+            <div class="equipment-card">
+                <div class="card-header">
+                    <h3>Chef Knife Set - Professional</h3>
+                        <span class="badge available">Available</span>
+                </div>
+                        <p class="description">Professional 8-piece chef knife set with storage case</p>
+                        <p class="category-label">Category: Kitchen Tools</p>
+    
+            <div class="card-footer">
+                 <div class="availability">
+                    <span class="label">Available</span>
+                      <span class="count">12 / 15</span>
+                 </div>
+                    <button class="request-btn">
+                      <i class="fa-solid fa-cart-shopping"></i> Request
+                    </button>
+                </div>
+            </div>
+        </section>
+
+      </main>
+
+    </div>
+  </div>
+</body>
+</html>

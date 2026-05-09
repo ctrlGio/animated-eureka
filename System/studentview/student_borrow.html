@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Borrow</title>
+  <link rel="stylesheet" href="/System/studentview/styles/student_borrow.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="dashboard-body">
+    <div class="dashboard-wrapper">
+      <aside class="sidebar">
+        <div class="sidebar-top">
+          <div class="brand">
+            <img class="profile-picture" src="/System/studentview/pictures/profile.webp">
+            <h2 class="user">Student</h2>
+            <p>Welcome, student</p>
+          </div>
+          <nav class="nav-menu">
+            <a href="/System/studentview/student_homepage.html" class="nav-item">
+              <i class="fa-solid fa-table-columns"></i> Dashboard
+            </a>
+
+            <a href="/System/studentview/student_browse.html" class="nav-item">
+              <i class="fa-solid fa-box-archive"></i> Browse Equipment
+            </a>
+
+            <a href="/System/studentview/student_borrow.html" class="nav-item = active">
+              <i class="fa-solid fa-file"></i> My Borrows
+            </a>
+
+            <a href="/System/studentview/student_request.html" class="nav-item">
+              <i class="fa-solid fa-file"></i> Request Equipment
+            </a>
+          </nav>
+        </div>
+        <a href="/System/homepage/loginpage.html" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+      </aside>
+
+      <main class="main-content">
+        <header class="content-header">
+          <h1>My Borrows</h1>
+          <p>Track your equipment borrowing history</p>
+        </header>
+        
+        <section class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-header"><span>Active Borrows</span><i class="fa-solid fa-calendar"></i></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header"><span>Returned Items</span><i class="fa-solid fa-check-circle"></i></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header"><span>Total Borrows</span><i class="fa-solid fa-calendar"></i></div>
+          </div>
+        </section>
+
+        <div class="borrow-toggle-wrapper">
+            <div class="pill-container">
+              <button class="pill-item active" onclick="switchTab(this, 'active')">Active Borrowings</button>
+              <button class="pill-item" onclick="switchTab(this, 'history')">History</button>
+                    <script src="/System/studentview/studentjs/studentborrow.js"></script>
+            </div>
+        </div>
+
+        <div id="active-borrowings" class="tab-content">
+          <!-- Place your Active Borrowings table or list here -->
+          <div class="inventory-card">
+          <h4>Current Items</h4>
+        <p>This is where your active borrows will appear.</p>
+    </div>
+</div>
+
+      <div id="history" class="tab-content" style="display: none;">
+    <!-- Place your History table or list here -->
+    <div class="inventory-card">
+        <h4>Past History</h4>
+        <p>This is where your completed borrows will appear.</p>
+    </div>
+</div>
+      </main>
+
+
+
+    </div>
+  </div>
+</body>
+</html>
