@@ -112,3 +112,28 @@ body {
 .login-footer strong {
     color: #495057;
 }
+
+#toggle-password {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 8px;
+    color: #aeb5bd;
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+}
+
+#toggle-password:hover {
+    color: #6c757d;
+}
+
+#password::-ms-reveal,
+#password::-webkit-credentials-auto-fill-button {
+    display: none;
+}
+
+#password::-webkit-textfield-decoration-container {
+    display: none;
+}

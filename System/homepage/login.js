@@ -1,59 +1,54 @@
 const loginForm = document.querySelector('.login-form');
-const roleButtons = document.querySelectorAll('.role-selection button');
-const signInBtn = document.querySelector('.sign-in-btn');
 const usernameInput = document.getElementById('username');
 const passwordInput = document.getElementById('password');
-
-const demoUserLabel = document.getElementById('demo-user');
-const demoPassLabel = document.getElementById('demo-pass');
-
-roleButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        
-        roleButtons.forEach(btn => btn.classList.remove('active'));
-        button.classList.add('active');
-
-        const role = button.innerText;
-        const roleLower = role.toLowerCase();
-        
-        signInBtn.innerText = `Sign In as ${role}`;
-        usernameInput.placeholder = `Enter ${roleLower} username`;
-        passwordInput.placeholder = `Enter ${roleLower} password`;
-        
-        if (demoUserLabel && demoPassLabel) {
-            demoUserLabel.innerText = roleLower;
-            demoPassLabel.innerText = roleLower + '123';
-        }
-    });
-});
 
 loginForm.addEventListener('submit', function (e) {
     e.preventDefault();
 
-    const username = usernameInput.value;
+    const username = usernameInput.value.trim().toLowerCase();
     const password = passwordInput.value;
-
-    const activeBtn = document.querySelector('.role-selection button.active');
-    const activeRole = activeBtn ? activeBtn.innerText.toLowerCase() : 'student';
 
     if (username.length > 30) {
         alert('Username cannot be more than 30 characters');
         return;
     }
 
-    if (username === activeRole && password === activeRole + '123') {
-        
+    const validRoles = ['admin', 'student', 'instructor'];
+    const activeRole = validRoles.includes(username) ? username : null;
+
+    if (!activeRole) {
+        alert('Invalid username. Please use admin, student, or instructor.');
+        return;
+    }
+
+    if (password === activeRole + '123') {
         if (activeRole === 'admin') {
             window.location.href = '/System/adminview/admin_homepage.html';
-        }
-        else if (activeRole === 'instructor') {
+        } else if (activeRole === 'instructor') {
             window.location.href = '/System/instructorview/instructor_homepage.html';
-        }
-        else if (activeRole === 'student') {
+        } else if (activeRole === 'student') {
             window.location.href = '/System/studentview/student_homepage.html';
         }
-
     } else {
         alert(`Invalid ${activeRole} credentials. Please try again!`);
     }
+});
+
+const toggleBtn = document.getElementById('toggle-password');
+const eyeIcon = document.getElementById('eye-icon');
+const passwordWrapper = document.getElementById('password-wrapper');
+
+toggleBtn.addEventListener('click', () => {
+  const isHidden = passwordInput.type === 'password';
+  passwordInput.type = isHidden ? 'text' : 'password';
+  eyeIcon.className = isHidden ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye';
+  toggleBtn.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+});
+
+passwordWrapper.addEventListener('focusout', (e) => {
+  if (!passwordWrapper.contains(e.relatedTarget)) {
+    passwordInput.type = 'password';
+    eyeIcon.className = 'fa-regular fa-eye';
+    toggleBtn.setAttribute('aria-label', 'Show password');
+  }
 });

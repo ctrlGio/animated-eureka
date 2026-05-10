@@ -27,9 +27,12 @@
 
       <div class="input-group">
         <label for="password">Password</label>
-        <div class="input-wrapper">
+        <div class="input-wrapper" id="password-wrapper">
           <i class="fa-solid fa-lock"></i>
           <input type="password" id="password" placeholder="Enter password" maxlength="20" required>
+          <button type="button" id="toggle-password" aria-label="Show password">
+            <i class="fa-regular fa-eye" id="eye-icon"></i>
+          </button>
         </div>
       </div>
 
@@ -43,7 +46,8 @@
       <p>Username: <strong>instructor</strong> | Password: <strong>instructor123</strong></p>
     </div>
   </div>
-  
+
   <script src="login.js"></script>
 </body>
+
 </html>
