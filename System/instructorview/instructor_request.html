@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instructor Homepage</title>
+    <link rel="stylesheet" href="/System/instructorview/styles/instructor_req.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="dashboard-body">
+    <div class="dashboard-wrapper">
+      <aside class="sidebar">
+        <div class="sidebar-top">
+          <div class="brand">
+            <img class="profile-picture" src="/System/instructorview/pictures/profile.webp">
+            <h2 class="user">Instructor</h2>
+            <p>Welcome, Instructor</p>
+          </div>
+          <nav class="nav-menu">
+            <a href="/System/instructorview/instructor_homepage.html" class="nav-item">
+              <i class="fa-solid fa-table-columns"></i> Dashboard
+            </a>
+
+            <a href="/System/instructorview/instructor_request.html" class="nav-item = active">
+              <i class="fa-solid fa-box-archive"></i> Student Requests
+            </a>
+
+          </nav>
+        </div>
+        <a href="/System/homepage/loginpage.html" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+      </aside>
+
+      <main class="main-content">
+        <header class="content-header">
+          <h1>Instructor Dashboard</h1>
+          <p>Review and approve student equipment requests</p>
+        </header>
+
+        <section class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-header"><span>Pending Your Review</span><i class="fa-solid fa-clock"></i></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header"><span>Approved by You</span><i class="fa-solid fa-check"></i></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header"><span>Rejected by You</span><i class="fa-solid fa-times"></i></div>
+          </div>
+        </section> 
+
+        <section class="request-container">
+        <div class="request-card">
+          <h4>All Student Requests</h4>
+          <table class="request-table">
+            <thead>
+              <tr class="table-card">
+                <th>Request ID</th>
+                <th>Student </th>
+                <th>Department</th>
+                <th>Year</th>
+                <th>Item Requested</th>
+                <th>Quantity</th>
+                <th>Date</th>
+                <th>Urgency</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+        </div>
+        </section>
+
+        
+</body>
+
+</html>
