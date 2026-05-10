@@ -145,3 +145,33 @@ body {
 
 .stat-trend.positive { color: #2ecc71; }
 .stat-trend.negative { color: #e74c3c; }
+
+.request-card {
+   background: white;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #f0f0f0;
+}
+
+.request-table {
+    width: 100%;
+    border-collapse: collapse; 
+    background: white;
+    border-radius: 12px;
+    overflow: hidden; 
+    border: 1px solid #f0f0f0;
+}
+
+
+.request-table th {
+    padding: 15px 20px; 
+    text-align: left;
+    color: #252728b2;
+    font-weight: bold;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+
+.table-card {
+    background-color: #fafafa; 
+}
