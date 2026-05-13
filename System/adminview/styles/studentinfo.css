@@ -123,7 +123,7 @@ body {
     padding: 20px;
     border-radius: 12px;
     border: 1px solid #e2e8f0;
-    display: inline-block;
+    display:flex;
     width: 100%;
     max-width: 200%;
     position:static;
@@ -136,6 +136,7 @@ body {
     padding: 3px 13px;
     width: 50%;
     transition: background-color 0.2s;
+    margin-right: 15px;
 }
 
 .search-wrapper:focus-within {
@@ -147,8 +148,9 @@ body {
     background: transparent;
     width: 100%;
     font-size: 15px;
-    color: #495057;
+    color: #000000;
     outline: none;
+    padding-top: 8px;
 }
 
 .search-input::placeholder {
@@ -355,6 +357,7 @@ body {
     border: 1px solid #f0f0f0;
     color: #333;
     outline: none;
+    margin-right: 15px;
 }
 
 .status-filter {
