@@ -4,7 +4,6 @@ const SUPABASE_URL = 'https://pxqacjetfbqwwacifahv.supabase.co'
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4cWFjamV0ZmJxd3dhY2lmeWh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0OTAyMDAsImV4cCI6MjA5NDA2NjIwMH0.EO9lMp3Nmg29JhIuuzEgM15nlRaQZKwQg6EkXMSTos4'
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-// ── Modal open/close ──────────────────────────────────────────────────────────
 const openButton  = document.getElementById('openButton')
 const container   = document.getElementById('addButton')
 const closeButton = document.getElementById('closeButton')
@@ -15,7 +14,6 @@ window.addEventListener('click', (e) => {
   if (e.target === container) container.classList.remove('open')
 })
 
-// ── Fetch & render inventory ──────────────────────────────────────────────────
 async function loadInventory(search = '', category = '', status = '') {
   let query = supabase
     .from('admininventory')
@@ -28,7 +26,7 @@ async function loadInventory(search = '', category = '', status = '') {
   const { data, error } = await query
   if (error) { console.error('Error loading inventory:', error); return }
 
-  // Filter by category name client-side
+
   let filtered = data
   if (category && category !== 'All Categories') {
     filtered = data.filter(item => item.admincategories?.name === category)
@@ -75,7 +73,6 @@ function renderTable(items) {
   table.appendChild(tbody)
 }
 
-// ── Add Item ──────────────────────────────────────────────────────────────────
 const addItemForm = document.getElementById('addItemForm')
 
 addItemForm.addEventListener('submit', async (e) => {
@@ -104,7 +101,6 @@ addItemForm.addEventListener('submit', async (e) => {
 
   const categoryName = categoryMap[categoryVal] || categoryVal
 
-  // Look up category_id from admincategories
   const { data: catData, error: catError } = await supabase
     .from('admincategories')
     .select('id')
@@ -135,7 +131,6 @@ addItemForm.addEventListener('submit', async (e) => {
   loadInventory()
 })
 
-// ── Delete Item ───────────────────────────────────────────────────────────────
 window.deleteItem = async (id) => {
   if (!confirm('Are you sure you want to delete this item?')) return
 
@@ -145,7 +140,7 @@ window.deleteItem = async (id) => {
   loadInventory()
 }
 
-// ── Edit Item ─────────────────────────────────────────────────────────────────
+
 window.openEdit = async (id) => {
   const { data, error } = await supabase
     .from('admininventory')
@@ -176,7 +171,7 @@ window.openEdit = async (id) => {
   loadInventory()
 }
 
-// ── Search & Filter ───────────────────────────────────────────────────────────
+
 const searchInput    = document.querySelector('.search-input')
 const categoryFilter = document.querySelector('.category-filter')
 const statusFilter   = document.querySelector('.status-filter')
@@ -185,5 +180,4 @@ searchInput.addEventListener('input',     () => loadInventory(searchInput.value,
 categoryFilter.addEventListener('change', () => loadInventory(searchInput.value, categoryFilter.value, statusFilter.value))
 statusFilter.addEventListener('change',   () => loadInventory(searchInput.value, categoryFilter.value, statusFilter.value))
 
-// ── Initial load ──────────────────────────────────────────────────────────────
 loadInventory()
