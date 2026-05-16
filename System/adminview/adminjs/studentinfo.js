@@ -4,7 +4,6 @@ const SUPABASE_URL = 'https://pxqacjetfbqwwacifahv.supabase.co'
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4cWFjamV0ZmJxd3dhY2lmeWh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0OTAyMDAsImV4cCI6MjA5NDA2NjIwMH0.EO9lMp3Nmg29JhIuuzEgM15nlRaQZKwQg6EkXMSTos4'
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-// ── Modal open/close ──────────────────────────────────────────────────────────
 const openBtn  = document.getElementById('openBorrow')
 const modal    = document.getElementById('newBorrowModal')
 const closeBtn = document.getElementById('closeNewBorrowModal')
@@ -15,7 +14,7 @@ window.addEventListener('click', (e) => {
   if (e.target === modal) modal.style.display = 'none'
 })
 
-// ── Load stat cards ───────────────────────────────────────────────────────────
+
 async function loadStats() {
   const { count: activeCount } = await supabase
     .from('adminborrows').select('*', { count: 'exact', head: true }).eq('status', 'Active')
@@ -31,7 +30,7 @@ async function loadStats() {
   document.querySelectorAll('.student-card .student-value')[1].textContent = returnedCount || 0
 }
 
-// ── Fetch & render borrows ────────────────────────────────────────────────────
+
 async function loadBorrows(search = '', yearLevel = '', status = '') {
   let query = supabase
     .from('adminborrows')
@@ -91,7 +90,7 @@ function renderTable(records) {
   table.appendChild(tbody)
 }
 
-// ── Add Borrow Record ─────────────────────────────────────────────────────────
+
 const newBorrowForm = document.getElementById('newBorrowForm')
 
 newBorrowForm.addEventListener('submit', async (e) => {
@@ -128,7 +127,7 @@ newBorrowForm.addEventListener('submit', async (e) => {
   loadStats()
 })
 
-// ── Mark as Returned ──────────────────────────────────────────────────────────
+
 window.markReturned = async (id) => {
   if (!confirm('Mark this item as returned?')) return
 
@@ -147,7 +146,7 @@ window.markReturned = async (id) => {
   loadStats()
 }
 
-// ── Delete Record ─────────────────────────────────────────────────────────────
+
 window.deleteRecord = async (id) => {
   if (!confirm('Are you sure you want to delete this record?')) return
 
@@ -158,7 +157,7 @@ window.deleteRecord = async (id) => {
   loadStats()
 }
 
-// ── Search & Filter ───────────────────────────────────────────────────────────
+
 const searchInput  = document.querySelector('.search-input')
 const levelFilter  = document.querySelector('.level-filter')
 const statusFilter = document.querySelector('.status-filter')
@@ -167,7 +166,6 @@ searchInput.addEventListener('input',    () => loadBorrows(searchInput.value, le
 levelFilter.addEventListener('change',   () => loadBorrows(searchInput.value, levelFilter.value, statusFilter.value))
 statusFilter.addEventListener('change',  () => loadBorrows(searchInput.value, levelFilter.value, statusFilter.value))
 
-// ── Auto-detect overdue ───────────────────────────────────────────────────────
 async function checkOverdue() {
   const today = new Date().toISOString().split('T')[0]
 
@@ -180,7 +178,6 @@ async function checkOverdue() {
   if (error) console.error('Error checking overdue:', error)
 }
 
-// ── Initial load ──────────────────────────────────────────────────────────────
 checkOverdue().then(() => {
   loadBorrows()
   loadStats()
