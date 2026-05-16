@@ -83,7 +83,7 @@
               <input type="text" id="itemBorrowed" name="itemBorrowed" required>
 
               <label for="quantity">Quantity:</label>
-              <input type="number" id="quantity" name="quantity" required>
+              <input type="number" id="quantity" name="quantity" min="1" required>
 
               <label for="borrowDate">Borrow Date:</label>
               <input type="date" id="borrowDate" name="borrowDate" required>
@@ -161,6 +161,6 @@
       </section>
     </main>
   </div>
-  <script src="adminjs/studentinfo.js"> </script>
+  <script type="module" src="adminjs/studentinfo.js"></script>
 </body>
 </html>
