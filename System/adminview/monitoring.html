@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Requisition Management</title>
-
+  <link rel="stylesheet" href="styles/settings.css">
   <link rel="stylesheet" href="styles/monitoring.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -17,10 +17,10 @@
         <div class="top">
           <div class="brand">
             <div class="user-header">
-              <img class="profile-picture" src="/System/adminview/pictures/profile.webp"> 
+              <img class="profile-picture" src="/System/adminview/pictures/profile.webp">
               <h2 class="user">Admin</h2>
               <div class="settings-container">
-              <button class="settings-btn"><i class="fa-solid fa-gear"></i></button>
+                <button class="settings-btn"><i class="fa-solid fa-gear"></i></button>
               </div>
             </div>
 
@@ -57,7 +57,7 @@
       <section class="monitoring-grid">
         <div class="monitoring-card">
           <div class="monitoring-header"><strong>Pending Approval</strong></div>
-          <div class="stat-value"></div>
+          <div class="monitoring-value"></div>
         </div>
         <div class="monitoring-card">
           <div class="monitoring-header"><strong>Approved</strong></div>
@@ -72,29 +72,31 @@
       <section class="requisition-grid">
         <div class="requisition-card">
           <h4>Requisition Forms</h4>
-            <table class="requisition-table">
-              <thead>
-                <tr class="requisition-table-header">
-                  <th>Request ID</th>
-                  <th>Requestor</th>
-                  <th>Professor</th>
-                  <th>Department</th>
-                  <th>Item Requested</th>
-                  <th>Quantity</th>
-                  <th>Date</th>
-                  <th>Urgency</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-            </table>
+          <table class="requisition-table">
+            <thead>
+              <tr class="requisition-table-header">
+                <th>Request ID</th>
+                <th>Requestor</th>
+                <th>Professor</th>
+                <th>Department</th>
+                <th>Item Requested</th>
+                <th>Quantity</th>
+                <th>Date</th>
+                <th>Urgency</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+          </table>
         </div>
       </section>
 
     </main>
 
   </div>
-
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="adminjs/monitoring.js"></script>
+  <script src="adminjs/settings.js"></script>
 </body>
 
 </html>

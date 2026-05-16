@@ -222,6 +222,18 @@ body {
     border: 1px solid #ffffff;
 }
 
+.inventory-table td {
+    padding: 15px 20px;
+    text-align: left;
+    color: #333;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+}
+
+.inventory-table tr:hover {
+    background-color: #f8fafc;
+}
+
 .inventory-table th {
     padding: 15px 20px; 
     text-align: left;
@@ -363,4 +375,58 @@ body {
 
 .settings-container {
     margin-left: auto;
+}
+
+.edit-btn {
+  background-color: transparent;
+  color: #4a5568;
+  border: 1px solid #e2e8f0;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.edit-btn:hover {
+  background-color: #f8fafc;
+  color: #3182ce;
+  border-color: #3182ce;
+}
+
+.delete-btn {
+  background-color: transparent;
+  color: #e53e3e;
+  border: none;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.delete-btn:hover {
+  background-color: #fff5f5;
+}
+
+.status-available{ 
+    background-color: #000000; 
+    color: white; 
+    padding: 4px 10px; 
+    border-radius: 20px; 
+    font-size: 13px; 
+}
+
+.status-borrowed{ 
+    background-color: #e2e8f0; 
+    color: #333;  
+    padding: 4px 10px; 
+    border-radius: 20px; 
+    font-size: 13px; 
+}
+
+.status-maintenance{ 
+    background-color: #e53e3e; 
+    color: white; 
+    padding: 4px 10px; 
+    border-radius: 20px; 
+    font-size: 13px; 
 }

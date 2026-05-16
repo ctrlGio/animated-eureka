@@ -204,3 +204,32 @@ body {
 .settings-container {
     margin-left: auto;
 }
+
+.requisition-table td {
+    padding: 15px 20px;
+    text-align: left;
+    color: #333;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+}
+
+.requisition-table tr:hover {
+    background-color: #f8fafc;
+}
+
+.status-pending  { background-color: #f6ad55; color: white; padding: 4px 10px; border-radius: 20px; font-size: 13px; }
+.status-approved { background-color: #48bb78; color: white; padding: 4px 10px; border-radius: 20px; font-size: 13px; }
+.status-rejected { background-color: #e53e3e; color: white; padding: 4px 10px; border-radius: 20px; font-size: 13px; }
+
+.urgency-high   { background-color: #e53e3e; color: white; padding: 4px 10px; border-radius: 20px; font-size: 13px; }
+.urgency-medium { background-color: #f6ad55; color: white; padding: 4px 10px; border-radius: 20px; font-size: 13px; }
+.urgency-low    { background-color: #48bb78; color: white; padding: 4px 10px; border-radius: 20px; font-size: 13px; }
+
+.approve-btn { background: transparent; color: #48bb78; border: 1px solid #48bb78; padding: 6px 8px; border-radius: 6px; cursor: pointer; font-size: 14px; }
+.reject-btn  { background: transparent; color: #f6ad55; border: 1px solid #f6ad55; padding: 6px 8px; border-radius: 6px; cursor: pointer; font-size: 14px; margin: 0 4px; }
+.delete-btn  { background: transparent; color: #e53e3e; border: none;               padding: 6px 8px; border-radius: 6px; cursor: pointer; font-size: 14px; }
+
+.approve-btn:disabled, .reject-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.approve-btn:hover:not(:disabled) { background-color: #48bb78; color: white; }
+.reject-btn:hover:not(:disabled)  { background-color: #f6ad55; color: white; }
+.delete-btn:hover  { background-color: #fff5f5; }
