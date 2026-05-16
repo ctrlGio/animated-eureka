@@ -338,3 +338,29 @@ body {
     color: #333;
     outline: none;
 }
+
+
+.sidebar-top{
+    background: white;
+    border-right: 1px solid #eef2f6;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.user-header {
+  display: flex;
+  align-items: center;
+}
+
+.settings-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 0;
+}
+
+.settings-container {
+    margin-left: auto;
+}
