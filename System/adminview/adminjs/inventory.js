@@ -1,24 +1,62 @@
 document.addEventListener('DOMContentLoaded', function () {
 
   const { createClient } = supabase
-  const SUPABASE_URL = 'https://pxqacjetfbqwwacifahv.supabase.co'
+  const SUPABASE_URL = 'https://pxqacjetfbqwwacifyhv.supabase.co'
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4cWFjamV0ZmJxd3dhY2lmeWh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0OTAyMDAsImV4cCI6MjA5NDA2NjIwMH0.EO9lMp3Nmg29JhIuuzEgM15nlRaQZKwQg6EkXMSTos4'
   const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
+  // ── Modal open/close (Add) ──────────────────────────────────────────────────
   const openButton  = document.getElementById('openButton')
   const container   = document.getElementById('addButton')
   const closeButton = document.getElementById('closeButton')
-
-  console.log('openButton:', openButton)
-  console.log('container:', container)
-  console.log('closeButton:', closeButton)
 
   if (openButton)  openButton.addEventListener('click',  () => container.classList.add('open'))
   if (closeButton) closeButton.addEventListener('click', () => container.classList.remove('open'))
   window.addEventListener('click', (e) => {
     if (e.target === container) container.classList.remove('open')
+    if (e.target === document.getElementById('editModal')) closeEditModal()
   })
 
+  // ── Edit Modal ──────────────────────────────────────────────────────────────
+  function openEditModal(item) {
+    document.getElementById('editId').value       = item.id
+    document.getElementById('editItemName').value = item.item_name
+    document.getElementById('editQuantity').value = item.quantity
+    document.getElementById('editStatus').value   = item.status
+    document.getElementById('editModal').classList.add('open')
+  }
+
+  function closeEditModal() {
+    document.getElementById('editModal').classList.remove('open')
+  }
+
+  document.getElementById('closeEditButton').addEventListener('click', closeEditModal)
+
+  document.getElementById('editItemForm').addEventListener('submit', async (e) => {
+    e.preventDefault()
+
+    const id        = document.getElementById('editId').value
+    const itemName  = document.getElementById('editItemName').value.trim()
+    const quantity  = parseInt(document.getElementById('editQuantity').value)
+    const status    = document.getElementById('editStatus').value
+
+    const { error } = await client
+      .from('admininventory')
+      .update({
+        item_name:  itemName,
+        quantity,
+        status,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', id)
+
+    if (error) { alert('Failed to update: ' + error.message); return }
+
+    closeEditModal()
+    loadInventory()
+  })
+
+  // ── Fetch & render inventory ────────────────────────────────────────────────
   async function loadInventory(search = '', category = '', status = '') {
     let query = client
       .from('admininventory')
@@ -50,8 +88,8 @@ document.addEventListener('DOMContentLoaded', function () {
       tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px;">No items found.</td></tr>`
     } else {
       items.forEach(item => {
-        const statusClass = item.status === 'Available'  ? 'status-available'
-                          : item.status === 'Borrowed'   ? 'status-borrowed'
+        const statusClass = item.status === 'Available' ? 'status-available'
+                          : item.status === 'Borrowed'  ? 'status-borrowed'
                           : 'status-maintenance'
 
         const categoryName = item.admincategories?.name || 'Unknown'
@@ -77,6 +115,7 @@ document.addEventListener('DOMContentLoaded', function () {
     table.appendChild(tbody)
   }
 
+  // ── Add Item ────────────────────────────────────────────────────────────────
   const addItemForm = document.getElementById('addItemForm')
 
   if (addItemForm) {
@@ -106,6 +145,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
       const categoryName = categoryMap[categoryVal] || categoryVal
 
+      // Check for duplicate
+      const { data: existing } = await client
+        .from('admininventory')
+        .select('id')
+        .ilike('item_name', itemName)
+        .single()
+
+      if (existing) {
+        alert('Item already exists in the inventory!')
+        return
+      }
+
+      // Get category_id
       const { data: catData, error: catError } = await client
         .from('admincategories')
         .select('id')
@@ -113,11 +165,11 @@ document.addEventListener('DOMContentLoaded', function () {
         .single()
 
       if (catError) {
-        console.error('Category not found:', catError)
         alert('Category not found. Make sure categories are inserted in the database.')
         return
       }
 
+      // Insert item
       const { error } = await client.from('admininventory').insert([{
         item_name:   itemName,
         category_id: catData.id,
@@ -125,11 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
         status:      statusMap[statusVal] || statusVal
       }])
 
-      if (error) {
-        console.error('Error adding item:', error)
-        alert('Failed to add item: ' + error.message)
-        return
-      }
+      if (error) { alert('Failed to add item: ' + error.message); return }
 
       addItemForm.reset()
       container.classList.remove('open')
@@ -137,6 +185,7 @@ document.addEventListener('DOMContentLoaded', function () {
     })
   }
 
+  // ── Delete Item ─────────────────────────────────────────────────────────────
   window.deleteItem = async (id) => {
     if (!confirm('Are you sure you want to delete this item?')) return
 
@@ -146,6 +195,7 @@ document.addEventListener('DOMContentLoaded', function () {
     loadInventory()
   }
 
+  // ── Open Edit Modal ─────────────────────────────────────────────────────────
   window.openEdit = async (id) => {
     const { data, error } = await client
       .from('admininventory')
@@ -155,27 +205,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (error) { console.error('Error fetching item:', error); return }
 
-    const newName   = prompt('Item Name:', data.item_name)
-    const newQty    = prompt('Quantity:', data.quantity)
-    const newStatus = prompt('Status (Available / Borrowed / Maintenance):', data.status)
-
-    if (newName === null && newQty === null && newStatus === null) return
-
-    const { error: updateError } = await client
-      .from('admininventory')
-      .update({
-        item_name:  newName   || data.item_name,
-        quantity:   newQty    ? parseInt(newQty) : data.quantity,
-        status:     newStatus || data.status,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', id)
-
-    if (updateError) { alert('Failed to update: ' + updateError.message); return }
-
-    loadInventory()
+    openEditModal(data)
   }
 
+  // ── Search & Filter ─────────────────────────────────────────────────────────
   const searchInput    = document.querySelector('.search-input')
   const categoryFilter = document.querySelector('.category-filter')
   const statusFilter   = document.querySelector('.status-filter')
@@ -184,7 +217,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (categoryFilter) categoryFilter.addEventListener('change', () => loadInventory(searchInput.value, categoryFilter.value, statusFilter.value))
   if (statusFilter)   statusFilter.addEventListener('change',   () => loadInventory(searchInput.value, categoryFilter.value, statusFilter.value))
 
- 
+  // ── Initial load ────────────────────────────────────────────────────────────
   loadInventory()
 
 })

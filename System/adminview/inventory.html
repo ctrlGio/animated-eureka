@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Inventory Management</title>
-
+  <link rel="stylesheet" href="styles/settings.css">
   <link rel="stylesheet" href="styles/inventory.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -17,13 +17,12 @@
         <div class="top">
           <div class="brand">
             <div class="user-header">
-              <img class="profile-picture" src="/System/adminview/pictures/profile.webp"> 
+              <img class="profile-picture" src="/System/adminview/pictures/profile.webp">
               <h2 class="user">Admin</h2>
               <div class="settings-container">
-              <button class="settings-btn"><i class="fa-solid fa-gear"></i></button>
+                <button class="settings-btn"><i class="fa-solid fa-gear"></i></button>
               </div>
             </div>
-
             <p class="welcome">Welcome, admin</p>
           </div>
         </div>
@@ -31,50 +30,49 @@
           <a href="admin_homepage.html" class="nav-item">
             <i class="fa-solid fa-table-columns"></i> Dashboard
           </a>
-
           <a href="inventory.html" class="nav-item active">
             <i class="fa-solid fa-box-archive"></i> Inventory
           </a>
-
           <a href="monitoring.html" class="nav-item">
             <i class="fa-solid fa-chart-line"></i> Monitoring
           </a>
-
           <a href="studentinfo.html" class="nav-item">
             <i class="fa-solid fa-user-group"></i> Student Information
           </a>
         </nav>
       </div>
-      <a href="/System/homepage/loginpage.html" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i>
-        Logout</a>
+      <a href="/System/homepage/loginpage.html" class="logout-btn">
+        <i class="fa-solid fa-right-from-bracket"></i> Logout
+      </a>
     </aside>
+
     <main class="main-content">
       <header class="content-header">
         <h1>Inventory Management</h1>
         <p>Track and manage school resources</p>
       </header>
+
       <div class="button-container">
-        <button class="add-item-button" id="openButton"><span class="add-icon"><i class="fa fa-plus"
-              aria-hidden="true"></i></span><strong>
-            Add Item
-          </strong></button>
+        <button class="add-item-button" id="openButton">
+          <span class="add-icon"><i class="fa fa-plus" aria-hidden="true"></i></span>
+          <strong>Add Item</strong>
+        </button>
       </div>
 
+      <!-- Add Item Modal -->
       <div class="add-button-modal" id="addButton">
-            <div class="container-content">
-               
-              <h2><i class="fa-solid fa-box-archive"></i> Add New Item</h2>
-              <p>Fill in the details below to add a new item to the inventory.</p>
-              <form id="addItemForm">
-                <div class="form-grid">
-                  <div class="form-group">
-                    <label for="itemName" class="item-name-input">Item Name:</label>
-                    <input type="text" id="itemName" name="itemName" required>
-                  </div>
-
-                  <div class="form-group">
-                    <label for="category" class="category-input">Category:</label>
-                    <select id="category" name="category" required>
+        <div class="container-content">
+          <h2><i class="fa-solid fa-box-archive"></i> Add New Item</h2>
+          <p>Fill in the details below to add a new item to the inventory.</p>
+          <form id="addItemForm">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="itemName">Item Name:</label>
+                <input type="text" id="itemName" name="itemName" required>
+              </div>
+              <div class="form-group">
+                <label for="category">Category:</label>
+                <select id="category" name="category" required>
                   <option value="">Select category</option>
                   <option value="kitchen-equipmet">Kitchen Equipment</option>
                   <option value="kitchen-tools">Kitchen Tools</option>
@@ -86,58 +84,83 @@
                   <option value="books">Books</option>
                 </select>
               </div>
-
-                <div class="form-group">
-                  <label for="quantity" class="quantity-input">Quantity:</label>
-                  <input type="number" id="quantity" name="quantity" min="1" required>
-                </div>
-
-                <div class="form-group">
-                  <label for="status" class="status-input">Status:</label>
-                  <select id="status" name="status" required>
-                    <option value="">Select status</option>
-                    <option value="available">Available</option>
-                    <option value="borrowed">Borrowed</option>
-                    <option value="maintenance">Maintenance</option>
-                  </select>
-                </div>
-
-                <button type="submit" class="add-confirm">Add Item</button>
-                <button id="closeButton" type="button" class="add-cancel">Cancel</button>
-              </form>
+              <div class="form-group">
+                <label for="quantity">Quantity:</label>
+                <input type="number" id="quantity" name="quantity" min="1" required>
+              </div>
+              <div class="form-group">
+                <label for="status">Status:</label>
+                <select id="status" name="status" required>
+                  <option value="">Select status</option>
+                  <option value="available">Available</option>
+                  <option value="borrowed">Borrowed</option>
+                  <option value="maintenance">Maintenance</option>
+                </select>
               </div>
             </div>
-          </div>
-        
+            <button type="submit" class="add-confirm">Add Item</button>
+            <button id="closeButton" type="button" class="add-cancel" style="margin-top:10px;">Cancel</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Edit Item Modal -->
+      <div class="add-button-modal" id="editModal">
+        <div class="container-content">
+          <h2><i class="fa-solid fa-pen-to-square"></i> Edit Item</h2>
+          <p>Update the details of this inventory item.</p>
+          <form id="editItemForm">
+            <input type="hidden" id="editId">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="editItemName">Item Name:</label>
+                <input type="text" id="editItemName" required>
+              </div>
+              <div class="form-group">
+                <label for="editStatus">Status:</label>
+                <select id="editStatus" required>
+                  <option value="Available">Available</option>
+                  <option value="Borrowed">Borrowed</option>
+                  <option value="Maintenance">Maintenance</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="editQuantity">Quantity:</label>
+                <input type="number" id="editQuantity" min="1" required>
+              </div>
+            </div>
+            <button type="submit" class="add-confirm">Save Changes</button>
+            <button id="closeEditButton" type="button" class="add-cancel" style="margin-top:10px;">Cancel</button>
+          </form>
+        </div>
+      </div>
+
       <section class="inventory-grid">
         <div class="search-container">
           <div class="search-wrapper">
             <span class="material-symbols-outlined search-icon"></span>
             <input type="text" class="search-input" placeholder="&#x1F50D; Search inventory...">
           </div>
-
-            <select class="category-filter">
-              <option>All Categories</option>
-              <option>Kitchen Tools</option>
-              <option>Kitchen Equipment</option>
-              <option>Beverage Equipment</option>
-              <option>Tableware</option>
-              <option>Furniture</option>
-              <option>Linen</option>
-              <option>Software</option>
-              <option>Books</option>
-            </select>
-
-            <select class="status-filter">
-              <option>All Statuses</option>
-              <option>Available</option>
-              <option>Borrowed</option>
-              <option>Maintenance</option>
-            </select>
-            
-          </div>
+          <select class="category-filter">
+            <option>All Categories</option>
+            <option>Kitchen Tools</option>
+            <option>Kitchen Equipment</option>
+            <option>Beverage Equipment</option>
+            <option>Tableware</option>
+            <option>Furniture</option>
+            <option>Linen</option>
+            <option>Software</option>
+            <option>Books</option>
+          </select>
+          <select class="status-filter">
+            <option>All Statuses</option>
+            <option>Available</option>
+            <option>Borrowed</option>
+            <option>Maintenance</option>
+          </select>
+        </div>
       </section>
-      </section>
+
       <section class="inventory-container">
         <div class="inventory-card">
           <h4>All Items</h4>
@@ -153,11 +176,12 @@
             </thead>
           </table>
         </div>
-        <div></div>
       </section>
+
     </main>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script defer src="adminjs/inventory.js"></script>
+  <script src="adminjs/inventory.js"></script>
+  <script src="adminjs/settings.js"></script>
 </body>
 </html>

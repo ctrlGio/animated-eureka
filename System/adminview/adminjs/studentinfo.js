@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
 
   const { createClient } = supabase
-  const SUPABASE_URL = 'https://pxqacjetfbqwwacifahv.supabase.co'
+  const SUPABASE_URL = 'https://pxqacjetfbqwwacifyhv.supabase.co'
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4cWFjamV0ZmJxd3dhY2lmeWh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0OTAyMDAsImV4cCI6MjA5NDA2NjIwMH0.EO9lMp3Nmg29JhIuuzEgM15nlRaQZKwQg6EkXMSTos4'
   const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 

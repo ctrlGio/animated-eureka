@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="styles/settings.css">
   <link rel="stylesheet" href="/System/adminview/styles/dashboard.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -16,10 +17,10 @@
         <div class="top">
           <div class="brand">
             <div class="user-header">
-              <img class="profile-picture" src="/System/adminview/pictures/profile.webp"> 
+              <img class="profile-picture" src="/System/adminview/pictures/profile.webp">
               <h2 class="user">Admin</h2>
               <div class="settings-container">
-              <button class="settings-btn"><i class="fa-solid fa-gear"></i></button>
+                <button class="settings-btn"><i class="fa-solid fa-gear"></i></button>
               </div>
             </div>
 
@@ -57,25 +58,25 @@
       <section class="stats-grid">
         <div class="stat-card">
           <div class="stat-header"><span>Active Borrows</span><i class="fa-solid fa-users"></i></div>
-          <div class="stat-value">7</div>
-          <div class="stat-trend positive">+3 from last week</div>
+          <div class="stat-value"></div>
+          <div class="stat-trend positive"></div>
         </div>
         <div class="stat-card">
           <div class="stat-header"><span>Total Inventory Items</span><i class="fa-solid fa-boxes"></i></div>
-          <div class="stat-value">342</div>
-          <div class="stat-trend positive">+12 from last week</div>
+          <div class="stat-value"></div>
+          <div class="stat-trend positive"></div>
         </div>
         <div class="stat-card">
           <div class="stat-header"><span>Pending Requisitions</span><i class="fa-solid fa-clipboard-list"></i>
           </div>
-          <div class="stat-value">3</div>
-          <div class="stat-trend">-2 from last week</div>
+          <div class="stat-value"></div>
+          <div class="stat-trend"></div>
         </div>
         <div class="stat-card">
           <div class="stat-header"><span>Overdue Items</span><i class="fa-solid fa-circle-exclamation"></i>
           </div>
-          <div class="stat-value">2</div>
-          <div class="stat-trend negative">+1 from last week</div>
+          <div class="stat-value"></div>
+          <div class="stat-trend negative"></div>
         </div>
       </section>
 
@@ -83,22 +84,7 @@
         <section class="activity-panel">
           <h3>Recent Activities</h3>
           <div class="activity-list">
-            <div class="activity-item">
-              <span class="dot blue"></span>
-              <div class="activity-info">
-                <strong>Item borrowed</strong>
-                <p>Emma Wilson - Chef Knife Set</p>
-              </div>
-              <span class="activity-time">2 hours ago</span>
-            </div>
-            <div class="activity-item">
-              <span class="dot blue"></span>
-              <div class="activity-info">
-                <strong>Requisition approved</strong>
-                <p>Culinary Arts Dept - Espresso Machine</p>
-              </div>
-              <span class="activity-time">4 hours ago</span>
-            </div>
+            <p style="color:#888; font-size:13px; padding:15px 0;">Loading activities...</p>
           </div>
         </section>
 
@@ -125,6 +111,9 @@
   </div>
   </main>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="adminjs/dashboard.js"></script>
+  <script src="adminjs/settings.js"></script>
 </body>
 
 </html>
