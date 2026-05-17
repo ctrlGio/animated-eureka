@@ -10,7 +10,7 @@
 </head>
 
 <body>
-    <div class="dashboard-body">
+  <div class="dashboard-body">
     <div class="dashboard-wrapper">
       <aside class="sidebar">
         <div class="sidebar-top">
@@ -23,21 +23,20 @@
             <a href="/System/studentview/student_homepage.html" class="nav-item">
               <i class="fa-solid fa-table-columns"></i> Dashboard
             </a>
-
             <a href="/System/studentview/student_browse.html" class="nav-item">
               <i class="fa-solid fa-box-archive"></i> Browse Equipment
             </a>
-
             <a href="/System/studentview/student_borrow.html" class="nav-item">
               <i class="fa-solid fa-file"></i> My Borrows
             </a>
-
-            <a href="/System/studentview/student_request.html" class="nav-item = active">
+            <a href="/System/studentview/student_request.html" class="nav-item active">
               <i class="fa-solid fa-file"></i> Request Equipment
             </a>
           </nav>
         </div>
-        <a href="/System/homepage/loginpage.html" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        <a href="#" class="logout-btn" id="logoutBtn">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </a>
       </aside>
 
       <main class="main-content">
@@ -47,7 +46,12 @@
         </header>
 
         <!-- Request form and history would go here -->
-        
+
       </main>
-    
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/System/studentview/studentjs/studentrequest.js"></script>
+  <script src="/System/studentview/studentjs/logout.js"></script>
+</body>
 </html>

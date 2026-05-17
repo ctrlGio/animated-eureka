@@ -85,12 +85,12 @@ body {
     border-top: 1px solid #f0f0f0;
     text-decoration: none;
     color: #6c757d;
-    display: block;
+    transition: background-color 0.15s, color 0.15s;
 }
 
 .logout-btn:hover {
-    background-color: #f8d7da;
-    color: #dc3545;
+    background-color: #6c757da6;
+    color: #f0f0f0;
 }
 
 /* Main Content */
@@ -181,7 +181,7 @@ body {
 .badge.red { background-color: #d90429; }
 .badge.grey { background-color: #e9ecef; color: #495057; }
 .badge.black { background-color: #000; }
-.badge.green { background-color: #d90429; } /* Use for Rejected/Approved */
+.badge.green { background-color: #097703; } /* Use for Rejected/Approved */
 
 .card p {
     font-size: 14px;
