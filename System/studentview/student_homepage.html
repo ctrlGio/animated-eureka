@@ -16,28 +16,27 @@
         <div class="sidebar-top">
           <div class="brand">
             <img class="profile-picture" src="/System/studentview/pictures/profile.webp">
-            <h2 class="user">Student</h2>
-            <p>Welcome, student</p>
+            <h2 class="user" id="sidebarName">Student</h2>
+            <p id="sidebarWelcome">Welcome, student</p>
           </div>
           <nav class="nav-menu">
             <a href="/System/studentview/student_homepage.html" class="nav-item active">
               <i class="fa-solid fa-table-columns"></i> Dashboard
             </a>
-
             <a href="/System/studentview/student_browse.html" class="nav-item">
               <i class="fa-solid fa-box-archive"></i> Browse Equipment
             </a>
-
             <a href="/System/studentview/student_borrow.html" class="nav-item">
               <i class="fa-solid fa-file"></i> My Borrows
             </a>
-
             <a href="/System/studentview/student_request.html" class="nav-item">
               <i class="fa-solid fa-file"></i> Request Equipment
             </a>
           </nav>
         </div>
-        <a href="/System/homepage/loginpage.html" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        <a href="#" class="logout-btn" id="logoutBtn">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </a>
       </aside>
 
       <main class="main-content">
@@ -45,58 +44,49 @@
           <h1>Dashboard</h1>
           <p>Welcome to your BSHM equipment portal!</p>
         </header>
-        
+
         <section class="stats-grid">
           <div class="stat-card">
             <div class="stat-header"><span>My Borrows</span><i class="fa-solid fa-box-archive"></i></div>
+            <div class="stat-value" id="stat-borrows">—</div>
           </div>
           <div class="stat-card">
             <div class="stat-header"><span>Overdue Items</span><i class="fa-solid fa-exclamation-triangle"></i></div>
+            <div class="stat-value" id="stat-overdue">—</div>
           </div>
           <div class="stat-card">
             <div class="stat-header"><span>Pending Requests</span><i class="fa-solid fa-file"></i></div>
+            <div class="stat-value" id="stat-requests">—</div>
           </div>
           <div class="stat-card">
             <div class="stat-header"><span>Good Standing</span><i class="fa-solid fa-check-circle"></i></div>
+            <div class="stat-value" id="stat-standing">—</div>
           </div>
         </section>
 
         <div class="dashboard-grid">
-            <section class="panel">
-              <h3>Current Borrowings</h3>
-                <div class="card">
-                  <div div class="card-header">
-                    <strong>Chef Knife Set - Professional</strong>
-                        <span class="badge red">12 days overdue</span>
-                    </div>
-                       <p>Quantity: 1</p>
-                    <div class="card-footer">
-        <span>Borrowed: 2026-03-10</span>
-        <span>Due: 2026-03-17</span>
-      </div>
-    </div>
-    </section>
+          <section class="panel">
+            <h3>Current Borrowings</h3>
+            <div id="current-borrowings-list">
+              <p style="color:#888;">Loading...</p>
+            </div>
+          </section>
 
-  <section class="panel">
-    <h3>Recent Requisitions</h3>
-    <div class="card">
-      <div class="card-header">
-        <strong>Espresso Machine</strong>
-        <span class="badge grey">Pending</span>
-      </div>
-      <p>Request ID: REQ045</p>
-      <p>Requested: 2026-03-25</p>
-    </div>
-  </section>
-</div>
-          
-        </section>
-
+          <section class="panel">
+            <h3>Recent Requisitions</h3>
+            <div id="recent-requests-list">
+              <p style="color:#888;">Loading...</p>
+            </div>
+          </section>
+        </div>
 
       </main>
-
-
     </div>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/System/studentview/studentjs/auth.js"></script>
+  <script src="/System/studentview/studentjs/student_homepage.js"></script>
+  <script src="/System/studentview/studentjs/logout.js"></script>
 </body>
+
 </html>

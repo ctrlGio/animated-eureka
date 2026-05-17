@@ -18,6 +18,28 @@ document.addEventListener('DOMContentLoaded', function () {
     if (e.target === modal) modal.style.display = 'none'
   })
 
+  const studentIdInput = document.getElementById('studentId')
+  if (studentIdInput) {
+    studentIdInput.addEventListener('blur', async () => {
+      const studentId = studentIdInput.value.trim()
+      if (!studentId) return
+
+      const { data: student } = await client
+        .from('students')
+        .select('student_name, year_level')
+        .eq('student_id', studentId)
+        .maybeSingle()
+
+      if (student) {
+        document.getElementById('studentName').value = student.student_name
+        document.getElementById('yearLevel').value   = student.year_level
+      } else {
+        document.getElementById('studentName').value = ''
+        document.getElementById('yearLevel').value   = ''
+      }
+    })
+  }
+
   async function loadAvailableItems() {
     const { data, error } = await client
       .from('admininventory')
@@ -41,27 +63,27 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   async function loadStats() {
-  const activeEl   = document.querySelector('.student-cards .student-value')
-  const overdueEl  = document.querySelectorAll('.student-card .student-value')[0]
-  const returnedEl = document.querySelectorAll('.student-card .student-value')[1]
+    const activeEl   = document.querySelector('.student-cards .student-value')
+    const overdueEl  = document.querySelectorAll('.student-card .student-value')[0]
+    const returnedEl = document.querySelectorAll('.student-card .student-value')[1]
 
-  if (activeEl)   activeEl.textContent   = '—'
-  if (overdueEl)  overdueEl.textContent  = '—'
-  if (returnedEl) returnedEl.textContent = '—'
+    if (activeEl)   activeEl.textContent   = '—'
+    if (overdueEl)  overdueEl.textContent  = '—'
+    if (returnedEl) returnedEl.textContent = '—'
 
-  const { count: activeCount } = await client
-    .from('adminborrows').select('*', { count: 'exact', head: true }).eq('status', 'Active')
+    const { count: activeCount } = await client
+      .from('adminborrows').select('*', { count: 'exact', head: true }).eq('status', 'Active')
 
-  const { count: overdueCount } = await client
-    .from('adminborrows').select('*', { count: 'exact', head: true }).eq('status', 'Overdue')
+    const { count: overdueCount } = await client
+      .from('adminborrows').select('*', { count: 'exact', head: true }).eq('status', 'Overdue')
 
-  const { count: returnedCount } = await client
-    .from('adminborrows').select('*', { count: 'exact', head: true }).eq('status', 'Returned')
+    const { count: returnedCount } = await client
+      .from('adminborrows').select('*', { count: 'exact', head: true }).eq('status', 'Returned')
 
-  if (activeEl)   activeEl.textContent   = activeCount   ?? 0
-  if (overdueEl)  overdueEl.textContent  = overdueCount  ?? 0
-  if (returnedEl) returnedEl.textContent = returnedCount ?? 0
-}
+    if (activeEl)   activeEl.textContent   = activeCount   ?? 0
+    if (overdueEl)  overdueEl.textContent  = overdueCount  ?? 0
+    if (returnedEl) returnedEl.textContent = returnedCount ?? 0
+  }
 
   async function loadBorrows(search = '', yearLevel = '', status = '') {
     let query = client
@@ -99,9 +121,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         tbody.innerHTML += `
           <tr data-id="${r.id}">
-            <td>${r.student_id   || '—'}</td>
+            <td>${r.student_id    || '—'}</td>
             <td>${r.student_name}</td>
-            <td>${r.year_level   || '—'}</td>
+            <td>${r.year_level    || '—'}</td>
             <td>${r.item_borrowed || '—'}</td>
             <td>${r.quantity}</td>
             <td>${borrowDate}</td>
@@ -135,6 +157,17 @@ document.addEventListener('DOMContentLoaded', function () {
       const quantity     = parseInt(document.getElementById('quantity').value)
       const borrowDate   = document.getElementById('borrowDate').value
       const dueDate      = document.getElementById('dueDate').value
+
+      const { data: studentExists } = await client
+        .from('students')
+        .select('id')
+        .eq('student_id', studentId)
+        .maybeSingle()
+
+      if (!studentExists) {
+        alert(`Student ID "${studentId}" does not exist in the system. Please register the student first.`)
+        return
+      }
 
       const { data: inventoryItem, error: inventoryError } = await client
         .from('admininventory')
@@ -201,7 +234,6 @@ document.addEventListener('DOMContentLoaded', function () {
   window.markReturned = async (id, itemBorrowed, quantity) => {
     if (!confirm('Mark this item as returned?')) return
 
-    // Restore quantity back to inventory
     const { data: inventoryItem } = await client
       .from('admininventory')
       .select('id, quantity')
@@ -220,7 +252,6 @@ document.addEventListener('DOMContentLoaded', function () {
         .eq('id', inventoryItem.id)
     }
 
-    // Update borrow status
     const { error } = await client
       .from('adminborrows')
       .update({

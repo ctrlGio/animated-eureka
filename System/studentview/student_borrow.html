@@ -10,7 +10,7 @@
 </head>
 
 <body>
-    <div class="dashboard-body">
+  <div class="dashboard-body">
     <div class="dashboard-wrapper">
       <aside class="sidebar">
         <div class="sidebar-top">
@@ -23,21 +23,20 @@
             <a href="/System/studentview/student_homepage.html" class="nav-item">
               <i class="fa-solid fa-table-columns"></i> Dashboard
             </a>
-
             <a href="/System/studentview/student_browse.html" class="nav-item">
               <i class="fa-solid fa-box-archive"></i> Browse Equipment
             </a>
-
-            <a href="/System/studentview/student_borrow.html" class="nav-item = active">
+            <a href="/System/studentview/student_borrow.html" class="nav-item active">
               <i class="fa-solid fa-file"></i> My Borrows
             </a>
-
             <a href="/System/studentview/student_request.html" class="nav-item">
               <i class="fa-solid fa-file"></i> Request Equipment
             </a>
           </nav>
         </div>
-        <a href="/System/homepage/loginpage.html" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        <a href="#" class="logout-btn" id="logoutBtn">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </a>
       </aside>
 
       <main class="main-content">
@@ -45,47 +44,48 @@
           <h1>My Borrows</h1>
           <p>Track your equipment borrowing history</p>
         </header>
-        
+
         <section class="stats-grid">
           <div class="stat-card">
             <div class="stat-header"><span>Active Borrows</span><i class="fa-solid fa-calendar"></i></div>
+            <div class="stat-value" id="stat-active">—</div>
           </div>
           <div class="stat-card">
             <div class="stat-header"><span>Returned Items</span><i class="fa-solid fa-check-circle"></i></div>
+            <div class="stat-value" id="stat-returned">—</div>
           </div>
           <div class="stat-card">
             <div class="stat-header"><span>Total Borrows</span><i class="fa-solid fa-calendar"></i></div>
+            <div class="stat-value" id="stat-total">—</div>
           </div>
         </section>
 
         <div class="borrow-toggle-wrapper">
-            <div class="pill-container">
-              <button class="pill-item active" onclick="switchTab(this, 'active')">Active Borrowings</button>
-              <button class="pill-item" onclick="switchTab(this, 'history')">History</button>
-                    <script src="/System/studentview/studentjs/studentborrow.js"></script>
-            </div>
+          <div class="pill-container">
+            <button class="pill-item active" onclick="switchTab(this, 'active-borrowings')">Active Borrowings</button>
+            <button class="pill-item" onclick="switchTab(this, 'history')">History</button>
+          </div>
         </div>
 
         <div id="active-borrowings" class="tab-content">
-          <!-- Place your Active Borrowings table or list here -->
           <div class="inventory-card">
-          <h4>Current Items</h4>
-        <p>This is where your active borrows will appear.</p>
-    </div>
-</div>
+            <h4>Current Items</h4>
+            <p>This is where your active borrows will appear.</p>
+          </div>
+        </div>
 
-      <div id="history" class="tab-content" style="display: none;">
-    <!-- Place your History table or list here -->
-    <div class="inventory-card">
-        <h4>Past History</h4>
-        <p>This is where your completed borrows will appear.</p>
-    </div>
-</div>
+        <div id="history" class="tab-content" style="display: none;">
+          <div class="inventory-card">
+            <h4>Past History</h4>
+            <p>This is where your completed borrows will appear.</p>
+          </div>
+        </div>
       </main>
-
-
-
     </div>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/System/studentview/studentjs/studentborrow.js"></script>
+  <script src="/System/studentview/studentjs/auth.js"></script>
+  <script src="/System/studentview/studentjs/logout.js"></script>
 </body>
 </html>
