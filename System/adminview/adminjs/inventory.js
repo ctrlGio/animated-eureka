@@ -5,24 +5,22 @@ document.addEventListener('DOMContentLoaded', function () {
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4cWFjamV0ZmJxd3dhY2lmeWh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0OTAyMDAsImV4cCI6MjA5NDA2NjIwMH0.EO9lMp3Nmg29JhIuuzEgM15nlRaQZKwQg6EkXMSTos4'
   const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-  // ── Modal open/close (Add) ──────────────────────────────────────────────────
-  const openButton  = document.getElementById('openButton')
-  const container   = document.getElementById('addButton')
+  const openButton = document.getElementById('openButton')
+  const container = document.getElementById('addButton')
   const closeButton = document.getElementById('closeButton')
 
-  if (openButton)  openButton.addEventListener('click',  () => container.classList.add('open'))
+  if (openButton) openButton.addEventListener('click', () => container.classList.add('open'))
   if (closeButton) closeButton.addEventListener('click', () => container.classList.remove('open'))
   window.addEventListener('click', (e) => {
     if (e.target === container) container.classList.remove('open')
     if (e.target === document.getElementById('editModal')) closeEditModal()
   })
 
-  // ── Edit Modal ──────────────────────────────────────────────────────────────
   function openEditModal(item) {
-    document.getElementById('editId').value       = item.id
+    document.getElementById('editId').value = item.id
     document.getElementById('editItemName').value = item.item_name
     document.getElementById('editQuantity').value = item.quantity
-    document.getElementById('editStatus').value   = item.status
+    document.getElementById('editStatus').value = item.status
     document.getElementById('editModal').classList.add('open')
   }
 
@@ -33,30 +31,39 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('closeEditButton').addEventListener('click', closeEditModal)
 
   document.getElementById('editItemForm').addEventListener('submit', async (e) => {
-    e.preventDefault()
+  e.preventDefault()
 
-    const id        = document.getElementById('editId').value
-    const itemName  = document.getElementById('editItemName').value.trim()
-    const quantity  = parseInt(document.getElementById('editQuantity').value)
-    const status    = document.getElementById('editStatus').value
+  const id       = document.getElementById('editId').value
+  const itemName = document.getElementById('editItemName').value.trim()
+  const quantity = parseInt(document.getElementById('editQuantity').value)
+  let status     = document.getElementById('editStatus').value
 
-    const { error } = await client
-      .from('admininventory')
-      .update({
-        item_name:  itemName,
-        quantity,
-        status,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', id)
+  if (quantity > 0 && status === 'Borrowed') {
+    status = 'Available'
+    document.getElementById('editStatus').value = 'Available'
+  }
 
-    if (error) { alert('Failed to update: ' + error.message); return }
+  if (quantity === 0) {
+    status = 'Borrowed'
+    document.getElementById('editStatus').value = 'Borrowed'
+  }
 
-    closeEditModal()
-    loadInventory()
-  })
+  const { error } = await client
+    .from('admininventory')
+    .update({
+      item_name:  itemName,
+      quantity,
+      status,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', id)
 
-  // ── Fetch & render inventory ────────────────────────────────────────────────
+  if (error) { alert('Failed to update: ' + error.message); return }
+
+  closeEditModal()
+  loadInventory()
+})
+
   async function loadInventory(search = '', category = '', status = '') {
     let query = client
       .from('admininventory')
@@ -78,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function renderTable(items) {
-    const table   = document.querySelector('.inventory-table')
+    const table = document.querySelector('.inventory-table')
     const oldBody = table.querySelector('tbody')
     if (oldBody) oldBody.remove()
 
@@ -89,8 +96,8 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
       items.forEach(item => {
         const statusClass = item.status === 'Available' ? 'status-available'
-                          : item.status === 'Borrowed'  ? 'status-borrowed'
-                          : 'status-maintenance'
+          : item.status === 'Borrowed' ? 'status-borrowed'
+            : 'status-maintenance'
 
         const categoryName = item.admincategories?.name || 'Unknown'
 
@@ -115,31 +122,30 @@ document.addEventListener('DOMContentLoaded', function () {
     table.appendChild(tbody)
   }
 
-  // ── Add Item ────────────────────────────────────────────────────────────────
   const addItemForm = document.getElementById('addItemForm')
 
   if (addItemForm) {
     addItemForm.addEventListener('submit', async (e) => {
       e.preventDefault()
 
-      const itemName    = document.getElementById('itemName').value.trim()
+      const itemName = document.getElementById('itemName').value.trim()
       const categoryVal = document.getElementById('category').value
-      const quantity    = parseInt(document.getElementById('quantity').value)
-      const statusVal   = document.getElementById('status').value
+      const quantity = parseInt(document.getElementById('quantity').value)
+      const statusVal = document.getElementById('status').value
 
       const categoryMap = {
-        'kitchen-equipmet':   'Kitchen Equipment',
-        'kitchen-tools':      'Kitchen Tools',
+        'kitchen-equipmet': 'Kitchen Equipment',
+        'kitchen-tools': 'Kitchen Tools',
         'beverage-equipment': 'Beverage Equipment',
-        'tableware':          'Tableware',
-        'furniture':          'Furniture',
-        'linen':              'Linen',
-        'software':           'Software',
-        'books':              'Books'
+        'tableware': 'Tableware',
+        'furniture': 'Furniture',
+        'linen': 'Linen',
+        'utensils': 'Utensils',
+        'mise-en-place-tools': 'Mise En Place Tools'
       }
       const statusMap = {
-        'available':   'Available',
-        'borrowed':    'Borrowed',
+        'available': 'Available',
+        'borrowed': 'Borrowed',
         'maintenance': 'Maintenance'
       }
 
@@ -150,9 +156,8 @@ document.addEventListener('DOMContentLoaded', function () {
         .from('admininventory')
         .select('id')
         .ilike('item_name', itemName)
-        .single()
 
-      if (existing) {
+      if (existing && existing.length > 0) {
         alert('Item already exists in the inventory!')
         return
       }
@@ -171,10 +176,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // Insert item
       const { error } = await client.from('admininventory').insert([{
-        item_name:   itemName,
+        item_name: itemName,
         category_id: catData.id,
         quantity,
-        status:      statusMap[statusVal] || statusVal
+        status: statusMap[statusVal] || statusVal
       }])
 
       if (error) { alert('Failed to add item: ' + error.message); return }
@@ -185,7 +190,6 @@ document.addEventListener('DOMContentLoaded', function () {
     })
   }
 
-  // ── Delete Item ─────────────────────────────────────────────────────────────
   window.deleteItem = async (id) => {
     if (!confirm('Are you sure you want to delete this item?')) return
 
@@ -195,7 +199,6 @@ document.addEventListener('DOMContentLoaded', function () {
     loadInventory()
   }
 
-  // ── Open Edit Modal ─────────────────────────────────────────────────────────
   window.openEdit = async (id) => {
     const { data, error } = await client
       .from('admininventory')
@@ -208,16 +211,14 @@ document.addEventListener('DOMContentLoaded', function () {
     openEditModal(data)
   }
 
-  // ── Search & Filter ─────────────────────────────────────────────────────────
-  const searchInput    = document.querySelector('.search-input')
+  const searchInput = document.querySelector('.search-input')
   const categoryFilter = document.querySelector('.category-filter')
-  const statusFilter   = document.querySelector('.status-filter')
+  const statusFilter = document.querySelector('.status-filter')
 
-  if (searchInput)    searchInput.addEventListener('input',     () => loadInventory(searchInput.value, categoryFilter.value, statusFilter.value))
+  if (searchInput) searchInput.addEventListener('input', () => loadInventory(searchInput.value, categoryFilter.value, statusFilter.value))
   if (categoryFilter) categoryFilter.addEventListener('change', () => loadInventory(searchInput.value, categoryFilter.value, statusFilter.value))
-  if (statusFilter)   statusFilter.addEventListener('change',   () => loadInventory(searchInput.value, categoryFilter.value, statusFilter.value))
+  if (statusFilter) statusFilter.addEventListener('change', () => loadInventory(searchInput.value, categoryFilter.value, statusFilter.value))
 
-  // ── Initial load ────────────────────────────────────────────────────────────
   loadInventory()
 
 })

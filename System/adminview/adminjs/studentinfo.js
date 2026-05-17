@@ -9,34 +9,59 @@ document.addEventListener('DOMContentLoaded', function () {
   const modal    = document.getElementById('newBorrowModal')
   const closeBtn = document.getElementById('closeNewBorrowModal')
 
-  console.log('openBtn:', openBtn)
-  console.log('modal:', modal)
-  console.log('closeBtn:', closeBtn)
-
-  if (openBtn)  openBtn.addEventListener('click',  () => modal.style.display = 'flex')
+  if (openBtn)  openBtn.addEventListener('click', () => {
+    loadAvailableItems()
+    modal.style.display = 'flex'
+  })
   if (closeBtn) closeBtn.addEventListener('click', () => modal.style.display = 'none')
   window.addEventListener('click', (e) => {
     if (e.target === modal) modal.style.display = 'none'
   })
 
-  async function loadStats() {
-    const { count: activeCount } = await client
-      .from('adminborrows').select('*', { count: 'exact', head: true }).eq('status', 'Active')
+  async function loadAvailableItems() {
+    const { data, error } = await client
+      .from('admininventory')
+      .select('item_name, quantity')
+      .eq('status', 'Available')
+      .gt('quantity', 0)
 
-    const { count: overdueCount } = await client
-      .from('adminborrows').select('*', { count: 'exact', head: true }).eq('status', 'Overdue')
+    if (error) { console.error('Error loading items:', error); return }
 
-    const { count: returnedCount } = await client
-      .from('adminborrows').select('*', { count: 'exact', head: true }).eq('status', 'Returned')
+    const select = document.getElementById('itemBorrowed')
+    select.innerHTML = '<option value="">Select Item</option>'
 
-    const activeEl   = document.querySelector('.student-cards .student-value')
-    const overdueEl  = document.querySelectorAll('.student-card .student-value')[0]
-    const returnedEl = document.querySelectorAll('.student-card .student-value')[1]
+    if (!data || data.length === 0) {
+      select.innerHTML = '<option value="">No items available</option>'
+      return
+    }
 
-    if (activeEl)   activeEl.textContent   = activeCount   || 0
-    if (overdueEl)  overdueEl.textContent  = overdueCount  || 0
-    if (returnedEl) returnedEl.textContent = returnedCount || 0
+    data.forEach(item => {
+      select.innerHTML += `<option value="${item.item_name}">${item.item_name} (${item.quantity} available)</option>`
+    })
   }
+
+  async function loadStats() {
+  const activeEl   = document.querySelector('.student-cards .student-value')
+  const overdueEl  = document.querySelectorAll('.student-card .student-value')[0]
+  const returnedEl = document.querySelectorAll('.student-card .student-value')[1]
+
+  if (activeEl)   activeEl.textContent   = '—'
+  if (overdueEl)  overdueEl.textContent  = '—'
+  if (returnedEl) returnedEl.textContent = '—'
+
+  const { count: activeCount } = await client
+    .from('adminborrows').select('*', { count: 'exact', head: true }).eq('status', 'Active')
+
+  const { count: overdueCount } = await client
+    .from('adminborrows').select('*', { count: 'exact', head: true }).eq('status', 'Overdue')
+
+  const { count: returnedCount } = await client
+    .from('adminborrows').select('*', { count: 'exact', head: true }).eq('status', 'Returned')
+
+  if (activeEl)   activeEl.textContent   = activeCount   ?? 0
+  if (overdueEl)  overdueEl.textContent  = overdueCount  ?? 0
+  if (returnedEl) returnedEl.textContent = returnedCount ?? 0
+}
 
   async function loadBorrows(search = '', yearLevel = '', status = '') {
     let query = client
@@ -83,8 +108,8 @@ document.addEventListener('DOMContentLoaded', function () {
             <td>${dueDate}</td>
             <td><span class="status-badge ${statusClass}">${r.status}</span></td>
             <td>
-              <button class="return-btn" onclick="markReturned(${r.id})" title="Mark as Returned">
-                <i class="fa-solid fa-rotate-left"></i>
+              <button class="return-btn" onclick="markReturned(${r.id}, '${r.item_borrowed}', ${r.quantity})" title="Mark as Returned">
+                <i class="fa-solid fa-rotate-left"></i> Return
               </button>
               <button class="delete-btn" onclick="deleteRecord(${r.id})" title="Delete">
                 <i class="fa-solid fa-trash"></i>
@@ -111,6 +136,44 @@ document.addEventListener('DOMContentLoaded', function () {
       const borrowDate   = document.getElementById('borrowDate').value
       const dueDate      = document.getElementById('dueDate').value
 
+      const { data: inventoryItem, error: inventoryError } = await client
+        .from('admininventory')
+        .select('id, quantity, status')
+        .ilike('item_name', itemBorrowed)
+        .single()
+
+      if (inventoryError || !inventoryItem) {
+        alert('Item not found in inventory!')
+        return
+      }
+
+      if (inventoryItem.status !== 'Available') {
+        alert('This item is not available for borrowing!')
+        return
+      }
+
+      if (quantity > inventoryItem.quantity) {
+        alert(`Not enough stock! Only ${inventoryItem.quantity} available.`)
+        return
+      }
+
+      const newQuantity = inventoryItem.quantity - quantity
+      const newStatus   = newQuantity === 0 ? 'Borrowed' : 'Available'
+
+      const { error: updateError } = await client
+        .from('admininventory')
+        .update({
+          quantity:   newQuantity,
+          status:     newStatus,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', inventoryItem.id)
+
+      if (updateError) {
+        alert('Failed to update inventory: ' + updateError.message)
+        return
+      }
+
       const { error } = await client.from('adminborrows').insert([{
         student_id:    studentId,
         student_name:  studentName,
@@ -135,9 +198,29 @@ document.addEventListener('DOMContentLoaded', function () {
     })
   }
 
-  window.markReturned = async (id) => {
+  window.markReturned = async (id, itemBorrowed, quantity) => {
     if (!confirm('Mark this item as returned?')) return
 
+    // Restore quantity back to inventory
+    const { data: inventoryItem } = await client
+      .from('admininventory')
+      .select('id, quantity')
+      .ilike('item_name', itemBorrowed)
+      .single()
+
+    if (inventoryItem) {
+      const restoredQuantity = inventoryItem.quantity + quantity
+      await client
+        .from('admininventory')
+        .update({
+          quantity:   restoredQuantity,
+          status:     'Available',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', inventoryItem.id)
+    }
+
+    // Update borrow status
     const { error } = await client
       .from('adminborrows')
       .update({
