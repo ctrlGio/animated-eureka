@@ -23,7 +23,6 @@
                 <button class="settings-btn"><i class="fa-solid fa-gear"></i></button>
               </div>
             </div>
-
             <p class="welcome">Welcome, admin</p>
           </div>
         </div>
@@ -31,34 +30,35 @@
           <a href="admin_homepage.html" class="nav-item">
             <i class="fa-solid fa-table-columns"></i> Dashboard
           </a>
-
           <a href="inventory.html" class="nav-item">
             <i class="fa-solid fa-box-archive"></i> Inventory
           </a>
-
           <a href="monitoring.html" class="nav-item">
             <i class="fa-solid fa-chart-line"></i> Monitoring
           </a>
-
           <a href="studentinfo.html" class="nav-item active">
             <i class="fa-solid fa-user-group"></i> Student Information
           </a>
         </nav>
       </div>
-      <a href="/System/homepage/loginpage.html" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i>
-        Logout</a>
+      <a href="#" class="logout-btn" id="logoutBtn">
+        <i class="fa-solid fa-right-from-bracket"></i> Logout
+      </a>
     </aside>
+
     <main class="main-content">
       <header class="content-header">
         <h1>Student Information</h1>
         <p>Track students who borrowed equipments and materials</p>
       </header>
+
       <div class="button-container">
-        <button class="add-item-button" id="openBorrow"><span class="add-icon"><i class="fa fa-plus"
-              aria-hidden="true"></i></span>
+        <button class="add-item-button" id="openBorrow">
+          <span class="add-icon"><i class="fa fa-plus" aria-hidden="true"></i></span>
           <strong>New Borrow Record</strong>
         </button>
       </div>
+
       <div class="new-borrow-modal" id="newBorrowModal">
         <div class="container-content">
           <div class="header-text">
@@ -82,7 +82,9 @@
             </select>
 
             <label for="itemBorrowed">Item Borrowed:</label>
-            <input type="text" id="itemBorrowed" name="itemBorrowed" required>
+            <select id="itemBorrowed" name="itemBorrowed" required>
+              <option value="">Select Item</option>
+            </select>
 
             <label for="quantity">Quantity:</label>
             <input type="number" id="quantity" name="quantity" min="1" required>
@@ -100,28 +102,27 @@
           </form>
         </div>
       </div>
+
       <section class="student-info-grid">
         <div class="student-cards">
           <div class="student-header"><strong>Total Active Borrows</strong></div>
           <div class="student-value"></div>
         </div>
         <div class="student-card">
-          <div class="student-header"><strong>Overdue Items</strong></i></div>
+          <div class="student-header"><strong>Overdue Items</strong></div>
           <div class="student-value"></div>
         </div>
         <div class="student-card">
-          <div class="student-header"><strong>Returned Items</strong></i>
-          </div>
+          <div class="student-header"><strong>Returned Items</strong></div>
           <div class="student-value"></div>
         </div>
       </section>
+
       <section class="student-container">
         <div class="search-container">
           <div class="search-wrapper">
-            <span class="material-symbols-outlined search-icon"></span>
             <input type="text" class="search-input" placeholder="&#x1F50D; Search by student name, ID, or item...">
           </div>
-
           <select class="level-filter">
             <option>All Statuses</option>
             <option>1st Year</option>
@@ -129,7 +130,6 @@
             <option>3rd Year</option>
             <option>4th Year</option>
           </select>
-
           <select class="status-filter">
             <option>All Statuses</option>
             <option>Active</option>
@@ -137,8 +137,8 @@
             <option>Returned</option>
           </select>
         </div>
-
       </section>
+
       <section class="student-container">
         <div class="student-card">
           <h4>Borrowing Records</h4>
@@ -156,14 +156,37 @@
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody></tbody>
           </table>
         </div>
       </section>
+
     </main>
   </div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script defer src="adminjs/studentinfo.js"></script>
-<script src="adminjs/settings.js"></script>
+
+  <div class="settings-modal" id="settingsModal">
+    <div class="settings-content">
+      <h2><i class="fa-solid fa-gear"></i> Settings</h2>
+      <p>Customize your experience</p>
+      <div class="settings-item">
+        <div class="settings-item-info">
+          <strong>🌙 Dark Mode</strong>
+          <span>Switch to dark theme</span>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="darkModeToggle">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <button class="close-settings-btn" id="closeSettings">Close</button>
+    </div>
+  </div>
+
+  <script src="/System/adminview/adminjs/auth.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="adminjs/studentinfo.js"></script>
+  <script src="adminjs/settings.js"></script>
+  <script src="adminjs/logout.js"></script>
 </body>
+
 </html>

@@ -41,7 +41,7 @@
           </a>
         </nav>
       </div>
-      <a href="/System/homepage/loginpage.html" class="logout-btn">
+      <a href="#" class="logout-btn" id="logoutBtn">
         <i class="fa-solid fa-right-from-bracket"></i> Logout
       </a>
     </aside>
@@ -80,8 +80,8 @@
                   <option value="tableware">Tableware</option>
                   <option value="furniture">Furniture</option>
                   <option value="linen">Linen</option>
-                  <option value="software">Software</option>
-                  <option value="books">Books</option>
+                  <option value="utensils">Utensils</option>
+                  <option value="mise-en-place-tools">Mise En Place Tools</option>
                 </select>
               </div>
               <div class="form-group">
@@ -138,7 +138,6 @@
       <section class="inventory-grid">
         <div class="search-container">
           <div class="search-wrapper">
-            <span class="material-symbols-outlined search-icon"></span>
             <input type="text" class="search-input" placeholder="&#x1F50D; Search inventory...">
           </div>
           <select class="category-filter">
@@ -149,8 +148,8 @@
             <option>Tableware</option>
             <option>Furniture</option>
             <option>Linen</option>
-            <option>Software</option>
-            <option>Books</option>
+            <option>Utensils</option>
+            <option>Mise En Place Tools</option>
           </select>
           <select class="status-filter">
             <option>All Statuses</option>
@@ -180,8 +179,30 @@
 
     </main>
   </div>
+
+  <div class="settings-modal" id="settingsModal">
+    <div class="settings-content">
+      <h2><i class="fa-solid fa-gear"></i> Settings</h2>
+      <p>Customize your experience</p>
+      <div class="settings-item">
+        <div class="settings-item-info">
+          <strong>🌙 Dark Mode</strong>
+          <span>Switch to dark theme</span>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="darkModeToggle">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <button class="close-settings-btn" id="closeSettings">Close</button>
+    </div>
+  </div>
+
+  <script src="adminjs/auth.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="adminjs/inventory.js"></script>
   <script src="adminjs/settings.js"></script>
+  <script src="adminjs/logout.js"></script>
 </body>
+
 </html>

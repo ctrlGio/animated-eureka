@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard</title>
   <link rel="stylesheet" href="styles/settings.css">
-  <link rel="stylesheet" href="/System/adminview/styles/dashboard.css">
+  <link rel="stylesheet" href="styles/dashboard.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
@@ -23,7 +23,6 @@
                 <button class="settings-btn"><i class="fa-solid fa-gear"></i></button>
               </div>
             </div>
-
             <p class="welcome">Welcome, admin</p>
           </div>
         </div>
@@ -31,22 +30,20 @@
           <a href="admin_homepage.html" class="nav-item active">
             <i class="fa-solid fa-table-columns"></i> Dashboard
           </a>
-
           <a href="inventory.html" class="nav-item">
             <i class="fa-solid fa-box-archive"></i> Inventory
           </a>
-
           <a href="monitoring.html" class="nav-item">
             <i class="fa-solid fa-chart-line"></i> Monitoring
           </a>
-
           <a href="studentinfo.html" class="nav-item">
             <i class="fa-solid fa-user-group"></i> Student Information
           </a>
         </nav>
       </div>
-      <a href="/System/homepage/loginpage.html" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i>
-        Logout</a>
+      <a href="#" class="logout-btn" id="logoutBtn">
+        <i class="fa-solid fa-right-from-bracket"></i> Logout
+      </a>
     </aside>
 
     <main class="main-content">
@@ -58,24 +55,22 @@
       <section class="stats-grid">
         <div class="stat-card">
           <div class="stat-header"><span>Active Borrows</span><i class="fa-solid fa-users"></i></div>
-          <div class="stat-value"></div>
+          <div class="stat-value">—</div>
           <div class="stat-trend positive"></div>
         </div>
         <div class="stat-card">
           <div class="stat-header"><span>Total Inventory Items</span><i class="fa-solid fa-boxes"></i></div>
-          <div class="stat-value"></div>
+          <div class="stat-value">—</div>
           <div class="stat-trend positive"></div>
         </div>
         <div class="stat-card">
-          <div class="stat-header"><span>Pending Requisitions</span><i class="fa-solid fa-clipboard-list"></i>
-          </div>
-          <div class="stat-value"></div>
+          <div class="stat-header"><span>Pending Requisitions</span><i class="fa-solid fa-clipboard-list"></i></div>
+          <div class="stat-value">—</div>
           <div class="stat-trend"></div>
         </div>
         <div class="stat-card">
-          <div class="stat-header"><span>Overdue Items</span><i class="fa-solid fa-circle-exclamation"></i>
-          </div>
-          <div class="stat-value"></div>
+          <div class="stat-header"><span>Overdue Items</span><i class="fa-solid fa-circle-exclamation"></i></div>
+          <div class="stat-value">—</div>
           <div class="stat-trend negative"></div>
         </div>
       </section>
@@ -106,14 +101,35 @@
               <span>Review pending forms</span>
             </a>
           </div>
+        </section>
       </div>
-      </section>
+
+    </main>
   </div>
-  </main>
+
+  <div class="settings-modal" id="settingsModal">
+    <div class="settings-content">
+      <h2><i class="fa-solid fa-gear"></i> Settings</h2>
+      <p>Customize your experience</p>
+      <div class="settings-item">
+        <div class="settings-item-info">
+          <strong>🌙 Dark Mode</strong>
+          <span>Switch to dark theme</span>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="darkModeToggle">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <button class="close-settings-btn" id="closeSettings">Close</button>
+    </div>
   </div>
+
+  <script src="adminjs/auth.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="adminjs/dashboard.js"></script>
   <script src="adminjs/settings.js"></script>
+  <script src="adminjs/logout.js"></script>
 </body>
 
 </html>
