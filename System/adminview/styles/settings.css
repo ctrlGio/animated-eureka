@@ -78,7 +78,6 @@
   background: #cbd5e0;
 }
 
-/* ── Toggle Switch ───────────────────────────────────────────────────────────── */
 .toggle-switch {
   position: relative;
   display: inline-block;
@@ -121,7 +120,150 @@ input:checked + .toggle-slider:before {
   transform: translateX(20px);
 }
 
-/* ── Dark Mode Styles ────────────────────────────────────────────────────────── */
+.add-student-btn {
+  background: #4361ee;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.add-student-btn:hover {
+  background: #3451d1;
+}
+
+.add-student-modal {
+  display: none;
+  position: fixed;
+  z-index: 2100;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.45);
+  align-items: center;
+  justify-content: center;
+}
+
+.add-student-modal.open {
+  display: flex;
+}
+
+.add-student-content {
+  background: white;
+  border-radius: 16px;
+  width: 420px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.25s ease;
+}
+
+.add-student-content h2 {
+  font-size: 20px;
+  margin-bottom: 5px;
+}
+
+.add-student-content p {
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 20px;
+}
+
+.add-student-content .form-group {
+  margin-bottom: 14px;
+}
+
+.add-student-content .form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #374151;
+}
+
+.add-student-content .form-group input,
+.add-student-content .form-group select {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 13px;
+  outline: none;
+  box-sizing: border-box;
+  transition: border 0.2s;
+}
+
+.add-student-content .form-group input:focus,
+.add-student-content .form-group select:focus {
+  border-color: #4361ee;
+}
+
+.add-student-msg {
+  font-size: 13px;
+  min-height: 18px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  padding: 0;
+}
+
+.add-student-msg.error {
+  color: #e53e3e;
+  background: #fff5f5;
+  padding: 8px 12px;
+}
+
+.add-student-msg.success {
+  color: #276749;
+  background: #f0fff4;
+  padding: 8px 12px;
+}
+
+.add-student-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.add-student-actions button {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s;
+}
+
+.add-student-actions #cancelAddStudent {
+  background: #e2e8f0;
+  color: #374151;
+}
+
+.add-student-actions #cancelAddStudent:hover {
+  background: #cbd5e0;
+}
+
+.add-student-actions #confirmAddStudent {
+  background: #4361ee;
+  color: white;
+}
+
+.add-student-actions #confirmAddStudent:hover {
+  background: #3451d1;
+}
+
+.add-student-actions #confirmAddStudent:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DARK MODE — BASE & LAYOUT
+═══════════════════════════════════════════════════════════════ */
 body.dark-mode {
   background-color: #1a1a2e !important;
 }
@@ -130,6 +272,21 @@ body.dark-mode .dashboard-body {
   background-color: #16213e !important;
 }
 
+body.dark-mode .main-content {
+  background-color: #16213e !important;
+}
+
+body.dark-mode .content-header h1 {
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .content-header p {
+  color: #a0aec0 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DARK MODE — SIDEBAR
+═══════════════════════════════════════════════════════════════ */
 body.dark-mode .sidebar,
 body.dark-mode .sidebar-top {
   background: #0f3460 !important;
@@ -157,95 +314,6 @@ body.dark-mode .logout-btn:hover {
   color: white !important;
 }
 
-body.dark-mode .main-content {
-  background-color: #16213e !important;
-}
-
-body.dark-mode .content-header h1 {
-  color: #e2e8f0 !important;
-}
-
-body.dark-mode .content-header p {
-  color: #a0aec0 !important;
-}
-
-body.dark-mode .stat-card,
-body.dark-mode .activity-panel,
-body.dark-mode .actions-panel,
-body.dark-mode .action-card,
-body.dark-mode .inventory-card,
-body.dark-mode .student-card,
-body.dark-mode .student-cards,
-body.dark-mode .monitoring-card,
-body.dark-mode .requisition-card,
-body.dark-mode .search-container,
-body.dark-mode .settings-content {
-  background: #0f3460 !important;
-  border-color: #1a1a2e !important;
-  color: #e2e8f0 !important;
-}
-
-body.dark-mode .stat-header,
-body.dark-mode .monitoring-header,
-body.dark-mode .student-header {
-  color: #a0aec0 !important;
-}
-
-body.dark-mode .stat-value,
-body.dark-mode .monitoring-value,
-body.dark-mode .student-value {
-  color: #e2e8f0 !important;
-}
-
-body.dark-mode .inventory-table,
-body.dark-mode .student-table,
-body.dark-mode .requisition-table {
-  background: #0f3460 !important;
-}
-
-body.dark-mode .inventory-table th,
-body.dark-mode .student-table th,
-body.dark-mode .requisition-table th {
-  background-color: #1a1a2e !important;
-  color: #a0aec0 !important;
-  border-color: #1a1a2e !important;
-}
-
-body.dark-mode .inventory-table td,
-body.dark-mode .student-table td,
-body.dark-mode .requisition-table td {
-  color: #e2e8f0 !important;
-  border-color: #1a1a2e !important;
-}
-
-body.dark-mode .inventory-table tr:hover,
-body.dark-mode .student-table tr:hover,
-body.dark-mode .requisition-table tr:hover {
-  background-color: #1a1a2e !important;
-}
-
-body.dark-mode .inventory-table-header,
-body.dark-mode .requisition-table-header,
-body.dark-mode .table-card {
-  background-color: #1a1a2e !important;
-}
-
-body.dark-mode .search-wrapper {
-  background-color: #1a1a2e !important;
-}
-
-body.dark-mode .search-input {
-  color: #e2e8f0 !important;
-}
-
-body.dark-mode .category-filter,
-body.dark-mode .status-filter,
-body.dark-mode .level-filter {
-  background-color: #1a1a2e !important;
-  color: #e2e8f0 !important;
-  border-color: #1a1a2e !important;
-}
-
 body.dark-mode .user,
 body.dark-mode .settings-btn {
   color: #e2e8f0 !important;
@@ -253,6 +321,62 @@ body.dark-mode .settings-btn {
 
 body.dark-mode .welcome {
   color: #a0aec0 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DARK MODE — DASHBOARD CARDS
+═══════════════════════════════════════════════════════════════ */
+body.dark-mode .stat-card {
+  background: #0f3460 !important;
+  border-color: #1a1a2e !important;
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .stat-header {
+  color: #a0aec0 !important;
+}
+
+body.dark-mode .stat-header i {
+  color: #a0aec0 !important;
+}
+
+body.dark-mode .stat-value {
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .stat-trend {
+  color: #718096 !important;
+}
+
+body.dark-mode .stat-trend.positive {
+  color: #68d391 !important;
+}
+
+body.dark-mode .stat-trend.negative {
+  color: #fc8181 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DARK MODE — DASHBOARD ACTIVITY & ACTIONS PANELS
+═══════════════════════════════════════════════════════════════ */
+body.dark-mode .activity-panel,
+body.dark-mode .actions-panel {
+  background: #0f3460 !important;
+  border-color: #1a1a2e !important;
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .activity-panel h3,
+body.dark-mode .actions-panel h3 {
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .activity-item {
+  border-color: #1a1a2e !important;
+}
+
+body.dark-mode .activity-info strong {
+  color: #e2e8f0 !important;
 }
 
 body.dark-mode .activity-info p {
@@ -263,36 +387,386 @@ body.dark-mode .activity-time {
   color: #718096 !important;
 }
 
-body.dark-mode .activity-item {
+body.dark-mode .action-card {
+  background: #0f3460 !important;
+  border-color: #1a1a2e !important;
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .action-card:hover {
+  background-color: #1a1a2e !important;
+}
+
+body.dark-mode .action-card strong {
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .action-card span {
+  color: #a0aec0 !important;
+}
+
+/* Status badges on dashboard activity */
+body.dark-mode .status-active {
+  background: #1e3a5f !important;
+  color: #90cdf4 !important;
+}
+
+body.dark-mode .status-overdue {
+  background: #3d1515 !important;
+  color: #fc8181 !important;
+}
+
+body.dark-mode .status-returned {
+  background: #1a3a2a !important;
+  color: #68d391 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DARK MODE — MONITORING CARDS
+═══════════════════════════════════════════════════════════════ */
+body.dark-mode .monitoring-card {
+  background: #0f3460 !important;
+  border-color: #1a1a2e !important;
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .monitoring-header {
+  color: #a0aec0 !important;
+}
+
+body.dark-mode .monitoring-value {
+  color: #e2e8f0 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DARK MODE — REQUISITION TABLE
+═══════════════════════════════════════════════════════════════ */
+body.dark-mode .requisition-card {
+  background: #0f3460 !important;
   border-color: #1a1a2e !important;
 }
 
+body.dark-mode .requisition-card h4 {
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .requisition-table {
+  background: #0f3460 !important;
+}
+
+body.dark-mode .requisition-table-header {
+  background-color: #1a1a2e !important;
+}
+
+body.dark-mode .requisition-table th {
+  background-color: #1a1a2e !important;
+  color: #a0aec0 !important;
+  border-color: #1a1a2e !important;
+}
+
+body.dark-mode .requisition-table td {
+  color: #e2e8f0 !important;
+  border-color: #1a1a2e !important;
+}
+
+body.dark-mode .requisition-table tbody tr:hover td {
+  background-color: #1a1a2e !important;
+}
+
+/* Requisition status & urgency badges */
+body.dark-mode .status-pending {
+  background-color: #3d2e00 !important;
+  color: #fbd38d !important;
+}
+
+body.dark-mode .status-approved {
+  background-color: #1a3a2a !important;
+  color: #68d391 !important;
+}
+
+body.dark-mode .status-rejected {
+  background-color: #3d1515 !important;
+  color: #fc8181 !important;
+}
+
+body.dark-mode .urgency-high {
+  background-color: #3d1515 !important;
+  color: #fc8181 !important;
+}
+
+body.dark-mode .urgency-medium {
+  background-color: #3d2e00 !important;
+  color: #fbd38d !important;
+}
+
+body.dark-mode .urgency-low {
+  background-color: #1a3a2a !important;
+  color: #68d391 !important;
+}
+
+/* Requisition action buttons */
+body.dark-mode .approve-btn {
+  color: #68d391 !important;
+  border-color: #68d391 !important;
+}
+
+body.dark-mode .approve-btn:hover:not(:disabled) {
+  background-color: #68d391 !important;
+  color: #1a1a2e !important;
+}
+
+body.dark-mode .reject-btn {
+  color: #fbd38d !important;
+  border-color: #fbd38d !important;
+}
+
+body.dark-mode .reject-btn:hover:not(:disabled) {
+  background-color: #fbd38d !important;
+  color: #1a1a2e !important;
+}
+
+body.dark-mode .delete-btn {
+  color: #fc8181 !important;
+}
+
+body.dark-mode .delete-btn:hover {
+  background-color: #3d1515 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DARK MODE — INVENTORY
+═══════════════════════════════════════════════════════════════ */
+body.dark-mode .inventory-card {
+  background: #0f3460 !important;
+  border-color: #1a1a2e !important;
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .inventory-card h4 {
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .inventory-table {
+  background: #0f3460 !important;
+}
+
+body.dark-mode .inventory-table-header {
+  background-color: #1a1a2e !important;
+}
+
+body.dark-mode .inventory-table th {
+  background-color: #1a1a2e !important;
+  color: #a0aec0 !important;
+  border-color: #1a1a2e !important;
+}
+
+body.dark-mode .inventory-table td {
+  color: #e2e8f0 !important;
+  border-color: #1a1a2e !important;
+}
+
+body.dark-mode .inventory-table tr:hover {
+  background-color: #1a1a2e !important;
+}
+
+/* Inventory status badges */
+body.dark-mode .status-available {
+  background-color: #e2e8f0 !important;
+  color: #1a1a2e !important;
+}
+
+body.dark-mode .status-borrowed {
+  background-color: #2d3748 !important;
+  color: #a0aec0 !important;
+}
+
+body.dark-mode .status-maintenance {
+  background-color: #3d1515 !important;
+  color: #fc8181 !important;
+}
+
+/* Inventory action buttons */
+body.dark-mode .edit-btn {
+  color: #90cdf4 !important;
+  border-color: #2d3748 !important;
+}
+
+body.dark-mode .edit-btn:hover {
+  background-color: #1a1a2e !important;
+  border-color: #90cdf4 !important;
+}
+
+/* Inventory Add/Edit modal */
 body.dark-mode .container-content {
   background: #0f3460 !important;
   color: #e2e8f0 !important;
 }
 
-body.dark-mode .form-group label,
+body.dark-mode .container-content h2,
+body.dark-mode .container-content p {
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .add-confirm {
+  background-color: #4361ee !important;
+  color: white !important;
+}
+
+body.dark-mode .add-confirm:hover {
+  background-color: #3451d1 !important;
+}
+
+body.dark-mode .add-cancel {
+  background-color: #1a1a2e !important;
+  color: #a0aec0 !important;
+}
+
+body.dark-mode .add-cancel:hover {
+  background-color: #2d3748 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DARK MODE — STUDENT INFO
+═══════════════════════════════════════════════════════════════ */
+body.dark-mode .student-card,
+body.dark-mode .student-cards {
+  background: #0f3460 !important;
+  border-color: #1a1a2e !important;
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .student-card h4 {
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .student-header {
+  color: #a0aec0 !important;
+}
+
+body.dark-mode .student-value {
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .student-table {
+  background: #0f3460 !important;
+}
+
+body.dark-mode .table-card {
+  background-color: #1a1a2e !important;
+}
+
+body.dark-mode .student-table th {
+  background-color: #1a1a2e !important;
+  color: #a0aec0 !important;
+  border-color: #1a1a2e !important;
+}
+
+body.dark-mode .student-table td {
+  color: #e2e8f0 !important;
+  border-color: #1a1a2e !important;
+}
+
+body.dark-mode .student-table tbody tr:hover {
+  background-color: #1a1a2e !important;
+}
+
+/* Student return & delete buttons */
+body.dark-mode .return-btn {
+  color: #90cdf4 !important;
+  border-color: #2d3748 !important;
+}
+
+body.dark-mode .return-btn:hover {
+  background-color: #1a1a2e !important;
+  border-color: #90cdf4 !important;
+}
+
+/* New Borrow modal */
+body.dark-mode .new-borrow-modal .container-content,
+body.dark-mode .container-content {
+  background: #0f3460 !important;
+  color: #e2e8f0 !important;
+}
+
 body.dark-mode .header-text h2,
 body.dark-mode .header-text p {
   color: #e2e8f0 !important;
 }
 
-body.dark-mode .form-group input,
-body.dark-mode .form-group select,
+body.dark-mode #newBorrowForm label {
+  color: #a0aec0 !important;
+}
+
 body.dark-mode #newBorrowForm input,
 body.dark-mode #newBorrowForm select {
   background-color: #1a1a2e !important;
   color: #e2e8f0 !important;
-  border-color: #1a1a2e !important;
+  border-color: #2d3748 !important;
+}
+
+body.dark-mode .form-buttons button[type="submit"] {
+  background: #4361ee !important;
+  color: white !important;
+}
+
+body.dark-mode #closeNewBorrowModal {
+  background: #1a1a2e !important;
+  color: #a0aec0 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DARK MODE — SHARED FORM ELEMENTS
+═══════════════════════════════════════════════════════════════ */
+body.dark-mode .form-group label {
+  color: #a0aec0 !important;
+}
+
+body.dark-mode .form-group input,
+body.dark-mode .form-group select {
+  background-color: #1a1a2e !important;
+  color: #e2e8f0 !important;
+  border-color: #2d3748 !important;
 }
 
 body.dark-mode h4 {
   color: #e2e8f0 !important;
 }
 
-body.dark-mode .settings-item {
+/* ═══════════════════════════════════════════════════════════════
+   DARK MODE — SEARCH & FILTERS
+═══════════════════════════════════════════════════════════════ */
+body.dark-mode .search-container {
+  background: #0f3460 !important;
   border-color: #1a1a2e !important;
+}
+
+body.dark-mode .search-wrapper {
+  background-color: #1a1a2e !important;
+}
+
+body.dark-mode .search-input {
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .search-input::placeholder {
+  color: #4a5568 !important;
+}
+
+body.dark-mode .category-filter,
+body.dark-mode .status-filter,
+body.dark-mode .level-filter {
+  background-color: #1a1a2e !important;
+  color: #e2e8f0 !important;
+  border-color: #2d3748 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DARK MODE — SETTINGS MODAL
+═══════════════════════════════════════════════════════════════ */
+body.dark-mode .settings-content {
+  background: #0f3460 !important;
+  border-color: #1a1a2e !important;
+  color: #e2e8f0 !important;
 }
 
 body.dark-mode .settings-content h2,
@@ -300,11 +774,95 @@ body.dark-mode .settings-item-info strong {
   color: #e2e8f0 !important;
 }
 
+body.dark-mode .settings-content > p,
 body.dark-mode .settings-item-info span {
   color: #a0aec0 !important;
+}
+
+body.dark-mode .settings-item {
+  border-color: #1a1a2e !important;
 }
 
 body.dark-mode .close-settings-btn {
   background: #1a1a2e !important;
   color: #e2e8f0 !important;
+}
+
+body.dark-mode .close-settings-btn:hover {
+  background: #2d3748 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DARK MODE — ADD STUDENT MODAL
+═══════════════════════════════════════════════════════════════ */
+body.dark-mode .add-student-content {
+  background: #0f3460 !important;
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .add-student-content h2 {
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .add-student-content > p {
+  color: #a0aec0 !important;
+}
+
+body.dark-mode .add-student-content .form-group label {
+  color: #a0aec0 !important;
+}
+
+body.dark-mode .add-student-content .form-group input,
+body.dark-mode .add-student-content .form-group select {
+  background: #1a1a2e !important;
+  color: #e2e8f0 !important;
+  border-color: #2d3748 !important;
+}
+
+body.dark-mode .add-student-msg.error {
+  background: #3d1515 !important;
+  color: #fc8181 !important;
+}
+
+body.dark-mode .add-student-msg.success {
+  background: #1a3a2a !important;
+  color: #68d391 !important;
+}
+
+body.dark-mode .add-student-actions #cancelAddStudent {
+  background: #1a1a2e !important;
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .add-student-actions #cancelAddStudent:hover {
+  background: #2d3748 !important;
+}
+
+body.dark-mode .add-student-actions #confirmAddStudent {
+  background: #4361ee !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   ADD STUDENT BASTA
+═══════════════════════════════════════════════════════════════ */
+#studentIdInput[readonly] {
+  background-color: #f1f5f9;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+body.dark-mode #studentIdInput[readonly] {
+  background-color: #1a1a2e !important;
+  color: #718096 !important;
+}
+#studentPassword::-ms-reveal,
+#studentPassword::-ms-clear,
+#studentPassword::-webkit-credentials-auto-fill-button {
+  display: none !important;
+}
+
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none !important;
 }

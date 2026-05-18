@@ -281,3 +281,27 @@ body {
 .settings-container {
     margin-left: auto;
 }
+
+.dot.green  { background: #16a34a; }
+.dot.red    { background: #dc2626; }
+.dot.orange { background: #d97706; }
+
+.activity-info strong {
+  display: block;
+  font-size: 13px;
+  color: #1e293b;
+  margin-bottom: 2px;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-active   { background: #dbeafe; color: #1d4ed8; }
+.status-overdue  { background: #fee2e2; color: #991b1b; }
+.status-returned { background: #d1fae5; color: #065f46; }

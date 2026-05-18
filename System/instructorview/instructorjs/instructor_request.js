@@ -11,9 +11,30 @@ if (localStorage.getItem('userRole') !== 'instructor') {
 
 const instructorName = localStorage.getItem('username') || 'Instructor'
 
-const tbody        = document.querySelector('.request-table tbody')
-const statValues   = document.querySelectorAll('.stat-value')
+const tbody      = document.querySelector('.request-table tbody')
+const statValues = document.querySelectorAll('.stat-value')
 
+/* ── Urgency from date needed ────────────────────── */
+function calcUrgency(dateStr) {
+  if (!dateStr) return 'Low'
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const target = new Date(dateStr)
+  target.setHours(0, 0, 0, 0)
+  const daysAway = Math.ceil((target - today) / (1000 * 60 * 60 * 24))
+  if (daysAway <= 1) return 'High'
+  if (daysAway <= 3) return 'Medium'
+  return 'Low'
+}
+
+/* Extract "Date needed: YYYY-MM-DD" from the reason string */
+function extractDateNeeded(reason) {
+  if (!reason) return null
+  const match = reason.match(/Date needed:\s*(\d{4}-\d{2}-\d{2})/)
+  return match ? match[1] : null
+}
+
+/* ── Load requests ───────────────────────────────── */
 async function loadRequests() {
   tbody.innerHTML = `<tr><td colspan="9" class="loading-cell">
     <i class="fa-solid fa-spinner fa-spin"></i> Loading requests...
@@ -39,9 +60,9 @@ function updateStats(data) {
   const approved = data.filter(r => r.status === 'Instructor Approved').length
   const rejected = data.filter(r => r.status === 'Instructor Rejected').length
 
-  statValues[0].textContent = pending
-  statValues[1].textContent = approved
-  statValues[2].textContent = rejected
+  if (statValues[0]) statValues[0].textContent = pending
+  if (statValues[1]) statValues[1].textContent = approved
+  if (statValues[2]) statValues[2].textContent = rejected
 }
 
 function renderTable(data) {
@@ -55,6 +76,10 @@ function renderTable(data) {
     const date        = r.created_at ? new Date(r.created_at).toLocaleDateString('en-PH', {
       year: 'numeric', month: 'short', day: 'numeric'
     }) : '—'
+
+    const dateNeeded  = extractDateNeeded(r.reason)
+    const urgency     = calcUrgency(dateNeeded)
+    const urgencyClass = urgency === 'High' ? 'urgency-high' : urgency === 'Medium' ? 'urgency-medium' : 'urgency-low'
 
     const isPending = r.status === 'Pending'
 
@@ -70,13 +95,13 @@ function renderTable(data) {
         <td>${r.year_level}</td>
         <td>${r.item_requested}</td>
         <td>${r.quantity}</td>
-        <td>${date}</td>
-        <td><span class="urgency-badge">${r.reason || '—'}</span></td>
+        <td>${dateNeeded || date}</td>
+        <td><span class="urgency-badge ${urgencyClass}">${urgency}</span></td>
         <td><span class="status-badge ${statusClass}">${r.status}</span></td>
         <td>
           ${isPending ? `
             <div class="action-btns">
-              <button class="btn-approve" onclick="handleApprove(${r.id}, '${r.student_id}', '${r.student_name}', '${r.item_requested}', ${r.quantity}, '${r.year_level}')">
+              <button class="btn-approve" onclick="handleApprove(${r.id}, '${r.student_id}', '${r.student_name}', '${r.item_requested}', ${r.quantity}, '${dateNeeded || ''}')">
                 <i class="fa-solid fa-check"></i> Approve
               </button>
               <button class="btn-reject" onclick="handleReject(${r.id})">
@@ -101,16 +126,14 @@ function getStatusClass(status) {
   }
 }
 
-async function handleApprove(id, studentId, studentName, itemRequested, quantity, yearLevel) {
+/* ── Approve ─────────────────────────────────────── */
+async function handleApprove(id, studentId, studentName, itemRequested, quantity, dateNeeded) {
   const row = document.querySelector(`tr[data-id="${id}"]`)
   setRowLoading(row, true)
 
   const { error: updateError } = await db
     .from('studentrequests')
-    .update({
-      status:     'Instructor Approved',
-      updated_at: new Date().toISOString()
-    })
+    .update({ status: 'Instructor Approved', updated_at: new Date().toISOString() })
     .eq('id', id)
 
   if (updateError) {
@@ -120,6 +143,8 @@ async function handleApprove(id, studentId, studentName, itemRequested, quantity
     return
   }
 
+  const urgency = calcUrgency(dateNeeded)
+
   const { error: insertError } = await db
     .from('adminrequisition_forms')
     .insert({
@@ -127,8 +152,8 @@ async function handleApprove(id, studentId, studentName, itemRequested, quantity
       professor:      instructorName,
       item_requested: itemRequested,
       quantity:       quantity,
-      date:           new Date().toISOString().split('T')[0],
-      urgency:        yearLevel,
+      date:           dateNeeded || new Date().toISOString().split('T')[0],
+      urgency:        urgency,
       status:         'Pending Admin Approval',
       created_at:     new Date().toISOString(),
       updated_at:     new Date().toISOString()
@@ -141,6 +166,7 @@ async function handleApprove(id, studentId, studentName, itemRequested, quantity
   await loadRequests()
 }
 
+/* ── Reject ──────────────────────────────────────── */
 async function handleReject(id) {
   if (!confirm('Are you sure you want to reject this request?')) return
 
@@ -149,10 +175,7 @@ async function handleReject(id) {
 
   const { error } = await db
     .from('studentrequests')
-    .update({
-      status:     'Instructor Rejected',
-      updated_at: new Date().toISOString()
-    })
+    .update({ status: 'Instructor Rejected', updated_at: new Date().toISOString() })
     .eq('id', id)
 
   if (error) {
