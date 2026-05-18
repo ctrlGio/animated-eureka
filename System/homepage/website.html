@@ -10,67 +10,87 @@
 </head>
 
 <body>
-    <header class="container">
-        <h3>BSHM Inventory</h3>
-        <p>Management System</p>
+    <header class="navbar">
+        <div class="logo-area">
+            <div class="logo-icon"><i class="fa-solid fa-cube"></i></div>
+            <div class="logo-text">
+                <h3>BSHM Inventory</h3>
+                <p>Management System</p>
+            </div>
+        </div>
         <button class="log_in">
-            <a href="/System/homepage/loginpage.html">Log In</a>
+            <a href="/System/homepage/loginpage.html"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
         </button>
     </header>
 
-    <section class="intro">
-        <div class ="intro-image">
-            <img src="/System/homepage/pictures/hero.webp" alt="Inventory Management">
-        </div>
-        <h1>Streamline your Inventory Management</h1>
-        <p>A comprehensive solution for managing BSHM equipment, student borrowings, and requisition workflows with multi-level approval systems.</p>
-        <div class="button">
-            <button class="get_started">
-                <a href="/System/homepage/loginpage.html">Get Started</a>
-            </button>
-            <button class="learn_more">
-                <a href="/System/homepage/learn_more.html">Learn More</a>
-            </button>
+    <section class="hero">
+        <div class="badge">Bachelor of Science in Hospitality Management</div>
+        <h1>Streamline Your Inventory Management</h1>
+        <p class="hero-sub">A comprehensive solution for managing BSHM equipment, student borrowings, and requisition workflows with multi-level approval systems.</p>
+        <div class="hero-btns">
+            <button class="btn-primary">Get Started</button>
+            <button class="btn-secondary">Learn More</button>
         </div>
     </section>
 
     <section class="features">
-        <h2>Key Features</h2>
-        <p>Everything you need to manage your inventory efficiently.</p>
+        <div class="section-header">
+            <h2>Key Features</h2>
+            <p>Everything you need to manage your hospitality equipment</p>
+        </div>
 
         <div class="feature-cards">
             <div class="feature-card">
-                <h3>Equipment Management</h3>
-                <p>Track and manage all BSHM equipment with detailed records and status updates.</p>
+                <div class="f-icon blue"><i class="fa-solid fa-box"></i></div>
+                <h3>Inventory Tracking</h3>
+                <p>Track all your BSHM equipment including kitchen tools, commercial appliances, and more.</p>
             </div>
             <div class="feature-card">
-                <h3>Student Borrowing</h3>
-                <p>Allow students to easily request and borrow equipment with a streamlined approval process.</p>
+                <div class="f-icon green"><i class="fa-solid fa-users"></i></div>
+                <h3>Student Management</h3>
+                <p>Monitor student borrowings, track due dates, manage returns, and keep detailed records.</p>
             </div>
             <div class="feature-card">
-                <h3>Requisition Workflow</h3>
-                <p>Multi-level approval system for equipment requests, ensuring efficient inventory control.</p>
+                <div class="f-icon purple"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                <h3>Approval Workflow</h3>
+                <p>Multi-level approval system with instructor and admin authorization and digital signatures.</p>
             </div>
         </div>
     </section>
 
-    <section class="about">
-        <h2>About the System</h2>
-        <p>The BSHM Inventory Management System is designed specifically for hospitality management programs to efficiently track and manage equipment, streamline borrowing processes, and maintain accurate records.</p>
-        <div class=other_features>
-            <h3>Role Based Access</h3>
-            <p>Different access levels for students, instructors, and administrators to ensure secure and efficient management.</p>
-            <h3>Real-Time Updates</h3>
-            <p>Instant notifications and updates on equipment status and request approvals.</p>
-            <h3>Comprehensive Reporting</h3>
-            <p>Generate detailed reports on inventory, borrowing history, and request statuses for better decision-making.</p>
+    <section class="about-grid">
+        <div class="about-text">
+            <h2>About the System</h2>
+            <p>The BSHM Inventory Management System is designed specifically for hospitality management programs...</p>
+            <ul class="benefits-list">
+                <li><i class="fa-solid fa-circle-check"></i> <strong>Role-Based Access:</strong> Separate interfaces for students and staff.</li>
+                <li><i class="fa-solid fa-circle-check"></i> <strong>Real-Time Tracking:</strong> Monitor equipment availability instantly.</li>
+                <li><i class="fa-solid fa-circle-check"></i> <strong>Comprehensive Reports:</strong> Generate detailed reports on borrowings.</li>
+            </ul>
+        </div>
+        <div class="user-roles-card">
+            <h3>User Roles</h3>
+            <div class="role-item">
+                <strong>Students</strong>
+                <p>Browse equipment, submit borrow requests, and track borrowings.</p>
+            </div>
+            <div class="role-item">
+                <strong>Instructors</strong>
+                <p>Review and approve student requests with digital signatures.</p>
+            </div>
+            <div class="role-item">
+                <strong>Administrators</strong>
+                <p>Full system access, final approvals, and inventory management.</p>
+            </div>
         </div>
     </section>
 
-
-
-        
-    
+    <footer class="main-footer">
+        <div class="footer-content">
+            <p><i class="fa-solid fa-cube"></i> BSHM Inventory System</p>
+            <p>&copy; 2026 BSHM Inventory Management System. All rights reserved.</p>
+        </div>
+    </footer>
 </body>
 
 </html>

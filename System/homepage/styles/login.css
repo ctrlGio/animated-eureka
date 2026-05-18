@@ -137,3 +137,8 @@ body {
 #password::-webkit-textfield-decoration-container {
     display: none;
 }
+
+.exit {
+  position: absolute;
+  top: 10px;
+}
