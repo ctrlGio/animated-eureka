@@ -111,7 +111,7 @@ body {
 /* Stats */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
     margin-bottom: 30px;
 }
@@ -174,4 +174,63 @@ body {
 
 .table-card {
     background-color: #fafafa; 
+}
+
+.request-container {
+    margin-top: 20px;
+}
+
+.request-table td {
+    padding: 15px 20px;
+    text-align: left;
+    color: #333;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+}
+
+.request-table tr:hover { 
+    background-color: #f8fafc;
+ }
+
+.status-pending  { 
+    background-color: #f6ad55; 
+    color: white; 
+    padding: 4px 10px; 
+    border-radius: 20px; 
+    font-size: 13px; 
+}
+.status-approved { 
+    background-color: #48bb78; 
+    color: white; 
+    padding: 4px 10px; 
+    border-radius: 20px; 
+    font-size: 13px; 
+}
+.status-rejected { 
+    background-color: #e53e3e; 
+    color: white; 
+    padding: 4px 10px; 
+    border-radius: 20px; 
+    font-size: 13px; 
+}
+.urgency-high { 
+    background-color: #e53e3e; 
+    color: white; 
+    padding: 4px 10px; 
+    border-radius: 20px; 
+    font-size: 13px; 
+}
+.urgency-medium { 
+    background-color: #f6ad55; 
+    color: white; 
+    padding: 4px 10px; 
+    border-radius: 20px; 
+    font-size: 13px; 
+}
+.urgency-low { 
+    background-color: #48bb78; 
+    color: white; 
+    padding: 4px 10px; 
+    border-radius: 20px; 
+    font-size: 13px; 
 }
