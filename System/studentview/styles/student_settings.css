@@ -1,0 +1,310 @@
+/* ── Settings Modal ──────────────────────────────────── */
+.settings-modal {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-modal.open {
+  display: flex;
+}
+
+.settings-content {
+  background: white;
+  border-radius: 16px;
+  width: 380px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.25s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.settings-content h2 {
+  font-size: 20px;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.settings-content p {
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 25px;
+}
+
+.settings-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.settings-item:last-child { border-bottom: none; }
+
+.settings-item-info strong {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 3px;
+}
+
+.settings-item-info span {
+  font-size: 12px;
+  color: #888;
+}
+
+.close-settings-btn {
+  background: #e2e8f0;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.close-settings-btn:hover { background: #cbd5e0; }
+
+/* ── Settings Button ─────────────────────────────────── */
+.settings-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 0;
+  color: #6c757d;
+  transition: color 0.2s;
+}
+
+.settings-btn:hover { color: #333; }
+
+.settings-container { margin-left: auto; }
+
+.user-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── Toggle Switch ───────────────────────────────────── */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 26px;
+}
+
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #cbd5e0;
+  border-radius: 26px;
+  transition: 0.3s;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+input:checked + .toggle-slider { background-color: #4361ee; }
+input:checked + .toggle-slider:before { transform: translateX(20px); }
+
+/* ── Dark Mode ───────────────────────────────────────── */
+body.dark-mode {
+  background-color: #1a1a2e !important;
+}
+
+body.dark-mode .dashboard-body {
+  background-color: #16213e !important;
+}
+
+body.dark-mode .sidebar {
+  background: #0f3460 !important;
+  border-color: #1a1a2e !important;
+}
+
+body.dark-mode .brand p,
+body.dark-mode .welcome {
+  color: #a0aec0 !important;
+}
+
+body.dark-mode .user,
+body.dark-mode .settings-btn {
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .nav-item {
+  color: #a0aec0 !important;
+}
+
+body.dark-mode .nav-item:hover,
+body.dark-mode .nav-item.active {
+  background: #1a1a2e !important;
+  color: #90cdf4 !important;
+  border-color: #90cdf4 !important;
+}
+
+body.dark-mode .logout-btn {
+  color: #a0aec0 !important;
+  border-color: #1a1a2e !important;
+}
+
+body.dark-mode .logout-btn:hover {
+  background-color: #1a1a2e !important;
+  color: white !important;
+}
+
+body.dark-mode .main-content {
+  background-color: #16213e !important;
+}
+
+body.dark-mode .content-header h1 {
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .content-header p {
+  color: #a0aec0 !important;
+}
+
+/* Cards & panels */
+body.dark-mode .stat-card,
+body.dark-mode .panel,
+body.dark-mode .request-card,
+body.dark-mode .inventory-card,
+body.dark-mode .equipment-card,
+body.dark-mode .search-container,
+body.dark-mode .settings-content,
+body.dark-mode .student-info-section {
+  background: #0f3460 !important;
+  border-color: #1a1a2e !important;
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .stat-header { color: #a0aec0 !important; }
+body.dark-mode .stat-value  { color: #e2e8f0 !important; }
+
+body.dark-mode h3,
+body.dark-mode h4 {
+  color: #e2e8f0 !important;
+}
+
+/* Tables */
+body.dark-mode .borrow-table {
+  background: #0f3460 !important;
+}
+
+body.dark-mode .borrow-table th {
+  background-color: #1a1a2e !important;
+  color: #a0aec0 !important;
+  border-color: #1a1a2e !important;
+}
+
+body.dark-mode .borrow-table td {
+  color: #e2e8f0 !important;
+  border-color: #1a1a2e !important;
+}
+
+body.dark-mode .borrow-table tr:hover {
+  background-color: #1a1a2e !important;
+}
+
+/* Search & filters */
+body.dark-mode .search-wrapper {
+  background-color: #1a1a2e !important;
+}
+
+body.dark-mode .search-input {
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .category-filter,
+body.dark-mode .status-filter {
+  background-color: #1a1a2e !important;
+  color: #e2e8f0 !important;
+  border-color: #1a1a2e !important;
+}
+
+/* Forms */
+body.dark-mode label,
+body.dark-mode .header-text h3,
+body.dark-mode .header-text p {
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode input,
+body.dark-mode select,
+body.dark-mode textarea {
+  background-color: #1a1a2e !important;
+  color: #e2e8f0 !important;
+  border-color: #475569 !important;
+}
+
+body.dark-mode input::placeholder,
+body.dark-mode textarea::placeholder {
+  color: #64748b !important;
+}
+
+/* Student info section */
+body.dark-mode .info-item span { color: #a0aec0 !important; }
+body.dark-mode .info-item strong { color: #e2e8f0 !important; }
+
+/* Browse cards */
+body.dark-mode .card-header h3 { color: #e2e8f0 !important; }
+body.dark-mode .description     { color: #a0aec0 !important; }
+body.dark-mode .category-label  { color: #64748b !important; }
+body.dark-mode .card-footer     { border-color: #1a1a2e !important; }
+body.dark-mode .availability .label { color: #a0aec0 !important; }
+body.dark-mode .availability .count { color: #e2e8f0 !important; }
+
+/* Pill tabs */
+body.dark-mode .pill-container {
+  background-color: #1a1a2e !important;
+  border-color: #0f3460 !important;
+}
+
+body.dark-mode .pill-item { color: #a0aec0 !important; }
+body.dark-mode .pill-item.active {
+  background-color: #0f3460 !important;
+  color: #e2e8f0 !important;
+}
+
+/* Settings modal */
+body.dark-mode .settings-item       { border-color: #1a1a2e !important; }
+body.dark-mode .settings-content h2 { color: #e2e8f0 !important; }
+body.dark-mode .settings-item-info strong { color: #e2e8f0 !important; }
+body.dark-mode .settings-item-info span   { color: #a0aec0 !important; }
+body.dark-mode .close-settings-btn {
+  background: #1a1a2e !important;
+  color: #e2e8f0 !important;
+}
+
+/* Divider */
+body.dark-mode .divider { color: #475569 !important; }
+body.dark-mode .divider::before,
+body.dark-mode .divider::after { background: #475569 !important; }

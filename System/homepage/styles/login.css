@@ -1,144 +1,411 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-    background-color: #d8dee6;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+  background-color: #d8dee6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 40px 16px;
 }
 
+/* ── Login Card ─────────────────────────────────────── */
 .login-container {
-    background-color: #ffffff;
-    width: 100%;
-    max-width: 420px;
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  background-color: #ffffff;
+  width: 100%;
+  max-width: 420px;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
 .login-header {
-    text-align: center;
-    margin-bottom: 30px;
+  text-align: center;
+  margin-bottom: 30px;
 }
 
 .login-header h2 {
-    color: #333;
-    font-size: 26px;
-    font-weight: 500;
-    margin-bottom: 8px;
+  color: #333;
+  font-size: 22px;
+  font-weight: 600;
 }
 
-.login-header p {
-    color: #6c757d;
-    font-size: 14px;
-}
-
+/* ── Input Groups ───────────────────────────────────── */
 .input-group {
-    margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 .input-group label {
-    display: block;
-    color: #495057;
-    font-size: 14px;
-    margin-bottom: 8px;
-    font-weight: 500;
+  display: block;
+  color: #495057;
+  font-size: 13px;
+  margin-bottom: 6px;
+  font-weight: 500;
 }
 
 .input-wrapper {
-    display: flex;
-    align-items: center;
-    background-color: #f1f3f5;
-    border-radius: 8px;
-    padding: 12px 16px;
-    transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  background-color: #f1f3f5;
+  border-radius: 8px;
+  padding: 11px 14px;
+  transition: background-color 0.2s ease;
 }
 
 .input-wrapper:focus-within {
-    background-color: #e9ecef;
-    box-shadow: 0 0 0 2px rgba(43, 50, 64, 0.1);
+  background-color: #e9ecef;
+  box-shadow: 0 0 0 2px rgba(43, 50, 64, 0.1);
 }
 
 .input-wrapper i {
-    color: #aeb5bd;
-    font-size: 16px;
-    margin-right: 12px;
+  color: #aeb5bd;
+  font-size: 15px;
+  margin-right: 10px;
+  flex-shrink: 0;
 }
 
-.input-wrapper input {
-    border: none;
-    background: transparent;
-    outline: none;
-    width: 100%;
-    font-size: 14px;
-    color: #333;
+.input-wrapper input,
+.input-wrapper select {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font-size: 14px;
+  color: #333;
+}
+
+.input-wrapper select {
+  cursor: pointer;
 }
 
 .input-wrapper input::placeholder {
-    color: #aeb5bd;
+  color: #aeb5bd;
 }
 
+/* ── Buttons ────────────────────────────────────────── */
 .sign-in-btn {
-    width: 100%;
-    background-color: #2b3240;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 14px;
-    font-size: 15px;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: background-color 0.2s;
+  width: 100%;
+  background-color: #2b3240;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 13px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background-color 0.2s, opacity 0.2s;
 }
 
-.sign-in-btn:hover {
-    background-color: #1e232d;
+.sign-in-btn:hover { background-color: #1e232d; }
+.sign-in-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.signup-toggle-btn {
+  width: 100%;
+  background-color: transparent;
+  color: #2b3240;
+  border: 1.5px solid #2b3240;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
+.signup-toggle-btn:hover { background-color: #f1f3f5; }
+
+/* ── Forgot link ────────────────────────────────────── */
+.form-links {
+  text-align: right;
+  margin-bottom: 4px;
+}
+
+.link-btn {
+  font-size: 12px;
+  color: #3b82f6;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* ── Divider ────────────────────────────────────────── */
+.divider {
+  text-align: center;
+  margin: 18px 0;
+  position: relative;
+  font-size: 12px;
+  color: #aeb5bd;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 42%;
+  height: 1px;
+  background: #e2e8f0;
+}
+
+.divider::before { left: 0; }
+.divider::after  { right: 0; }
+
+/* ── Status Messages ────────────────────────────────── */
+.form-message {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 14px;
+  display: block;
+  line-height: 1.6;
+}
+
+.form-message i {
+  margin-right: 6px;
+}
+
+.form-message.success {
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.form-message.error {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.form-message.info {
+  background: #eff6ff;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+}
+
+/* ── Modal Overlay ──────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  overflow-y: auto;
+  padding: 40px 16px;
+  z-index: 100;
+}
+
+.modal-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 36px;
+  width: 100%;
+  max-width: 460px;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  animation: slideUp 0.25s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.modal-card h3 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: #1e293b;
+}
+
+.modal-sub {
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 24px;
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: #f1f3f5;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.modal-close:hover { background: #e2e8f0; }
+
+/* ── Misc ───────────────────────────────────────────── */
 .login-footer {
-    margin-top: 35px;
-    text-align: center;
-    font-size: 12px;
-    color: #6c757d;
-    line-height: 1.6;
+  margin-top: 24px;
+  text-align: center;
+  font-size: 12px;
+  color: #6c757d;
 }
 
-.login-footer strong {
-    color: #495057;
+.hidden { display: none !important; }
+
+#toggle-password,
+.toggle-pw {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 8px;
+  color: #aeb5bd;
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+  flex-shrink: 0;
 }
 
-#toggle-password {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    margin-left: 8px;
-    color: #aeb5bd;
-    display: flex;
-    align-items: center;
-    font-size: 16px;
-}
-
-#toggle-password:hover {
-    color: #6c757d;
-}
-
-#password::-ms-reveal,
-#password::-webkit-credentials-auto-fill-button {
-    display: none;
-}
-
-#password::-webkit-textfield-decoration-container {
-    display: none;
-}
+#toggle-password:hover,
+.toggle-pw:hover { color: #6c757d; }
 
 .exit {
-  position: absolute;
-  top: 10px;
+  position: fixed;
+  top: 14px;
+  left: 20px;
+  z-index: 50;
+}
+
+.exit a {
+  text-decoration: none;
+  color: #2b3240;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── Hide browser's built-in password reveal eye ────── */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear,
+input[type="password"]::-webkit-credentials-auto-fill-button,
+input[type="password"]::-webkit-strong-password-auto-fill-button,
+input[type="password"]::-webkit-textfield-decoration-container,
+input[type="password"]::-webkit-caps-lock-indicator,
+input[type="password"]::-webkit-password-reveal-button {
+  display: none !important;
+  pointer-events: none;
+}
+
+/* ── Append this block to the bottom of login.css ── */
+
+/* Confirm-login waiting overlay */
+#confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 24px 16px;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.confirm-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 40px 36px;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+  animation: slideUp 0.25s ease;
+}
+
+.confirm-icon {
+  width: 68px;
+  height: 68px;
+  background: #eff6ff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: #3b82f6;
+  margin: 0 auto 20px;
+}
+
+.confirm-card h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 10px;
+}
+
+.confirm-card p {
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+
+.confirm-dots {
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+  margin: 22px 0 10px;
+}
+
+.confirm-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #2b3240;
+  animation: bounce 1.2s infinite ease-in-out;
+}
+
+.confirm-dots span:nth-child(2) { animation-delay: 0.2s; }
+.confirm-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes bounce {
+  0%, 80%, 100% { transform: translateY(0);    opacity: 0.4; }
+  40%            { transform: translateY(-8px); opacity: 1;   }
+}
+
+.confirm-sub {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-bottom: 20px !important;
+}
+
+#confirm-cancel {
+  background: none;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 9px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+#confirm-cancel:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
 }

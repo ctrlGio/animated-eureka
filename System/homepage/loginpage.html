@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login</title>
+  <title>Login — BSHM</title>
   <link rel="stylesheet" href="/System/homepage/styles/login.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -12,21 +12,23 @@
 <body>
 
   <nav class="exit">
-    <a href="/System/homepage/website.html"><i class="fa-solid fa-arrow-left"></i>
-    Back to Home</a>
+    <a href="/System/homepage/website.html"><i class="fa-solid fa-arrow-left"></i> Back to Home</a>
   </nav>
 
-  <div class="login-container">
+  <!--LOGIN CARD-->
+  <div class="login-container" id="login-card">
     <div class="login-header">
       <h2>BSHM Monitoring System</h2>
     </div>
 
-    <form class="login-form">
+    <div id="login-message" class="form-message hidden"></div>
+
+    <form class="login-form" id="login-form">
       <div class="input-group">
         <label for="username">Username</label>
         <div class="input-wrapper">
           <i class="fa-regular fa-user"></i>
-          <input type="text" id="username" placeholder="Enter username" maxlength="20" required>
+          <input type="text" id="username" placeholder="Enter username" maxlength="20" autocomplete="username" required>
         </div>
       </div>
 
@@ -34,26 +36,130 @@
         <label for="password">Password</label>
         <div class="input-wrapper" id="password-wrapper">
           <i class="fa-solid fa-lock"></i>
-          <input type="password" id="password" placeholder="Enter password" maxlength="20" required>
+          <input type="password" id="password" placeholder="Enter password" maxlength="60" autocomplete="current-password" required>
           <button type="button" id="toggle-password" aria-label="Show password">
             <i class="fa-regular fa-eye" id="eye-icon"></i>
           </button>
         </div>
       </div>
 
-      <button type="submit" class="sign-in-btn">Sign In</button>
+      <div class="form-links">
+        <span class="link-btn" id="open-forgot">Forgot password?</span>
+      </div>
+
+      <button type="submit" class="sign-in-btn" id="login-btn">Sign In</button>
     </form>
 
+    <div class="divider"><span>or</span></div>
+
+    <button class="signup-toggle-btn" id="open-signup">
+      <i class="fa-solid fa-user-plus"></i> Create Student Account
+    </button>
+
     <div class="login-footer">
-      <p>Demo credentials:</p>
-      <p>Username: <strong>admin</strong> | Password: <strong>admin123</strong></p>
-      <p>Username: <strong>student</strong> | Password: <strong>student123</strong></p>
-      <p>Username: <strong>instructor</strong> | Password: <strong>instructor123</strong></p>
+      <p>Staff / Admin credentials are pre-configured.</p>
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="login.js"></script>
-</body>
+  <!--SIGN UP MODAL-->
+  <div class="modal-overlay hidden" id="signup-overlay">
+    <div class="modal-card">
+      <button class="modal-close" id="close-signup"><i class="fa-solid fa-xmark"></i></button>
+      <h3>Create Account</h3>
+      <p class="modal-sub">Your Student ID will be auto-generated (e.g. STU001)</p>
 
+      <div id="signup-message" class="form-message hidden"></div>
+
+      <form id="signup-form">
+        <div class="input-group">
+          <label>Full Name</label>
+          <div class="input-wrapper">
+            <i class="fa-regular fa-id-card"></i>
+            <input type="text" id="s-name" placeholder="Juan Dela Cruz" autocomplete="name" required>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>Email Address</label>
+          <div class="input-wrapper">
+            <i class="fa-regular fa-envelope"></i>
+            <input type="email" id="s-email" placeholder="juan@email.com" autocomplete="email" required>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>Year Level</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <select id="s-year" required>
+              <option value="" disabled selected>Select year level</option>
+              <option value="1st Year">1st Year</option>
+              <option value="2nd Year">2nd Year</option>
+              <option value="3rd Year">3rd Year</option>
+              <option value="4th Year">4th Year</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>Section</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-users"></i>
+            <input type="text" id="s-section" placeholder="e.g. BSHM 2-A" autocomplete="off" required>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>Password</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" id="s-password" placeholder="Minimum 8 characters" autocomplete="new-password" required minlength="8">
+            <button type="button" class="toggle-pw" aria-label="Show password" data-target="s-password">
+              <i class="fa-regular fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label>Confirm Password</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" id="s-confirm" placeholder="Re-enter password" autocomplete="new-password" required minlength="8">
+            <button type="button" class="toggle-pw" aria-label="Show password" data-target="s-confirm">
+              <i class="fa-regular fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="sign-in-btn" id="signup-btn">Create Account</button>
+      </form>
+    </div>
+  </div>
+
+  <!--FORGOT PASSWORD MODAL-->
+  <div class="modal-overlay hidden" id="forgot-overlay">
+    <div class="modal-card">
+      <button class="modal-close" id="close-forgot"><i class="fa-solid fa-xmark"></i></button>
+      <h3>Reset Password</h3>
+      <p class="modal-sub">Enter your Student ID. We'll email you a reset link.</p>
+
+      <div id="forgot-message" class="form-message hidden"></div>
+
+      <form id="forgot-form">
+        <div class="input-group">
+          <label>Student ID</label>
+          <div class="input-wrapper">
+            <i class="fa-regular fa-user"></i>
+            <input type="text" id="f-student-id" placeholder="e.g. STU001" autocomplete="off" required>
+          </div>
+        </div>
+        <button type="submit" class="sign-in-btn" id="forgot-btn">Send Reset Link</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/System/homepage/login.js"></script>
+</body>
 </html>
