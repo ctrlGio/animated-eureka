@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Student Request</title>
+  <link rel="stylesheet" href="/System/studentview/styles/student_settings.css">
   <link rel="stylesheet" href="/System/studentview/styles/student_request.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -15,9 +16,14 @@
       <aside class="sidebar">
         <div class="sidebar-top">
           <div class="brand">
-            <img class="profile-picture" src="/System/studentview/pictures/profile.webp">
-            <h2 class="user">Student</h2>
-            <p>Welcome, student</p>
+            <div class="brand-top">
+              <img class="profile-picture" src="/System/studentview/pictures/profile.webp">
+              <h2 class="user" id="sidebarName">Student</h2>
+              <div class="settings-container">
+                <button class="settings-btn"><i class="fa-solid fa-gear"></i></button>
+              </div>
+            </div>
+            <p id="sidebarWelcome">Welcome, student</p>
           </div>
           <nav class="nav-menu">
             <a href="/System/studentview/student_homepage.html" class="nav-item">
@@ -39,94 +45,131 @@
         </a>
       </aside>
 
-<main class="main-content">
-  <header class="content-header">
-    <h1>Request Equipment</h1>
-    <p>Submit a requisition form to borrow equipment</p>
-  </header>
+      <main class="main-content">
+        <header class="content-header">
+          <h1>Request Equipment</h1>
+          <p>Submit a requisition form to borrow equipment</p>
+        </header>
 
-  <div class="request-container">
-    <div class="request-card">
-      <div class="form-header">
-        <div class="icon-box"><i class="fa-solid fa-file-lines"></i></div>
-        <div class="header-text">
-          <h3>Equipment Requisition Form</h3>
-          <p>Fill out all required information</p>
+        <div class="request-container">
+          <div class="request-card">
+            <div class="form-header">
+              <div class="icon-box"><i class="fa-solid fa-file-lines"></i></div>
+              <div class="header-text">
+                <h3>Equipment Requisition Form</h3>
+                <p>Fill out all required information</p>
+              </div>
+            </div>
+
+            <form id="requestForm">
+
+              <!-- Purpose -->
+              <div class="form-row">
+                <div class="form-group full-width">
+                  <label for="purpose">Purpose of Request <span class="required">*</span></label>
+                  <input type="text" id="purpose" placeholder="e.g., Culinary Lab Practice, Event Setup" required>
+                </div>
+              </div>
+
+              <!-- Date + Duration -->
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="dateNeeded">Date Needed <span class="required">*</span></label>
+                  <input type="date" id="dateNeeded" required>
+                </div>
+                <div class="form-group">
+                  <label for="duration">Duration (days) <span class="required">*</span></label>
+                  <input type="number" id="duration" value="1" min="1" required>
+                </div>
+              </div>
+
+              <!-- Equipment Items -->
+              <div class="form-row flex-end">
+                <label class="row-label">Equipment Items <span class="required">*</span></label>
+                <button type="button" id="btn-add-item" class="btn-add-item"><strong>+ Add Item</strong></button>
+              </div>
+
+              <!-- Dynamic item rows injected here by JS -->
+              <div id="items-container"></div>
+
+              <!-- Notes -->
+              <div class="form-group full-width" style="margin-bottom: 20px;">
+                <label for="notes">Additional Notes</label>
+                <textarea id="notes" placeholder="Any special requirements or additional information..."></textarea>
+              </div>
+
+              <!-- Student Info -->
+              <div class="student-info-section">
+                <p class="section-title">Student Information</p>
+                <div class="info-grid">
+                  <div class="info-item"><span>Student ID</span><strong id="info-student-id">—</strong></div>
+                  <div class="info-item"><span>Name</span><strong id="info-student-name">—</strong></div>
+                  <div class="info-item"><span>Course</span><strong>BSHM</strong></div>
+                  <div class="info-item"><span>Year Level</span><strong id="info-year-level">—</strong></div>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" id="btn-submit" class="btn-submit">Submit Request</button>
+                <button type="reset" class="btn-cancel">Cancel</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Past Requests Table -->
+          <div class="request-card" style="margin-top: 30px;">
+            <div class="form-header">
+              <div class="icon-box"><i class="fa-solid fa-clock-rotate-left"></i></div>
+              <div class="header-text">
+                <h3>My Past Requests</h3>
+                <p>Track the status of your submitted requisitions</p>
+              </div>
+            </div>
+            <table class="request-table">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Qty</th>
+                  <th>Reason / Notes</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td colspan="5" style="text-align:center;padding:20px;color:#888;">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="settings-modal" id="settingsModal">
+    <div class="settings-content">
+      <h2><i class="fa-solid fa-gear"></i> Settings</h2>
+      <p>Customize your experience</p>
+      <div class="settings-item">
+        <div class="settings-item-info">
+          <strong>🌙 Dark Mode</strong>
+          <span>Switch to dark theme</span>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="darkModeToggle">
+          <span class="toggle-slider"></span>
+        </label>
       </div>
-
-      <form id="requestForm">
-        <div class="form-row">
-          <div class="form-group full-width">
-            <label>Purpose of Request <span class="required">*</span></label>
-            <input type="text" placeholder="e.g., Culinary Lab Practice, Event Setup" required>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>Date Needed <span class="required">*</span></label>
-            <input type="date" required>
-          </div>
-          <div class="form-group">
-            <label>Duration (days) <span class="required">*</span></label>
-            <input type="number" value="7" required>
-          </div>
-        </div>
-
-        <div class="form-row flex-end">
-           <label class="row-label">Equipment Items <span class="required">*</span></label>
-           <button type="button" class="btn-add-item">+ Add Item</button>
-        </div>
-        <div class="form-row items-row">
-          <div class="form-group flex-grow">
-            <select required>
-              <option value="">Select equipment...</option>
-              <option>Chef's Knife</option>
-              <option>Commercial Blender</option>
-              <option>Cutting Board</option>
-              <option>Food Processor</option>
-              <option>Mixing Bowl Set</option>
-              <option>Stand Mixer</option>
-              <option>Measuring Cups</option>
-              <option>Measuring Spoons</option>
-              <option>Colander</option>
-              <option>Whisk</option>
-              <option>Rolling Pin</option>
-              <option>Pastry Brush</option>
-            </select>
-          </div>
-          <div class="form-group qty-box">
-            <input type="number" value="1">
-          </div>
-        </div>
-
-        <div class="form-group full-width">
-          <label>Additional Notes</label>
-          <textarea placeholder="Any special requirements or additional information..."></textarea>
-        </div>
-
-        <div class="student-info-section">
-          <p class="section-title">Student Information</p>
-          <div class="info-grid">
-            <div class="info-item"><span>Student ID</span><strong>STU001</strong></div>
-            <div class="info-item"><span>Name</span><strong>Juan Dela Cruz</strong></div>
-            <div class="info-item"><span>Course</span><strong>BSHM</strong></div>
-            <div class="info-item"><span>Year Level</span><strong>2nd Year</strong></div>
-          </div>
-        </div>
-
-        <div class="form-actions">
-          <button type="submit" class="btn-submit">Submit Request</button>
-          <button type="reset" class="btn-cancel">Cancel</button>
-        </div>
-      </form>
+      <button class="close-settings-btn" id="closeSettings">Close</button>
     </div>
   </div>
-    </div>
-  </div>
+
+  <script src="/System/studentview/studentjs/auth.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/System/studentview/studentjs/settings.js"></script>
   <script src="/System/studentview/studentjs/studentrequest.js"></script>
   <script src="/System/studentview/studentjs/logout.js"></script>
 </body>
+
 </html>

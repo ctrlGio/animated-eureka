@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Email — BSHM</title>
+  <link rel="stylesheet" href="/System/homepage/styles/login.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="login-container" style="text-align:center;">
+    <div id="verify-state">
+      <i class="fa-solid fa-spinner fa-spin" style="font-size:2rem; color:#3b82f6; margin-bottom:16px;"></i>
+      <h2>Verifying your email...</h2>
+    </div>
+    <div id="verify-success" class="hidden">
+      <i class="fa-solid fa-circle-check" style="font-size:3rem; color:#22c55e; margin-bottom:16px;"></i>
+      <h2>Email Verified!</h2>
+      <p style="color:#64748b; margin:12px 0 24px;">Your account is now active. You can log in.</p>
+      <a href="/System/homepage/loginpage.html" class="sign-in-btn" style="display:inline-block; text-decoration:none;">Go to Login</a>
+    </div>
+    <div id="verify-error" class="hidden">
+      <i class="fa-solid fa-circle-xmark" style="font-size:3rem; color:#ef4444; margin-bottom:16px;"></i>
+      <h2>Verification Failed</h2>
+      <p style="color:#64748b; margin:12px 0 24px;" id="verify-error-msg">The link is invalid or has expired.</p>
+      <a href="/System/homepage/loginpage.html" class="sign-in-btn" style="display:inline-block; text-decoration:none;">Back to Login</a>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/System/homepage/verify-email.js"></script>
+</body>
+</html>

@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Student Borrow</title>
+  <link rel="stylesheet" href="/System/studentview/styles/student_settings.css">
   <link rel="stylesheet" href="/System/studentview/styles/student_borrow.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -15,9 +16,14 @@
       <aside class="sidebar">
         <div class="sidebar-top">
           <div class="brand">
-            <img class="profile-picture" src="/System/studentview/pictures/profile.webp">
-            <h2 class="user">Student</h2>
-            <p>Welcome, student</p>
+            <div class="brand-top">
+              <img class="profile-picture" src="/System/studentview/pictures/profile.webp">
+              <h2 class="user" id="sidebarName">Student</h2>
+              <div class="settings-container">
+                <button class="settings-btn"><i class="fa-solid fa-gear"></i></button>
+              </div>
+            </div>
+            <p id="sidebarWelcome">Welcome, student</p>
           </div>
           <nav class="nav-menu">
             <a href="/System/studentview/student_homepage.html" class="nav-item">
@@ -83,9 +89,27 @@
       </main>
     </div>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="/System/studentview/studentjs/studentborrow.js"></script>
+  <div class="settings-modal" id="settingsModal">
+    <div class="settings-content">
+      <h2><i class="fa-solid fa-gear"></i> Settings</h2>
+      <p>Customize your experience</p>
+      <div class="settings-item">
+        <div class="settings-item-info">
+          <strong>🌙 Dark Mode</strong>
+          <span>Switch to dark theme</span>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="darkModeToggle">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <button class="close-settings-btn" id="closeSettings">Close</button>
+    </div>
+  </div>
   <script src="/System/studentview/studentjs/auth.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/System/studentview/studentjs/settings.js"></script>
+  <script src="/System/studentview/studentjs/studentborrow.js"></script>
   <script src="/System/studentview/studentjs/logout.js"></script>
 </body>
 </html>

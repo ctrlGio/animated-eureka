@@ -26,7 +26,8 @@
     <section class="hero">
         <div class="badge">Bachelor of Science in Hospitality Management</div>
         <h1>Streamline Your Inventory Management</h1>
-        <p class="hero-sub">A comprehensive solution for managing BSHM equipment, student borrowings, and requisition workflows with multi-level approval systems.</p>
+        <p class="hero-sub">A comprehensive solution for managing BSHM equipment, student borrowings, and requisition
+            workflows with multi-level approval systems.</p>
         <div class="hero-btns">
             <button class="btn-primary">Get Started</button>
             <button class="btn-secondary">Learn More</button>
@@ -63,9 +64,12 @@
             <h2>About the System</h2>
             <p>The BSHM Inventory Management System is designed specifically for hospitality management programs...</p>
             <ul class="benefits-list">
-                <li><i class="fa-solid fa-circle-check"></i> <strong>Role-Based Access:</strong> Separate interfaces for students and staff.</li>
-                <li><i class="fa-solid fa-circle-check"></i> <strong>Real-Time Tracking:</strong> Monitor equipment availability instantly.</li>
-                <li><i class="fa-solid fa-circle-check"></i> <strong>Comprehensive Reports:</strong> Generate detailed reports on borrowings.</li>
+                <li><i class="fa-solid fa-circle-check"></i> <strong>Role-Based Access:</strong> Separate interfaces for
+                    students and staff.</li>
+                <li><i class="fa-solid fa-circle-check"></i> <strong>Real-Time Tracking:</strong> Monitor equipment
+                    availability instantly.</li>
+                <li><i class="fa-solid fa-circle-check"></i> <strong>Comprehensive Reports:</strong> Generate detailed
+                    reports on borrowings.</li>
             </ul>
         </div>
         <div class="user-roles-card">
@@ -91,7 +95,15 @@
             <p>&copy; 2026 BSHM Inventory Management System. All rights reserved.</p>
         </div>
     </footer>
+    <script>
+        document.querySelector('.btn-primary').addEventListener('click', function () {
+            window.location.href = '/System/homepage/loginpage.html';
+        });
+
+        document.querySelector('.btn-secondary').addEventListener('click', function () {
+            document.querySelector('.about-grid').scrollIntoView({ behavior: 'smooth' });
+        });
+    </script>
 </body>
 
 </html>
-

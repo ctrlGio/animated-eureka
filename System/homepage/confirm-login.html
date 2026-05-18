@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirm Login — BSHM</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #d8dee6;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 48px 40px;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+      text-align: center;
+      animation: fadeUp 0.3s ease;
+    }
+
+    @keyframes fadeUp {
+      from { transform: translateY(16px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+
+    .icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      margin: 0 auto 24px;
+    }
+
+    .icon.loading  { background: #f1f5f9; color: #64748b; }
+    .icon.success  { background: #f0fdf4; color: #16a34a; }
+    .icon.danger   { background: #fef2f2; color: #dc2626; }
+    .icon.warning  { background: #fffbeb; color: #d97706; }
+
+    h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 14px;
+      color: #64748b;
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+
+    .spinner {
+      width: 28px;
+      height: 28px;
+      border: 3px solid #e2e8f0;
+      border-top-color: #2b3240;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .back-btn {
+      display: inline-block;
+      margin-top: 24px;
+      padding: 11px 28px;
+      background: #2b3240;
+      color: #fff;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .back-btn:hover { background: #1e232d; }
+  </style>
+</head>
+<body>
+
+<div class="card" id="card">
+  <div class="icon loading" id="icon">
+    <div class="spinner"></div>
+  </div>
+  <h2 id="title">Processing…</h2>
+  <p id="message">Please wait a moment.</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const { createClient } = supabase
+  const db = createClient(
+    'https://pxqacjetfbqwwacifyhv.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4cWFjamV0ZmJxd3dhY2lmeWh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0OTAyMDAsImV4cCI6MjA5NDA2NjIwMH0.EO9lMp3Nmg29JhIuuzEgM15nlRaQZKwQg6EkXMSTos4'
+  )
+
+  const params = new URLSearchParams(window.location.search)
+  const token  = params.get('token')
+  const action = params.get('action') // 'confirm' | 'deny'
+
+  const iconEl   = document.getElementById('icon')
+  const titleEl  = document.getElementById('title')
+  const msgEl    = document.getElementById('message')
+  const cardEl   = document.getElementById('card')
+
+  function setResult(type, iconClass, title, message) {
+    iconEl.className = `icon ${type}`
+    iconEl.innerHTML = `<i class="${iconClass}"></i>`
+    titleEl.textContent = title
+    msgEl.textContent   = message
+
+    const btn = document.createElement('a')
+    btn.href      = '/System/homepage/loginpage.html'
+    btn.className = 'back-btn'
+    btn.textContent = 'Back to Login'
+    cardEl.appendChild(btn)
+  }
+
+  async function processAction() {
+    if (!token || !['confirm', 'deny'].includes(action)) {
+      setResult('warning', 'fa-solid fa-triangle-exclamation', 'Invalid Link', 'This link is malformed or has already been used.')
+      return
+    }
+
+    // Check token exists and is still pending
+    const { data: row } = await db
+      .from('login_confirmations')
+      .select('status, created_at')
+      .eq('token', token)
+      .maybeSingle()
+
+    if (!row) {
+      setResult('warning', 'fa-solid fa-triangle-exclamation', 'Link Expired', 'This confirmation link has already been used or has expired.')
+      return
+    }
+
+    if (row.status !== 'pending') {
+      setResult('warning', 'fa-solid fa-clock-rotate-left', 'Already Responded', 'This login request was already ' + row.status + '.')
+      return
+    }
+
+    // Check 60-second expiry
+    const age = (Date.now() - new Date(row.created_at).getTime()) / 1000
+    if (age > 60) {
+      await db.from('login_confirmations').update({ status: 'expired' }).eq('token', token)
+      setResult('warning', 'fa-regular fa-clock', 'Link Expired', 'This confirmation link has expired (60 seconds). Please try logging in again.')
+      return
+    }
+
+    const newStatus = action === 'confirm' ? 'confirmed' : 'denied'
+    const { error } = await db
+      .from('login_confirmations')
+      .update({ status: newStatus })
+      .eq('token', token)
+
+    if (error) {
+      setResult('danger', 'fa-solid fa-circle-xmark', 'Something Went Wrong', 'Could not update your confirmation. Please try again.')
+      return
+    }
+
+    if (action === 'confirm') {
+      setResult('success', 'fa-solid fa-circle-check', 'Login Confirmed!', 'You\'ve successfully confirmed your login. You can now go back to the app.')
+    } else {
+      setResult('danger', 'fa-solid fa-shield-halved', 'Login Denied', 'Login was blocked. If someone else has your password, please change it immediately.')
+    }
+  }
+
+  processAction()
+</script>
+</body>
+</html>

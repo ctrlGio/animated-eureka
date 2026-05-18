@@ -32,31 +32,40 @@ body {
 }
 
 .brand {
-    padding: 30px 25px;
+    padding: 30px 25px 20px;
 }
 
-.brand h2 {
-    font-size: 20px;
+.brand-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+}
+
+.profile-picture {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.user {
+    font-size: 15px;
     color: #333;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
 }
 
 .brand p {
     font-size: 13px;
     color: #888;
-}
-
-.profile-picture{
-    width: 27px;
-    display: inline-block;
-    vertical-align: text-bottom;
-    cursor: pointer;
-    margin-right: 3px;
-    border-radius: 20px;
-}
-
-.user {
-    display:inline-block;
-    cursor: pointer;
+    padding-left: 2px;
 }
 
 .nav-menu {
