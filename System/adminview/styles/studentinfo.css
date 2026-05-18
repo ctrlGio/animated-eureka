@@ -414,7 +414,7 @@ body {
   color: #4a5568;
 }
 
-.student-table tr:hover {
+.student-table tbody tr:hover {
   background-color: #f8fafc;
 }
 
@@ -453,4 +453,17 @@ body {
 
 .delete-btn:hover {
   background-color: #fff5f5;
+}
+
+body.dark-mode .student-table tbody tr:hover {
+  background-color: #1a1a2e !important;
+}
+
+body.dark-mode .return-btn:hover {
+  background-color: #1a1a2e !important;
+  border-color: #2d3748 !important;
+}
+
+body.dark-mode .delete-btn:hover {
+  background-color: #3d1515 !important;
 }

@@ -1,11 +1,3 @@
-// ============================================================
-// reset-password.js
-// Runs on reset-password.html
-// 1. Validates the token from the URL
-// 2. If valid, shows the new-password form
-// 3. On submit, updates the student's password
-// ============================================================
-
 const { createClient } = supabase
 
 const SUPABASE_URL      = 'https://pxqacjetfbqwwacifyhv.supabase.co'
@@ -15,6 +7,16 @@ const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 let validRecord = null
 
+/* ── Hash helper ─────────────────────────────────────────── */
+async function hashPassword(password) {
+  const encoder    = new TextEncoder()
+  const data       = encoder.encode(password)
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data)
+  const hashArray  = Array.from(new Uint8Array(hashBuffer))
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+}
+
+/* ── UI helper ───────────────────────────────────────────── */
 function showMessage(type, text) {
   const el = document.getElementById('reset-message')
   el.className = `form-message ${type}`
@@ -22,6 +24,26 @@ function showMessage(type, text) {
   el.classList.remove('hidden')
 }
 
+/* ── Eye toggle ──────────────────────────────────────────── */
+document.querySelectorAll('.toggle-pw').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const targetId = btn.getAttribute('data-target')
+    const input    = document.getElementById(targetId)
+    const icon     = btn.querySelector('i')
+
+    if (input.type === 'password') {
+      input.type        = 'text'
+      icon.className    = 'fa-regular fa-eye-slash'
+      btn.setAttribute('aria-label', 'Hide password')
+    } else {
+      input.type        = 'password'
+      icon.className    = 'fa-regular fa-eye'
+      btn.setAttribute('aria-label', 'Show password')
+    }
+  })
+})
+
+/* ── Verify token ────────────────────────────────────────── */
 async function initResetPage() {
   const params = new URLSearchParams(window.location.search)
   const token  = params.get('token')
@@ -45,12 +67,11 @@ async function initResetPage() {
   }
 
   validRecord = record
-
-  // Show the form
   document.getElementById('verifying-state').classList.add('hidden')
   document.getElementById('reset-form').classList.remove('hidden')
 }
 
+/* ── Submit new password ─────────────────────────────────── */
 document.getElementById('reset-form').addEventListener('submit', async function (e) {
   e.preventDefault()
 
@@ -68,13 +89,15 @@ document.getElementById('reset-form').addEventListener('submit', async function 
   }
 
   const btn = document.getElementById('reset-btn')
-  btn.disabled     = true
-  btn.textContent  = 'Updating...'
+  btn.disabled    = true
+  btn.textContent = 'Updating...'
 
-  // Update password
+  // Hash before saving
+  const hashedPassword = await hashPassword(newPass)
+
   const { error } = await db
     .from('students')
-    .update({ password_hash: newPass })
+    .update({ password_hash: hashedPassword })
     .eq('student_id', validRecord.student_id)
 
   if (error) {

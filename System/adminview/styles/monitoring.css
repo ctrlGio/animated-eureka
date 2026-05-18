@@ -35,23 +35,11 @@ body {
     height: 100vh;
 }
 
-.brand {
-    padding: 30px 25px;
-}
+.brand { padding: 30px 25px; }
+.brand h2 { font-size: 20px; color: #333; }
+.brand p  { font-size: 13px; color: #888; }
 
-.brand h2 {
-    font-size: 20px;
-    color: #333;
-}
-
-.brand p {
-    font-size: 13px;
-    color: #888;
-}
-
-.nav-menu {
-    margin-top: 20px;
-}
+.nav-menu { margin-top: 20px; }
 
 .nav-item {
     display: flex;
@@ -63,17 +51,11 @@ body {
     transition: 0.15s;
 }
 
-.nav-item:hover {
-    background: #f0f4ff;
-    color: #4361ee;
-    border-right: 3px solid #4361ee;
-}
-
+.nav-item:hover,
 .nav-item.active {
     background: #f0f4ff;
     color: #4361ee;
     border-right: 3px solid #4361ee;
-
 }
 
 .logout-btn {
@@ -95,17 +77,10 @@ body {
     padding: 40px;
 }
 
-.content-header h1 {
-    font-size: 28px;
-    margin-bottom: 5px;
-}
+.content-header h1 { font-size: 28px; margin-bottom: 5px; }
+.content-header p  { color: #888; margin-bottom: 30px; }
 
-.content-header p {
-    color: #888;
-    margin-bottom: 30px;
-}
-
-.profile-picture{
+.profile-picture {
     width: 27px;
     display: inline-block;
     vertical-align: text-bottom;
@@ -113,11 +88,34 @@ body {
     margin-right: 3px;
     border-radius: 20px;
 }
-.user {
-    display:inline-block;
-    cursor: pointer;
+
+.user { display: inline-block; cursor: pointer; }
+
+/* ── Sidebar top ─────────────────────────────────── */
+.sidebar-top {
+    background: white;
+    border-right: 1px solid #eef2f6;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
+.user-header {
+    display: flex;
+    align-items: center;
+}
+
+.settings-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0;
+}
+
+.settings-container { margin-left: auto; }
+
+/* ── Monitoring stat cards ───────────────────────── */
 .monitoring-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -143,93 +141,137 @@ body {
     font-size: 32px;
     font-weight: bold;
     margin: 10px 0;
+    color: #1e293b;
 }
 
-.requisition-card{
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    border: 1px solid #f0f0f0;
-    max-width:1400%;
-}
-.requisition-grid{
-     display: grid;
-    grid-template-columns: (1fr);
-    gap: 20px;
+/* ── Requisition card & grid ─────────────────────── */
+.requisition-grid {
     margin-bottom: 30px;
 }
 
+.requisition-card {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    border: 1px solid #f0f0f0;
+    overflow-x: auto;        /* scroll on small screens */
+}
+
+.requisition-card h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 16px;
+}
+
+/* ── Table ───────────────────────────────────────── */
 .requisition-table {
     width: 100%;
-    border-collapse: collapse; 
-    background: white;
-    border-radius: 12px;
-    overflow: hidden; 
-    border: 1px solid #f0f0f0;
+    border-collapse: collapse;
+    font-size: 14px;
+    white-space: nowrap;     /* prevent cell content wrapping */
 }
 
-.requisition-table th {
-    padding: 15px 20px; 
-    text-align: left;
-    color: #252728b2;
-    font-weight: bold;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-.requisition-table-header{
-    background-color: #fafafa;
-}
-
-.sidebar-top{
-    background: white;
-    border-right: 1px solid #eef2f6;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.user-header {
-  display: flex;
-  align-items: center;
-}
-
-.settings-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1.2rem;
-  padding: 0;
-}
-
-.settings-container {
-    margin-left: auto;
-}
-
-.requisition-table td {
-    padding: 15px 20px;
-    text-align: left;
-    color: #333;
-    border-bottom: 1px solid #f0f0f0;
-    vertical-align: middle;
-}
-
-.requisition-table tr:hover {
+.requisition-table-header {
     background-color: #f8fafc;
 }
 
-.status-pending  { background-color: #f6ad55; color: white; padding: 4px 10px; border-radius: 20px; font-size: 13px; }
-.status-approved { background-color: #48bb78; color: white; padding: 4px 10px; border-radius: 20px; font-size: 13px; }
-.status-rejected { background-color: #e53e3e; color: white; padding: 4px 10px; border-radius: 20px; font-size: 13px; }
+.requisition-table th {
+    padding: 12px 16px;
+    text-align: left;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 2px solid #e2e8f0;
+}
 
-.urgency-high   { background-color: #e53e3e; color: white; padding: 4px 10px; border-radius: 20px; font-size: 13px; }
-.urgency-medium { background-color: #f6ad55; color: white; padding: 4px 10px; border-radius: 20px; font-size: 13px; }
-.urgency-low    { background-color: #48bb78; color: white; padding: 4px 10px; border-radius: 20px; font-size: 13px; }
+.requisition-table td {
+    padding: 14px 16px;
+    text-align: left;
+    color: #334155;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+    white-space: nowrap;
+}
 
-.approve-btn { background: transparent; color: #48bb78; border: 1px solid #48bb78; padding: 6px 8px; border-radius: 6px; cursor: pointer; font-size: 14px; }
-.reject-btn  { background: transparent; color: #f6ad55; border: 1px solid #f6ad55; padding: 6px 8px; border-radius: 6px; cursor: pointer; font-size: 14px; margin: 0 4px; }
-.delete-btn  { background: transparent; color: #e53e3e; border: none;               padding: 6px 8px; border-radius: 6px; cursor: pointer; font-size: 14px; }
+/* allow requestor name to wrap if very long */
+.requisition-table td:nth-child(2) {
+    white-space: normal;
+    min-width: 120px;
+    max-width: 180px;
+}
 
-.approve-btn:disabled, .reject-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-.approve-btn:hover:not(:disabled) { background-color: #48bb78; color: white; }
-.reject-btn:hover:not(:disabled)  { background-color: #f6ad55; color: white; }
-.delete-btn:hover  { background-color: #fff5f5; }
+.requisition-table tbody tr:hover td {
+    background-color: #f8fafc;
+}
+
+/* ── Status badges ───────────────────────────────── */
+.status-badge,
+.urgency-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.status-pending  { background-color: #fef3c7; color: #92400e; }
+.status-approved { background-color: #d1fae5; color: #065f46; }
+.status-rejected { background-color: #fee2e2; color: #991b1b; }
+
+.urgency-high   { background-color: #fee2e2; color: #991b1b; }
+.urgency-medium { background-color: #fef3c7; color: #92400e; }
+.urgency-low    { background-color: #d1fae5; color: #065f46; }
+
+/* ── Action buttons ──────────────────────────────── */
+.actions-cell {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.approve-btn,
+.reject-btn,
+.delete-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.15s, color 0.15s;
+    flex-shrink: 0;
+}
+
+.approve-btn {
+    background: transparent;
+    color: #16a34a;
+    border: 1px solid #16a34a;
+}
+
+.reject-btn {
+    background: transparent;
+    color: #d97706;
+    border: 1px solid #d97706;
+}
+
+.delete-btn {
+    background: transparent;
+    color: #dc2626;
+    border: none;
+}
+
+.approve-btn:disabled,
+.reject-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.approve-btn:hover:not(:disabled) { background-color: #16a34a; color: white; }
+.reject-btn:hover:not(:disabled)  { background-color: #d97706; color: white; }
+.delete-btn:hover                 { background-color: #fee2e2; }

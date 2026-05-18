@@ -15,7 +15,7 @@
     <a href="/System/homepage/website.html"><i class="fa-solid fa-arrow-left"></i> Back to Home</a>
   </nav>
 
-  <!--LOGIN CARD-->
+  <!-- LOGIN CARD -->
   <div class="login-container" id="login-card">
     <div class="login-header">
       <h2>BSHM Monitoring System</h2>
@@ -49,94 +49,9 @@
 
       <button type="submit" class="sign-in-btn" id="login-btn">Sign In</button>
     </form>
-
-    <div class="divider"><span>or</span></div>
-
-    <button class="signup-toggle-btn" id="open-signup">
-      <i class="fa-solid fa-user-plus"></i> Create Student Account
-    </button>
-
-    <div class="login-footer">
-      <p>Staff / Admin credentials are pre-configured.</p>
-    </div>
   </div>
 
-  <!--SIGN UP MODAL-->
-  <div class="modal-overlay hidden" id="signup-overlay">
-    <div class="modal-card">
-      <button class="modal-close" id="close-signup"><i class="fa-solid fa-xmark"></i></button>
-      <h3>Create Account</h3>
-      <p class="modal-sub">Your Student ID will be auto-generated (e.g. STU001)</p>
-
-      <div id="signup-message" class="form-message hidden"></div>
-
-      <form id="signup-form">
-        <div class="input-group">
-          <label>Full Name</label>
-          <div class="input-wrapper">
-            <i class="fa-regular fa-id-card"></i>
-            <input type="text" id="s-name" placeholder="Juan Dela Cruz" autocomplete="name" required>
-          </div>
-        </div>
-
-        <div class="input-group">
-          <label>Email Address</label>
-          <div class="input-wrapper">
-            <i class="fa-regular fa-envelope"></i>
-            <input type="email" id="s-email" placeholder="juan@email.com" autocomplete="email" required>
-          </div>
-        </div>
-
-        <div class="input-group">
-          <label>Year Level</label>
-          <div class="input-wrapper">
-            <i class="fa-solid fa-graduation-cap"></i>
-            <select id="s-year" required>
-              <option value="" disabled selected>Select year level</option>
-              <option value="1st Year">1st Year</option>
-              <option value="2nd Year">2nd Year</option>
-              <option value="3rd Year">3rd Year</option>
-              <option value="4th Year">4th Year</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="input-group">
-          <label>Section</label>
-          <div class="input-wrapper">
-            <i class="fa-solid fa-users"></i>
-            <input type="text" id="s-section" placeholder="e.g. BSHM 2-A" autocomplete="off" required>
-          </div>
-        </div>
-
-        <div class="input-group">
-          <label>Password</label>
-          <div class="input-wrapper">
-            <i class="fa-solid fa-lock"></i>
-            <input type="password" id="s-password" placeholder="Minimum 8 characters" autocomplete="new-password" required minlength="8">
-            <button type="button" class="toggle-pw" aria-label="Show password" data-target="s-password">
-              <i class="fa-regular fa-eye"></i>
-            </button>
-          </div>
-        </div>
-
-        <div class="input-group">
-          <label>Confirm Password</label>
-          <div class="input-wrapper">
-            <i class="fa-solid fa-lock"></i>
-            <input type="password" id="s-confirm" placeholder="Re-enter password" autocomplete="new-password" required minlength="8">
-            <button type="button" class="toggle-pw" aria-label="Show password" data-target="s-confirm">
-              <i class="fa-regular fa-eye"></i>
-            </button>
-          </div>
-        </div>
-
-        <button type="submit" class="sign-in-btn" id="signup-btn">Create Account</button>
-      </form>
-    </div>
-  </div>
-
-  <!--FORGOT PASSWORD MODAL-->
+  <!-- FORGOT PASSWORD MODAL -->
   <div class="modal-overlay hidden" id="forgot-overlay">
     <div class="modal-card">
       <button class="modal-close" id="close-forgot"><i class="fa-solid fa-xmark"></i></button>
@@ -162,4 +77,5 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/System/homepage/login.js"></script>
 </body>
+
 </html>
