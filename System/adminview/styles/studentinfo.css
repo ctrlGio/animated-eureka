@@ -467,3 +467,9 @@ body.dark-mode .return-btn:hover {
 body.dark-mode .delete-btn:hover {
   background-color: #3d1515 !important;
 }
+
+.return-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}

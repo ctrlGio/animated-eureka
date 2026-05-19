@@ -285,22 +285,26 @@ body.dark-mode .history-table td { color: #e2e8f0 !important; border-color: #1a1
         const safeName = (r.student_name || '').replace(/'/g, "\\'")
         const safeYear = (r.year_level || '').replace(/'/g, "\\'")
 
+        const isReturned = r.status === 'Returned'
+
         tbody.innerHTML += `
-          <tr class="clickable-row" onclick="openHistory('${safeId}', '${safeName}', '${safeYear}')" data-id="${r.id}">
-            <td>${r.student_id || '—'}</td>
-            <td>${r.student_name}</td>
-            <td>${r.year_level || '—'}</td>
-            <td>${r.item_borrowed || '—'}</td>
-            <td>${r.quantity}</td>
-            <td>${borrowDate}</td>
-            <td>${dueDate}</td>
-            <td><span class="status-badge ${statusClass}">${r.status}</span></td>
-            <td onclick="event.stopPropagation()">
-              <button class="return-btn" onclick="markReturned(${r.id}, '${r.item_borrowed}', ${r.quantity})" title="Mark as Returned">
-                <i class="fa-solid fa-rotate-left"></i> Return
-              </button>
-            </td>
-          </tr>`
+  <tr class="clickable-row" onclick="openHistory('${safeId}', '${safeName}', '${safeYear}')" data-id="${r.id}">
+    <td>${r.student_id || '—'}</td>
+    <td>${r.student_name}</td>
+    <td>${r.year_level || '—'}</td>
+    <td>${r.item_borrowed || '—'}</td>
+    <td>${r.quantity}</td>
+    <td>${borrowDate}</td>
+    <td>${dueDate}</td>
+    <td><span class="status-badge ${statusClass}">${r.status}</span></td>
+    <td onclick="event.stopPropagation()">
+      <button class="return-btn" 
+        ${isReturned ? 'disabled' : `onclick="markReturned(${r.id}, '${r.item_borrowed}', ${r.quantity})"`}
+        title="${isReturned ? 'Already returned' : 'Mark as Returned'}">
+        <i class="fa-solid fa-rotate-left"></i> Return
+      </button>
+    </td>
+  </tr>`
       })
     }
     table.appendChild(tbody)
@@ -344,14 +348,72 @@ body.dark-mode .history-table td { color: #e2e8f0 !important; border-color: #1a1
     })
   }
 
-  window.markReturned = async (id, itemBorrowed, quantity) => {
-    if (!confirm('Mark this item as returned?')) return
-    const { data: inv } = await client.from('admininventory').select('id, quantity').ilike('item_name', itemBorrowed).single()
-    if (inv) await client.from('admininventory').update({ quantity: inv.quantity + quantity, status: 'Available', updated_at: new Date().toISOString() }).eq('id', inv.id)
-    const { error } = await client.from('adminborrows').update({ status: 'Returned', return_date: new Date().toISOString(), updated_at: new Date().toISOString() }).eq('id', id)
-    if (error) { alert('Failed: ' + error.message); return }
-    loadBorrows(); loadStats()
+  function showArchiveModal({ onConfirm, onCancel }) {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+    position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+    display: flex; align-items: center; justify-content: center; z-index: 9999;
+  `;
+
+    overlay.innerHTML = `
+    <div style="background: #fff; border-radius: 12px; padding: 1.5rem; width: 340px; max-width: 90%; box-shadow: 0 8px 32px rgba(0,0,0,0.18);">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 1rem;">
+        <div style="width: 40px; height: 40px; border-radius: 50%; background: #e8eafd; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3d3dc4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 14L4 9l5-5"/>
+          <path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>
+        </svg>
+        </div>
+        <span style="font-size: 17px; font-weight: 500;">Mark as returned</span>
+      </div>
+      <p style="font-size: 14px; color: #666; margin: 0 0 1.25rem; line-height: 1.6;">
+        Mark this item as returned?
+      </p>
+      <div style="display: flex; gap: 8px; justify-content: flex-end;">
+        <button id="modal-cancel" style="padding: 8px 20px; font-size: 14px; border-radius: 8px; border: 1px solid #ddd; background: #f5f5f5; cursor: pointer;">Cancel</button>
+        <button id="modal-confirm" style="padding: 8px 20px; font-size: 14px; border-radius: 8px; background: #3d3dc4; color: #fff; border: none; cursor: pointer; font-weight: 500;">Mark as returned</button>
+      </div>
+    </div>
+  `;
+
+    document.body.appendChild(overlay);
+
+    const cleanup = () => document.body.removeChild(overlay);
+
+    overlay.querySelector('#modal-cancel').onclick = () => { cleanup(); onCancel?.(); };
+    overlay.querySelector('#modal-confirm').onclick = () => { cleanup(); onConfirm(); };
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) { cleanup(); onCancel?.(); } });
   }
+
+  window.markReturned = (id, itemBorrowed, quantity) => {
+    showArchiveModal({
+      onConfirm: async () => {
+        const { data: inv } = await client.from('admininventory')
+          .select('id, quantity')
+          .ilike('item_name', itemBorrowed)
+          .single();
+
+        if (inv) {
+          await client.from('admininventory').update({
+            quantity: inv.quantity + quantity,
+            status: 'Available',
+            updated_at: new Date().toISOString()
+          }).eq('id', inv.id);
+        }
+
+        const { error } = await client.from('adminborrows').update({
+          status: 'Returned',
+          return_date: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }).eq('id', id);
+
+        if (error) { alert('Failed: ' + error.message); return; }
+
+        loadBorrows();
+        loadStats();
+      }
+    });
+  };
 
   const searchInput = document.querySelector('.search-input')
   const levelFilter = document.querySelector('.level-filter')

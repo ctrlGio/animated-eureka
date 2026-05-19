@@ -31,7 +31,7 @@
             <i class="fa-solid fa-table-columns"></i> Dashboard
           </a>
           <a href="inventory.html" class="nav-item">
-            <i class="fa-solid fa-box-archive"></i> Inventory
+            <i class="fa-solid fa-box-open"></i> Inventory
           </a>
           <a href="monitoring.html" class="nav-item">
             <i class="fa-solid fa-chart-line"></i> Monitoring
@@ -116,11 +116,36 @@
     </main>
   </div>
 
+  <div class="settings-modal" id="settingsModal">
+    <div class="settings-content">
+      <h2><i class="fa-solid fa-gear"></i> Settings</h2>
+      <p>Customize your experience</p>
+      <!--<div class="settings-item">
+        <div class="settings-item-info">
+          <strong>🌙 Dark Mode</strong>
+          <span>Switch to dark theme</span>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="darkModeToggle">
+          <span class="toggle-slider"></span>
+        </label>
+      </div> -->
+      <div class="settings-item">
+        <div class="settings-item-info">
+          <strong>👤 Add Student Account</strong>
+          <span>Create a new student login</span>
+        </div>
+        <button class="add-student-btn" id="openAddStudentBtn">Add</button>
+      </div>
+      <button class="close-settings-btn" id="closeSettings">Close</button>
+    </div>
+  </div>
+
+  <!-- Add Student Modal -->
   <div class="add-student-modal" id="addStudentModal">
     <div class="add-student-content">
       <h2>👤 Add Student Account</h2>
       <p>Fill in the details to create a new student account</p>
-
       <form id="addStudentForm" onsubmit="return false;">
         <div class="form-group">
           <label>Full Name</label>
@@ -136,20 +161,9 @@
         </div>
         <div class="form-group">
           <label>Password</label>
-          <div style="position: relative;">
-            <input type="password" id="studentPassword" autocomplete="new-password" placeholder="Minimum 6 characters" style="padding-right: 40px;">
-            <button type="button" id="togglePassword" style="
-              position: absolute;
-              right: 10px;
-              top: 50%;
-              transform: translateY(-50%);
-              background: none;
-              border: none;
-              cursor: pointer;
-              color: #888;
-              font-size: 15px;
-              padding: 0;
-            ">
+          <div style="position:relative;">
+            <input type="password" id="studentPassword" autocomplete="new-password" placeholder="Minimum 6 characters" style="padding-right:40px;">
+            <button type="button" id="togglePassword" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#888;font-size:15px;padding:0;">
               <i class="fa-solid fa-eye"></i>
             </button>
           </div>
@@ -164,9 +178,7 @@
             <option value="4th Year">4th Year</option>
           </select>
         </div>
-
         <div id="addStudentMsg" class="add-student-msg"></div>
-
         <div class="add-student-actions">
           <button id="cancelAddStudent">Cancel</button>
           <button id="confirmAddStudent">Create Account</button>

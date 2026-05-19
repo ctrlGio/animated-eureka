@@ -7,6 +7,17 @@ const studentId   = localStorage.getItem('studentId')   || '—'
 const studentName = localStorage.getItem('username')     || '—'
 const yearLevel   = localStorage.getItem('yearLevel')    || '—'
 
+const dateInput = document.getElementById("dateNeeded");
+
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+
+  const minDate = `${year}-${month}-${day}`;
+
+  dateInput.min = minDate;
+
 function fillStudentInfo() {
   const idEl   = document.getElementById('info-student-id')
   const nameEl = document.getElementById('info-student-name')

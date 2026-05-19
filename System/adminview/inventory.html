@@ -31,7 +31,7 @@
             <i class="fa-solid fa-table-columns"></i> Dashboard
           </a>
           <a href="inventory.html" class="nav-item active">
-            <i class="fa-solid fa-box-archive"></i> Inventory
+            <i class="fa-solid fa-box-open"></i> Inventory
           </a>
           <a href="monitoring.html" class="nav-item">
             <i class="fa-solid fa-chart-line"></i> Monitoring
@@ -178,7 +178,7 @@
     <div class="settings-content">
       <h2><i class="fa-solid fa-gear"></i> Settings</h2>
       <p>Customize your experience</p>
-      <div class="settings-item">
+      <!--<div class="settings-item">
         <div class="settings-item-info">
           <strong>🌙 Dark Mode</strong>
           <span>Switch to dark theme</span>
@@ -187,7 +187,7 @@
           <input type="checkbox" id="darkModeToggle">
           <span class="toggle-slider"></span>
         </label>
-      </div>
+      </div> -->
       <div class="settings-item">
         <div class="settings-item-info">
           <strong>👤 Add Student Account</strong>
@@ -257,6 +257,40 @@
       </form>
     </div>
   </div>
+  <!-- Alert Modal -->
+<div class="alert-modal-overlay" id="alertModalOverlay">
+  <div class="alert-modal-box">
+    <div class="alert-modal-header">
+      <div class="alert-modal-icon" id="alertModalIcon"><i></i></div>
+      <div class="alert-modal-title" id="alertModalTitle"></div>
+    </div>
+    <div class="alert-modal-body">
+      <div class="alert-modal-message" id="alertModalMessage"></div>
+      <div class="alert-modal-detail" id="alertModalDetail"></div>
+    </div>
+    <div class="alert-modal-footer">
+      <button class="alert-modal-close-btn" id="alertModalCloseBtn">Got it</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Modal -->
+<div class="alert-modal-overlay" id="confirmModalOverlay">
+  <div class="alert-modal-box">
+    <div class="alert-modal-header">
+      <div class="alert-modal-icon" id="confirmModalIcon"><i></i></div>
+      <div class="alert-modal-title" id="confirmModalTitle"></div>
+    </div>
+    <div class="alert-modal-body">
+      <div class="alert-modal-message" id="confirmModalMessage"></div>
+    </div>
+    <div class="alert-modal-footer" style="gap: 10px;">
+      <button class="alert-modal-close-btn" id="confirmModalCancelBtn" 
+        style="background:#e2e8f0; color:#333;">Cancel</button>
+      <button class="alert-modal-close-btn" id="confirmModalConfirmBtn"></button>
+    </div>
+  </div>
+</div>
 
   <script src="adminjs/auth.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

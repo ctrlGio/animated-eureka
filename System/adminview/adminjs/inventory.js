@@ -4,6 +4,77 @@ document.addEventListener('DOMContentLoaded', function () {
   const SUPABASE_URL = 'https://pxqacjetfbqwwacifyhv.supabase.co'
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4cWFjamV0ZmJxd3dhY2lmeWh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0OTAyMDAsImV4cCI6MjA5NDA2NjIwMH0.EO9lMp3Nmg29JhIuuzEgM15nlRaQZKwQg6EkXMSTos4'
   const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  function showAlert({ type = 'error', title, message, detail = null }) {
+  const overlay  = document.getElementById('alertModalOverlay')
+  const icon     = document.getElementById('alertModalIcon')
+  const iconEl   = icon.querySelector('i')
+  const titleEl  = document.getElementById('alertModalTitle')
+  const msgEl    = document.getElementById('alertModalMessage')
+  const detailEl = document.getElementById('alertModalDetail')
+  const closeBtn = document.getElementById('alertModalCloseBtn')
+
+  icon.className   = `alert-modal-icon ${type}`
+  iconEl.className = type === 'error'   ? 'fa-solid fa-circle-xmark'
+                   : type === 'warning' ? 'fa-solid fa-triangle-exclamation'
+                   : 'fa-solid fa-circle-check'
+
+  titleEl.textContent = title
+  msgEl.textContent   = message
+  closeBtn.className  = `alert-modal-close-btn ${type}`
+
+  if (detail) {
+    detailEl.innerHTML = detail
+    detailEl.classList.add('visible')
+  } else {
+    detailEl.innerHTML = ''
+    detailEl.classList.remove('visible')
+  }
+
+  overlay.classList.add('open')
+}
+
+function closeAlert() {
+  document.getElementById('alertModalOverlay').classList.remove('open')
+}
+
+function showConfirm({ type = 'delete', title, message, onConfirm }) {
+  const overlay    = document.getElementById('confirmModalOverlay')
+  const icon       = document.getElementById('confirmModalIcon')
+  const iconEl     = icon.querySelector('i')
+  const titleEl    = document.getElementById('confirmModalTitle')
+  const msgEl      = document.getElementById('confirmModalMessage')
+  const confirmBtn = document.getElementById('confirmModalConfirmBtn')
+  const cancelBtn  = document.getElementById('confirmModalCancelBtn')
+
+  icon.className   = `alert-modal-icon error`
+  iconEl.className = 'fa-solid fa-box-archive'
+  titleEl.textContent = title
+  msgEl.textContent   = message
+  confirmBtn.textContent = 'Move to Archive'
+  confirmBtn.className   = 'alert-modal-close-btn error'
+
+  overlay.classList.add('open')
+
+  const newConfirmBtn = confirmBtn.cloneNode(true)
+  confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn)
+  const newCancelBtn = cancelBtn.cloneNode(true)
+  cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn)
+
+  newConfirmBtn.addEventListener('click', () => {
+    overlay.classList.remove('open')
+    onConfirm()
+  })
+
+  newCancelBtn.addEventListener('click', () => overlay.classList.remove('open'))
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) overlay.classList.remove('open')
+  }, { once: true })
+}
+
+document.getElementById('alertModalCloseBtn').addEventListener('click', closeAlert)
+document.getElementById('alertModalOverlay').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('alertModalOverlay')) closeAlert()
+})
 
   const openButton = document.getElementById('openButton')
   const container = document.getElementById('addButton')
@@ -98,26 +169,84 @@ document.addEventListener('DOMContentLoaded', function () {
       items.forEach(item => {
         const statusClass = item.status === 'Available' ? 'status-available'
           : item.status === 'Borrowed' ? 'status-borrowed'
-            : 'status-maintenance'
+          : 'status-maintenance'
 
         const categoryName = item.admincategories?.name || 'Unknown'
 
-        tbody.innerHTML += `
-          <tr data-id="${item.id}">
-            <td>${item.item_name}</td>
-            <td>${categoryName}</td>
-            <td>${item.quantity}</td>
-            <td><span class="status-badge ${statusClass}">${item.status}</span></td>
-            <td>
-              <button class="delete-btn" onclick="deleteItem(${item.id})" title="Move to Archive">
-                <i class="fa-solid fa-trash"></i>
+        const tr = document.createElement('tr')
+        tr.dataset.id = item.id
+        tr.innerHTML = `
+          <td>${item.item_name}</td>
+          <td>${categoryName}</td>
+          <td>
+            <div class="qty-display" id="qty-display-${item.id}">
+              <span class="qty-value">${item.quantity}</span>
+              <button class="qty-edit-icon" onclick="startEditQty(${item.id}, ${item.quantity})" title="Edit quantity">
+              <i class="fa-solid fa-pen"></i>
               </button>
-            </td>
-          </tr>`
+              </div> 
+            <div class="qty-edit" id="qty-edit-${item.id}" style="display:none;">
+              <input type="number" class="qty-input" id="qty-input-${item.id}" value="${item.quantity}" min="0">
+              <div class="qty-actions">
+                <button class="qty-confirm-btn" onclick="saveQty(${item.id})" title="Save">
+                  <i class="fa-solid fa-check"></i>
+                </button>
+                <button class="qty-cancel-btn" onclick="cancelEditQty(${item.id}, ${item.quantity})" title="Cancel">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+            </div>
+          </td>
+          <td><span class="status-badge ${statusClass}">${item.status}</span></td>
+          <td>
+            <button class="delete-btn" onclick="deleteItem(${item.id})" title="Move to Archive">
+              <i class="fa-solid fa-box-archive"></i>
+            </button>
+          </td>
+        `
+        tbody.appendChild(tr)
       })
     }
 
     table.appendChild(tbody)
+  }
+
+  window.startEditQty = (id, currentQty) => {
+    document.getElementById(`qty-display-${id}`).style.display = 'none'
+    document.getElementById(`qty-edit-${id}`).style.display = 'flex'
+    const input = document.getElementById(`qty-input-${id}`)
+    input.value = currentQty
+    input.focus()
+  }
+
+  window.cancelEditQty = (id, originalQty) => {
+    document.getElementById(`qty-input-${id}`).value = originalQty
+    document.getElementById(`qty-edit-${id}`).style.display = 'none'
+    document.getElementById(`qty-display-${id}`).style.display = 'flex'
+  }
+
+  window.saveQty = async (id) => {
+    const input = document.getElementById(`qty-input-${id}`)
+    const newQty = parseInt(input.value)
+
+    if (isNaN(newQty) || newQty < 0) {
+      showAlert({ type: 'warning', title: 'Invalid Quantity', message: 'Please enter a valid quantity (0 or more).' })
+      return
+    }
+
+    const newStatus = newQty === 0 ? 'Borrowed' : 'Available'
+
+    const { error } = await client
+      .from('admininventory')
+      .update({ quantity: newQty, status: newStatus, updated_at: new Date().toISOString() })
+      .eq('id', id)
+
+    if (error) {
+      showAlert({ type: 'error', title: 'Update Failed', message: 'Could not update the quantity.', detail: `<strong>Error:</strong> ${error.message}` })
+      return
+    }
+
+    loadInventory(searchInput.value, categoryFilter.value, statusFilter.value)
   }
 
   const addItemForm = document.getElementById('addItemForm')
@@ -179,22 +308,27 @@ document.addEventListener('DOMContentLoaded', function () {
     })
   }
 
-  window.deleteItem = async (id) => {
-    if (!confirm('Are you sure you want to delete this item?')) return
+  window.deleteItem = (id) => {
+  showConfirm({
+    type: 'delete',
+    title: 'Move to Archive',
+    message: 'Are you sure you want to move this item to the archive? You can restore it later.',
+    onConfirm: async () => {
+      const { error } = await client
+        .from('admininventory')
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('id', id)
 
-    const { error } = await client
-      .from('admininventory')
-      .update({ deleted_at: new Date().toISOString() })
-      .eq('id', id)
+      if (error) {
+        showAlert({ type: 'error', title: 'Archive Failed', message: 'Could not move this item to the archive.', detail: `<strong>Error:</strong> ${error.message}` })
+        return
+      }
 
-    if (error) {
-      alert('Failed to delete: ' + error.message)
-      return
+      showAlert({ type: 'success', title: 'Moved to Archive', message: 'The item has been successfully moved to the archive.' })
+      loadInventory()
     }
-
-    alert('Item successfully marked as deleted.')
-    loadInventory()
-  }
+  })
+}
 
   window.openEdit = async (id) => {
     const { data, error } = await client
