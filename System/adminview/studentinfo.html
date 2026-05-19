@@ -39,6 +39,9 @@
           <a href="studentinfo.html" class="nav-item active">
             <i class="fa-solid fa-user-group"></i> Student Information
           </a>
+          <a href="archive.html" class="nav-item">
+            <i class="fa-solid fa-clock-rotate-left"></i> Archive
+          </a>
         </nav>
       </div>
       <a href="#" class="logout-btn" id="logoutBtn">
@@ -51,57 +54,6 @@
         <h1>Student Information</h1>
         <p>Track students who borrowed equipments and materials</p>
       </header>
-
-      <div class="button-container">
-        <button class="add-item-button" id="openBorrow">
-          <span class="add-icon"><i class="fa fa-plus" aria-hidden="true"></i></span>
-          <strong>New Borrow Record</strong>
-        </button>
-      </div>
-
-      <div class="new-borrow-modal" id="newBorrowModal">
-        <div class="container-content">
-          <div class="header-text">
-            <h2><span>&#128100;</span> Create New Borrow Record</h2>
-            <p>Record a new equipment borrowing transaction for a BSHM student</p>
-          </div>
-          <form id="newBorrowForm">
-            <label for="studentId">Student ID:</label>
-            <input type="text" id="studentId" name="studentId" placeholder="e.g., STU001" required>
-
-            <label for="studentName">Student Name:</label>
-            <input type="text" id="studentName" name="studentName" placeholder="e.g., Aron John Returan" required>
-
-            <label for="yearLevel">Year Level:</label>
-            <select id="yearLevel" name="yearLevel" required>
-              <option value="">Select Year Level</option>
-              <option value="1st Year">1st Year</option>
-              <option value="2nd Year">2nd Year</option>
-              <option value="3rd Year">3rd Year</option>
-              <option value="4th Year">4th Year</option>
-            </select>
-
-            <label for="itemBorrowed">Item Borrowed:</label>
-            <select id="itemBorrowed" name="itemBorrowed" required>
-              <option value="">Select Item</option>
-            </select>
-
-            <label for="quantity">Quantity:</label>
-            <input type="number" id="quantity" name="quantity" min="1" required>
-
-            <label for="borrowDate">Borrow Date:</label>
-            <input type="date" id="borrowDate" name="borrowDate" required>
-
-            <label for="dueDate">Due Date:</label>
-            <input type="date" id="dueDate" name="dueDate" required>
-
-            <div class="form-buttons">
-              <button type="submit"><span>&#128190;</span> Save Record</button>
-              <button id="closeNewBorrowModal" type="button"><span>&#10060;</span> Cancel</button>
-            </div>
-          </form>
-        </div>
-      </div>
 
       <section class="student-info-grid">
         <div class="student-cards">
@@ -180,24 +132,24 @@
         </div>
         <div class="form-group">
           <label>Email</label>
-          <input type="email" id="studentEmail" placeholder="e.g. juan@school.edu">
+          <input type="email" id="studentEmail" autocomplete="email" placeholder="e.g. juan@school.edu">
         </div>
         <div class="form-group">
           <label>Password</label>
           <div style="position: relative;">
-            <input type="password" id="studentPassword" placeholder="Minimum 6 characters" style="padding-right: 40px;">
+            <input type="password" id="studentPassword" autocomplete="new-password" placeholder="Minimum 6 characters" style="padding-right: 40px;">
             <button type="button" id="togglePassword" style="
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #888;
-      font-size: 15px;
-      padding: 0;
-    ">
+              position: absolute;
+              right: 10px;
+              top: 50%;
+              transform: translateY(-50%);
+              background: none;
+              border: none;
+              cursor: pointer;
+              color: #888;
+              font-size: 15px;
+              padding: 0;
+            ">
               <i class="fa-solid fa-eye"></i>
             </button>
           </div>

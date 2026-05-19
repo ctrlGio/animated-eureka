@@ -1,0 +1,41 @@
+.restore-btn {
+  background-color: transparent;
+  color: #48bb78;
+  border: 1px solid #e2e8f0;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.restore-btn:hover {
+  background-color: #f0fff4;
+  color: #2f855a;
+  border-color: #48bb78;
+}
+
+.archive-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: #a0aec0;
+}
+
+.archive-empty i {
+  font-size: 48px;
+  margin-bottom: 15px;
+  display: block;
+  color: #cbd5e0;
+}
+
+.archive-empty p {
+  font-size: 15px;
+}
+
+.deleted-badge {
+  background-color: #fed7d7;
+  color: #c53030;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+}

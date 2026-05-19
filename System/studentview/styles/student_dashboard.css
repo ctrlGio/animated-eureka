@@ -190,7 +190,7 @@ body {
 .badge.red { background-color: #d90429; }
 .badge.grey { background-color: #e9ecef; color: #495057; }
 .badge.black { background-color: #000; }
-.badge.green { background-color: #097703; } /* Use for Rejected/Approved */
+.badge.green { background-color: #097703; } 
 
 .card p {
     font-size: 14px;
