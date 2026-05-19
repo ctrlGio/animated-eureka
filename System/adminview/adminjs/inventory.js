@@ -31,43 +31,44 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('closeEditButton').addEventListener('click', closeEditModal)
 
   document.getElementById('editItemForm').addEventListener('submit', async (e) => {
-  e.preventDefault()
+    e.preventDefault()
 
-  const id       = document.getElementById('editId').value
-  const itemName = document.getElementById('editItemName').value.trim()
-  const quantity = parseInt(document.getElementById('editQuantity').value)
-  let status     = document.getElementById('editStatus').value
+    const id = document.getElementById('editId').value
+    const itemName = document.getElementById('editItemName').value.trim()
+    const quantity = parseInt(document.getElementById('editQuantity').value)
+    let status = document.getElementById('editStatus').value
 
-  if (quantity > 0 && status === 'Borrowed') {
-    status = 'Available'
-    document.getElementById('editStatus').value = 'Available'
-  }
+    if (quantity > 0 && status === 'Borrowed') {
+      status = 'Available'
+      document.getElementById('editStatus').value = 'Available'
+    }
 
-  if (quantity === 0) {
-    status = 'Borrowed'
-    document.getElementById('editStatus').value = 'Borrowed'
-  }
+    if (quantity === 0) {
+      status = 'Borrowed'
+      document.getElementById('editStatus').value = 'Borrowed'
+    }
 
-  const { error } = await client
-    .from('admininventory')
-    .update({
-      item_name:  itemName,
-      quantity,
-      status,
-      updated_at: new Date().toISOString()
-    })
-    .eq('id', id)
+    const { error } = await client
+      .from('admininventory')
+      .update({
+        item_name: itemName,
+        quantity,
+        status,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', id)
 
-  if (error) { alert('Failed to update: ' + error.message); return }
+    if (error) { alert('Failed to update: ' + error.message); return }
 
-  closeEditModal()
-  loadInventory()
-})
+    closeEditModal()
+    loadInventory()
+  })
 
   async function loadInventory(search = '', category = '', status = '') {
     let query = client
       .from('admininventory')
       .select('*, admincategories(name)')
+      .is('deleted_at', null)
       .order('created_at', { ascending: false })
 
     if (search) query = query.ilike('item_name', `%${search}%`)
@@ -108,10 +109,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <td>${item.quantity}</td>
             <td><span class="status-badge ${statusClass}">${item.status}</span></td>
             <td>
-              <button class="edit-btn" onclick="openEdit(${item.id})" title="Edit">
-                <i class="fa-solid fa-pen-to-square"></i>
-              </button>
-              <button class="delete-btn" onclick="deleteItem(${item.id})" title="Delete">
+              <button class="delete-btn" onclick="deleteItem(${item.id})" title="Move to Archive">
                 <i class="fa-solid fa-trash"></i>
               </button>
             </td>
@@ -131,7 +129,6 @@ document.addEventListener('DOMContentLoaded', function () {
       const itemName = document.getElementById('itemName').value.trim()
       const categoryVal = document.getElementById('category').value
       const quantity = parseInt(document.getElementById('quantity').value)
-      const statusVal = document.getElementById('status').value
 
       const categoryMap = {
         'kitchen-equipmet': 'Kitchen Equipment',
@@ -143,15 +140,9 @@ document.addEventListener('DOMContentLoaded', function () {
         'utensils': 'Utensils',
         'mise-en-place-tools': 'Mise En Place Tools'
       }
-      const statusMap = {
-        'available': 'Available',
-        'borrowed': 'Borrowed',
-        'maintenance': 'Maintenance'
-      }
 
       const categoryName = categoryMap[categoryVal] || categoryVal
 
-      // Check for duplicate
       const { data: existing } = await client
         .from('admininventory')
         .select('id')
@@ -162,7 +153,6 @@ document.addEventListener('DOMContentLoaded', function () {
         return
       }
 
-      // Get category_id
       const { data: catData, error: catError } = await client
         .from('admincategories')
         .select('id')
@@ -174,15 +164,14 @@ document.addEventListener('DOMContentLoaded', function () {
         return
       }
 
-      // Insert item
-      const { error } = await client.from('admininventory').insert([{
+      const { error: insertError } = await client.from('admininventory').insert([{
         item_name: itemName,
         category_id: catData.id,
         quantity,
-        status: statusMap[statusVal] || statusVal
+        status: 'Available'
       }])
 
-      if (error) { alert('Failed to add item: ' + error.message); return }
+      if (insertError) { alert('Failed to add item: ' + insertError.message); return }
 
       addItemForm.reset()
       container.classList.remove('open')
@@ -193,9 +182,17 @@ document.addEventListener('DOMContentLoaded', function () {
   window.deleteItem = async (id) => {
     if (!confirm('Are you sure you want to delete this item?')) return
 
-    const { error } = await client.from('admininventory').delete().eq('id', id)
-    if (error) { alert('Failed to delete: ' + error.message); return }
+    const { error } = await client
+      .from('admininventory')
+      .update({ deleted_at: new Date().toISOString() })
+      .eq('id', id)
 
+    if (error) {
+      alert('Failed to delete: ' + error.message)
+      return
+    }
+
+    alert('Item successfully marked as deleted.')
     loadInventory()
   }
 

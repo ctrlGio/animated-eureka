@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +8,6 @@
   <link rel="stylesheet" href="styles/monitoring.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-
 <body class="dashboard-body">
   <div class="dashboard-wrapper">
     <aside class="sidebar">
@@ -27,18 +25,11 @@
           </div>
         </div>
         <nav class="nav-menu">
-          <a href="admin_homepage.html" class="nav-item">
-            <i class="fa-solid fa-table-columns"></i> Dashboard
-          </a>
-          <a href="inventory.html" class="nav-item">
-            <i class="fa-solid fa-box-archive"></i> Inventory
-          </a>
-          <a href="monitoring.html" class="nav-item active">
-            <i class="fa-solid fa-chart-line"></i> Monitoring
-          </a>
-          <a href="studentinfo.html" class="nav-item">
-            <i class="fa-solid fa-user-group"></i> Student Information
-          </a>
+          <a href="admin_homepage.html" class="nav-item"><i class="fa-solid fa-table-columns"></i> Dashboard</a>
+          <a href="inventory.html" class="nav-item"><i class="fa-solid fa-box-archive"></i> Inventory</a>
+          <a href="monitoring.html" class="nav-item active"><i class="fa-solid fa-chart-line"></i> Monitoring</a>
+          <a href="studentinfo.html" class="nav-item"><i class="fa-solid fa-user-group"></i> Student Information</a>
+          <a href="archive.html" class="nav-item"><i class="fa-solid fa-clock-rotate-left"></i> Archive</a>
         </nav>
       </div>
       <a href="#" class="logout-btn" id="logoutBtn">
@@ -87,10 +78,10 @@
           </table>
         </div>
       </section>
-
     </main>
   </div>
 
+  <!-- Settings Modal -->
   <div class="settings-modal" id="settingsModal">
     <div class="settings-content">
       <h2><i class="fa-solid fa-gear"></i> Settings</h2>
@@ -105,7 +96,6 @@
           <span class="toggle-slider"></span>
         </label>
       </div>
-      <!-- Add Student Account -->
       <div class="settings-item">
         <div class="settings-item-info">
           <strong>👤 Add Student Account</strong>
@@ -113,16 +103,15 @@
         </div>
         <button class="add-student-btn" id="openAddStudentBtn">Add</button>
       </div>
-
       <button class="close-settings-btn" id="closeSettings">Close</button>
     </div>
   </div>
+
   <!-- Add Student Modal -->
   <div class="add-student-modal" id="addStudentModal">
     <div class="add-student-content">
       <h2>👤 Add Student Account</h2>
       <p>Fill in the details to create a new student account</p>
-
       <form id="addStudentForm" onsubmit="return false;">
         <div class="form-group">
           <label>Full Name</label>
@@ -134,24 +123,13 @@
         </div>
         <div class="form-group">
           <label>Email</label>
-          <input type="email" id="studentEmail" placeholder="e.g. juan@school.edu">
+          <input type="email" id="studentEmail" autocomplete="email" placeholder="e.g. juan@school.edu">
         </div>
         <div class="form-group">
           <label>Password</label>
-          <div style="position: relative;">
-            <input type="password" id="studentPassword" placeholder="Minimum 6 characters" style="padding-right: 40px;">
-            <button type="button" id="togglePassword" style="
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #888;
-      font-size: 15px;
-      padding: 0;
-    ">
+          <div style="position:relative;">
+            <input type="password" id="studentPassword" autocomplete="new-password" placeholder="Minimum 6 characters" style="padding-right:40px;">
+            <button type="button" id="togglePassword" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#888;font-size:15px;padding:0;">
               <i class="fa-solid fa-eye"></i>
             </button>
           </div>
@@ -166,14 +144,45 @@
             <option value="4th Year">4th Year</option>
           </select>
         </div>
-
         <div id="addStudentMsg" class="add-student-msg"></div>
-
         <div class="add-student-actions">
           <button id="cancelAddStudent">Cancel</button>
           <button id="confirmAddStudent">Create Account</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Approve / Reject Confirm Modal -->
+  <div class="req-confirm-overlay" id="reqConfirmOverlay">
+    <div class="req-confirm-card">
+      <div class="req-confirm-icon" id="reqConfirmIcon">
+        <i id="reqConfirmIconI"></i>
+      </div>
+      <h3 id="reqConfirmTitle">Confirm Action</h3>
+      <p id="reqConfirmSubtitle">Are you sure you want to proceed?</p>
+      <div class="req-confirm-details" id="reqConfirmDetails"></div>
+      <div class="req-confirm-actions">
+        <button class="req-confirm-yes" id="reqConfirmYes">Confirm</button>
+        <button class="req-confirm-cancel" id="reqConfirmCancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alert Modal -->
+  <div class="alert-modal-overlay" id="alertModalOverlay">
+    <div class="alert-modal-box">
+      <div class="alert-modal-header">
+        <div class="alert-modal-icon" id="alertModalIcon"><i></i></div>
+        <div class="alert-modal-title" id="alertModalTitle"></div>
+      </div>
+      <div class="alert-modal-body">
+        <div class="alert-modal-message" id="alertModalMessage"></div>
+        <div class="alert-modal-detail" id="alertModalDetail"></div>
+      </div>
+      <div class="alert-modal-footer">
+        <button class="alert-modal-close-btn" id="alertModalCloseBtn">Got it</button>
+      </div>
     </div>
   </div>
 
@@ -183,5 +192,4 @@
   <script src="adminjs/settings.js"></script>
   <script src="adminjs/logout.js"></script>
 </body>
-
 </html>

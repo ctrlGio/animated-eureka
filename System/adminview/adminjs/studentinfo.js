@@ -299,9 +299,6 @@ body.dark-mode .history-table td { color: #e2e8f0 !important; border-color: #1a1
               <button class="return-btn" onclick="markReturned(${r.id}, '${r.item_borrowed}', ${r.quantity})" title="Mark as Returned">
                 <i class="fa-solid fa-rotate-left"></i> Return
               </button>
-              <button class="delete-btn" onclick="deleteRecord(${r.id})" title="Delete">
-                <i class="fa-solid fa-trash"></i>
-              </button>
             </td>
           </tr>`
       })
@@ -352,13 +349,6 @@ body.dark-mode .history-table td { color: #e2e8f0 !important; border-color: #1a1
     const { data: inv } = await client.from('admininventory').select('id, quantity').ilike('item_name', itemBorrowed).single()
     if (inv) await client.from('admininventory').update({ quantity: inv.quantity + quantity, status: 'Available', updated_at: new Date().toISOString() }).eq('id', inv.id)
     const { error } = await client.from('adminborrows').update({ status: 'Returned', return_date: new Date().toISOString(), updated_at: new Date().toISOString() }).eq('id', id)
-    if (error) { alert('Failed: ' + error.message); return }
-    loadBorrows(); loadStats()
-  }
-
-  window.deleteRecord = async (id) => {
-    if (!confirm('Delete this record?')) return
-    const { error } = await client.from('adminborrows').delete().eq('id', id)
     if (error) { alert('Failed: ' + error.message); return }
     loadBorrows(); loadStats()
   }

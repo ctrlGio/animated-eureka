@@ -215,4 +215,12 @@ body {
     margin-top: 10px;
 }
 
-.status-active   { background-color: #48bb78; co
+.status-active {
+    background-color: #097703;
+    color: white;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    display: inline-block;
+}

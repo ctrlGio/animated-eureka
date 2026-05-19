@@ -5,7 +5,71 @@ document.addEventListener('DOMContentLoaded', function () {
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4cWFjamV0ZmJxd3dhY2lmeWh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0OTAyMDAsImV4cCI6MjA5NDA2NjIwMH0.EO9lMp3Nmg29JhIuuzEgM15nlRaQZKwQg6EkXMSTos4'
   const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-  /* ── Stats ─────────────────────────────────────────── */
+  // ── Alert Modal ───────────────────────────────────────────────────────────
+  function showAlert({ type = 'error', title, message, detail = null }) {
+    const overlay  = document.getElementById('alertModalOverlay')
+    const icon     = document.getElementById('alertModalIcon')
+    const iconEl   = icon.querySelector('i')
+    const titleEl  = document.getElementById('alertModalTitle')
+    const msgEl    = document.getElementById('alertModalMessage')
+    const detailEl = document.getElementById('alertModalDetail')
+    const closeBtn = document.getElementById('alertModalCloseBtn')
+
+    icon.className   = 'alert-modal-icon ' + type
+    iconEl.className = type === 'error'   ? 'fa-solid fa-circle-xmark'
+                     : type === 'warning' ? 'fa-solid fa-triangle-exclamation'
+                     : 'fa-solid fa-circle-check'
+
+    titleEl.textContent = title
+    msgEl.textContent   = message
+    closeBtn.className  = 'alert-modal-close-btn ' + type
+
+    if (detail) { detailEl.innerHTML = detail; detailEl.classList.add('visible') }
+    else        { detailEl.innerHTML = '';      detailEl.classList.remove('visible') }
+
+    overlay.classList.add('open')
+  }
+
+  function closeAlert() { document.getElementById('alertModalOverlay').classList.remove('open') }
+  document.getElementById('alertModalCloseBtn').addEventListener('click', closeAlert)
+  document.getElementById('alertModalOverlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('alertModalOverlay')) closeAlert()
+  })
+
+  // ── Confirm Modal ─────────────────────────────────────────────────────────
+  function showConfirm({ type, title, subtitle, details, onConfirm }) {
+    const overlay    = document.getElementById('reqConfirmOverlay')
+    const icon       = document.getElementById('reqConfirmIcon')
+    const iconEl     = document.getElementById('reqConfirmIconI')
+    const titleEl    = document.getElementById('reqConfirmTitle')
+    const subtitleEl = document.getElementById('reqConfirmSubtitle')
+    const detailsEl  = document.getElementById('reqConfirmDetails')
+
+    icon.className   = 'req-confirm-icon ' + type
+    iconEl.className = type === 'approve' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-xmark'
+    titleEl.textContent    = title
+    subtitleEl.textContent = subtitle
+    detailsEl.innerHTML    = details || ''
+
+    overlay.classList.add('open')
+
+    const close = () => overlay.classList.remove('open')
+
+    // Replace buttons to clear old listeners
+    const oldYes    = document.getElementById('reqConfirmYes')
+    const oldCancel = document.getElementById('reqConfirmCancel')
+    const newYes    = oldYes.cloneNode(true)
+    const newCancel = oldCancel.cloneNode(true)
+    newYes.className = 'req-confirm-yes ' + type
+    oldYes.parentNode.replaceChild(newYes, oldYes)
+    oldCancel.parentNode.replaceChild(newCancel, oldCancel)
+
+    document.getElementById('reqConfirmYes').addEventListener('click', () => { close(); onConfirm() })
+    document.getElementById('reqConfirmCancel').addEventListener('click', close)
+    overlay.addEventListener('click', e => { if (e.target === overlay) close() })
+  }
+
+  // ── Stats ─────────────────────────────────────────────────────────────────
   async function loadStats() {
     const statuses = ['Pending Admin Approval', 'Approved', 'Rejected']
     const counts   = await Promise.all(statuses.map(s =>
@@ -14,123 +78,161 @@ document.addEventListener('DOMContentLoaded', function () {
         .eq('status', s)
         .then(r => r.count || 0)
     ))
-
     const vals = document.querySelectorAll('.monitoring-value')
     if (vals[0]) vals[0].textContent = counts[0]
     if (vals[1]) vals[1].textContent = counts[1]
     if (vals[2]) vals[2].textContent = counts[2]
   }
 
-  /* ── Load table ─────────────────────────────────────── */
+  // ── Load Table ────────────────────────────────────────────────────────────
   async function loadRequisitions() {
     const { data, error } = await client
       .from('adminrequisition_forms')
       .select('*')
       .order('created_at', { ascending: false })
-
     if (error) { console.error('Error loading requisitions:', error); return }
     renderTable(data)
   }
 
-  /* ── Render ─────────────────────────────────────────── */
   function renderTable(records) {
     const table   = document.querySelector('.requisition-table')
     const oldBody = table.querySelector('tbody')
     if (oldBody) oldBody.remove()
-
     const tbody = document.createElement('tbody')
 
     if (!records || records.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:20px;color:#888;">No requisition forms found.</td></tr>`
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;color:#888;">No requisition forms found.</td></tr>'
     } else {
       records.forEach((r, index) => {
         const status = r.status || 'Pending Admin Approval'
-
-        const statusClass = status === 'Approved'              ? 'status-approved'
-                          : status === 'Rejected'              ? 'status-rejected'
+        const statusClass = status === 'Approved' ? 'status-approved'
+                          : status === 'Rejected' ? 'status-rejected'
                           : 'status-pending'
 
-        // urgency — only show badge if it's actually High/Medium/Low
         const validUrgency = ['High', 'Medium', 'Low'].includes(r.urgency)
         const urgencyClass = r.urgency === 'High'   ? 'urgency-high'
                            : r.urgency === 'Medium' ? 'urgency-medium'
                            : 'urgency-low'
-        const urgencyHtml  = validUrgency
-          ? `<span class="urgency-badge ${urgencyClass}">${r.urgency}</span>`
-          : `<span style="color:#888;">—</span>`
+        const urgencyHtml = validUrgency
+          ? '<span class="urgency-badge ' + urgencyClass + '">' + r.urgency + '</span>'
+          : '<span style="color:#888;">—</span>'
 
         const isPending = status === 'Pending Admin Approval'
 
-        tbody.innerHTML += `
-          <tr data-id="${r.id}">
-            <td>#${index + 1}</td>
-            <td>${r.requestor || '—'}</td>
-            <td>${r.professor || '—'}</td>
-            <td>${r.item_requested || '—'}</td>
-            <td>${r.quantity ?? '—'}</td>
-            <td>${r.date || '—'}</td>
-            <td>${urgencyHtml}</td>
-            <td><span class="status-badge ${statusClass}">${status}</span></td>
-            <td>
-              <div class="actions-cell">
-                <button class="approve-btn" onclick="approveRequisition(${r.id})" title="Approve" ${!isPending ? 'disabled' : ''}>
-                  <i class="fa-solid fa-check"></i>
-                </button>
-                <button class="reject-btn" onclick="rejectRequisition(${r.id})" title="Reject" ${!isPending ? 'disabled' : ''}>
-                  <i class="fa-solid fa-xmark"></i>
-                </button>
-                <button class="delete-btn" onclick="deleteRequisition(${r.id})" title="Delete">
-                  <i class="fa-solid fa-trash"></i>
-                </button>
-              </div>
-            </td>
-          </tr>`
+        tbody.innerHTML += '<tr data-id="' + r.id + '">' +
+          '<td>#' + (index + 1) + '</td>' +
+          '<td>' + (r.requestor || '—') + '</td>' +
+          '<td>' + (r.professor || '—') + '</td>' +
+          '<td>' + (r.item_requested || '—') + '</td>' +
+          '<td>' + (r.quantity ?? '—') + '</td>' +
+          '<td>' + (r.date || '—') + '</td>' +
+          '<td>' + urgencyHtml + '</td>' +
+          '<td><span class="status-badge ' + statusClass + '">' + status + '</span></td>' +
+          '<td><div class="actions-cell">' +
+            '<button class="approve-btn" onclick="approveRequisition(' + r.id + ')" title="Approve"' + (!isPending ? ' disabled' : '') + '>' +
+              '<i class="fa-solid fa-check"></i>' +
+            '</button>' +
+            '<button class="reject-btn" onclick="rejectRequisition(' + r.id + ')" title="Reject"' + (!isPending ? ' disabled' : '') + '>' +
+              '<i class="fa-solid fa-xmark"></i>' +
+            '</button>' +
+            '</button>' +
+          '</div></td>' +
+        '</tr>'
       })
     }
-
     table.appendChild(tbody)
   }
 
-  /* ── Actions ─────────────────────────────────────────── */
+  // ── Approve ───────────────────────────────────────────────────────────────
   window.approveRequisition = async (id) => {
-    if (!confirm('Approve this requisition?')) return
-
-    // Fetch full requisition record first
-    const { data: req, error: fetchErr } = await client
+    const { data: req } = await client
       .from('adminrequisition_forms')
       .select('*')
       .eq('id', id)
       .maybeSingle()
 
-    if (fetchErr || !req) { alert('Failed to fetch requisition details.'); return }
+    if (!req) { showAlert({ type: 'error', title: 'Not Found', message: 'Could not load requisition details.' }); return }
 
-    // Update status to Approved
-    const { error } = await client
+    showConfirm({
+      type:     'approve',
+      title:    'Approve Requisition',
+      subtitle: 'Are you sure you want to approve this request?',
+      details:
+        '<div class="req-detail-row"><span>Requestor</span><strong>' + req.requestor + '</strong></div>' +
+        '<div class="req-detail-row"><span>Professor</span><strong>' + (req.professor || '—') + '</strong></div>' +
+        '<div class="req-detail-row"><span>Item</span><strong>' + req.item_requested + '</strong></div>' +
+        '<div class="req-detail-row"><span>Quantity</span><strong>' + req.quantity + '</strong></div>' +
+        '<div class="req-detail-row"><span>Date Needed</span><strong>' + (req.date || '—') + '</strong></div>',
+      onConfirm: () => doApprove(id, req)
+    })
+  }
+
+  async function doApprove(id, req) {
+    // 1. Find inventory item
+    const { data: inventoryItem, error: invFetchErr } = await client
+      .from('admininventory')
+      .select('id, quantity, status')
+      .ilike('item_name', req.item_requested)
+      .maybeSingle()
+
+    if (invFetchErr || !inventoryItem) {
+      showAlert({ type: 'error', title: 'Item Not Found', message: 'The requested item does not exist in inventory.',
+        detail: '<strong>Item:</strong> ' + req.item_requested })
+      return
+    }
+
+    // 2. Check stock
+    if (inventoryItem.quantity < req.quantity) {
+      showAlert({ type: 'warning', title: 'Insufficient Stock', message: 'Not enough stock to fulfill this requisition.',
+        detail: '<strong>Available:</strong> ' + inventoryItem.quantity + '<br><strong>Requested:</strong> ' + req.quantity })
+      return
+    }
+
+    // 3. Deduct inventory
+    const newQuantity = inventoryItem.quantity - req.quantity
+    const newStatus   = newQuantity === 0 ? 'Borrowed' : 'Available'
+
+    const { error: invUpdateErr } = await client
+      .from('admininventory')
+      .update({ quantity: newQuantity, status: newStatus, updated_at: new Date().toISOString() })
+      .eq('id', inventoryItem.id)
+
+    if (invUpdateErr) {
+      showAlert({ type: 'error', title: 'Inventory Update Failed', message: 'Could not update inventory.',
+        detail: '<strong>Error:</strong> ' + invUpdateErr.message })
+      return
+    }
+
+    // 4. Approve requisition
+    const { error: approveErr } = await client
       .from('adminrequisition_forms')
       .update({ status: 'Approved', updated_at: new Date().toISOString() })
       .eq('id', id)
-    if (error) { alert('Failed to approve: ' + error.message); return }
 
-    // Look up student record to get student_id and year_level
+    if (approveErr) {
+      showAlert({ type: 'error', title: 'Approval Failed', message: 'Could not update requisition status.',
+        detail: '<strong>Error:</strong> ' + approveErr.message })
+      return
+    }
+
+    // 5. Create borrow record
     const { data: student } = await client
       .from('students')
       .select('student_id, year_level')
       .ilike('student_name', req.requestor)
       .maybeSingle()
 
-    // Calculate due date (borrow date + 7 days by default)
     const borrowDate = req.date || new Date().toISOString().split('T')[0]
     const due = new Date(borrowDate)
     due.setDate(due.getDate() + 7)
     const dueDate = due.toISOString().split('T')[0]
 
-    // Create borrow record in adminborrows
     const { error: borrowErr } = await client
       .from('adminborrows')
       .insert([{
-        student_id:    student?.student_id || 'N/A',
+        student_id:    student ? student.student_id : 'N/A',
         student_name:  req.requestor,
-        year_level:    student?.year_level || 'N/A',
+        year_level:    student ? student.year_level : 'N/A',
         item_borrowed: req.item_requested,
         quantity:      req.quantity,
         borrow_date:   borrowDate,
@@ -139,31 +241,49 @@ document.addEventListener('DOMContentLoaded', function () {
       }])
 
     if (borrowErr) {
-      console.error('Failed to create borrow record:', borrowErr)
-      alert('Approved but failed to create borrow record: ' + borrowErr.message)
+      showAlert({ type: 'warning', title: 'Borrow Record Failed',
+        message: 'Requisition approved but borrow record could not be created.',
+        detail: '<strong>Error:</strong> ' + borrowErr.message })
     }
 
-    loadRequisitions(); loadStats()
+    loadRequisitions()
+    loadStats()
   }
 
+  // ── Reject ────────────────────────────────────────────────────────────────
   window.rejectRequisition = async (id) => {
-    if (!confirm('Reject this requisition?')) return
+    const { data: req } = await client
+      .from('adminrequisition_forms')
+      .select('requestor, item_requested, quantity, professor')
+      .eq('id', id)
+      .maybeSingle()
+
+    showConfirm({
+      type:     'reject',
+      title:    'Reject Requisition',
+      subtitle: 'Are you sure you want to reject this request?',
+      details: req
+        ? '<div class="req-detail-row"><span>Requestor</span><strong>' + req.requestor + '</strong></div>' +
+          '<div class="req-detail-row"><span>Professor</span><strong>' + (req.professor || '—') + '</strong></div>' +
+          '<div class="req-detail-row"><span>Item</span><strong>' + req.item_requested + '</strong></div>' +
+          '<div class="req-detail-row"><span>Quantity</span><strong>' + req.quantity + '</strong></div>'
+        : '',
+      onConfirm: () => doReject(id)
+    })
+  }
+
+  async function doReject(id) {
     const { error } = await client
       .from('adminrequisition_forms')
       .update({ status: 'Rejected', updated_at: new Date().toISOString() })
       .eq('id', id)
-    if (error) { alert('Failed to reject: ' + error.message); return }
-    loadRequisitions(); loadStats()
-  }
-
-  window.deleteRequisition = async (id) => {
-    if (!confirm('Delete this requisition?')) return
-    const { error } = await client
-      .from('adminrequisition_forms')
-      .delete()
-      .eq('id', id)
-    if (error) { alert('Failed to delete: ' + error.message); return }
-    loadRequisitions(); loadStats()
+    if (error) {
+      showAlert({ type: 'error', title: 'Rejection Failed', message: 'Could not reject this requisition.',
+        detail: '<strong>Error:</strong> ' + error.message })
+      return
+    }
+    loadRequisitions()
+    loadStats()
   }
 
   loadStats()
