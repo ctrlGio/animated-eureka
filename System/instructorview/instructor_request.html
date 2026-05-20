@@ -63,26 +63,27 @@
 
         <section class="request-container">
           <div class="request-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-              <h4 style="margin-bottom: 0;">All Student Requests</h4>
-              <div style="display: flex; gap: 8px;">
-                <select id="dateFilter" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 13px; color: #333; outline: none; cursor: pointer; background: #f8fafc;">
-                  <option value="all">All Time</option>
-                  <option value="today">Today</option>
-                  <option value="week">This Week</option>
-                  <option value="month">This Month</option>
-                </select>
-              </div>
+            <div class="card-toolbar">
+              <h4>All Student Requests</h4>
+              <select id="dateFilter">
+                <option value="all">All Time</option>
+                <option value="today">Today</option>
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+              </select>
             </div>
             <table class="request-table">
               <thead>
                 <tr class="table-card">
+                  <th class="checkbox-col">
+                    <input type="checkbox" id="selectAll" title="Select all pending">
+                  </th>
                   <th>Request ID</th>
                   <th>Student</th>
                   <th>Department</th>
                   <th>Item Requested</th>
                   <th>Quantity</th>
-                  <th>Date</th>
+                  <th>Date Needed</th>
                   <th>Urgency</th>
                   <th>Status</th>
                   <th>Actions</th>
@@ -97,6 +98,25 @@
     </div>
   </div>
 
+  <!-- Bulk Action Bar -->
+  <div class="bulk-bar" id="bulkBar">
+    <div class="bulk-bar-left">
+      <i class="fa-solid fa-list-check"></i>
+      <span id="bulkCount">0 selected</span>
+    </div>
+    <div class="bulk-bar-right">
+      <button class="bulk-btn approve" id="bulkApproveBtn">
+        <i class="fa-solid fa-check"></i> Approve Selected
+      </button>
+      <button class="bulk-btn reject" id="bulkRejectBtn">
+        <i class="fa-solid fa-xmark"></i> Reject Selected
+      </button>
+      <button class="bulk-btn cancel" id="bulkCancelBtn">
+        <i class="fa-solid fa-times"></i> Cancel
+      </button>
+    </div>
+  </div>
+
   <!-- Approve Confirm Modal -->
   <div class="modal-overlay" id="approveModalOverlay">
     <div class="modal-box">
@@ -104,10 +124,10 @@
         <div class="modal-icon success">
           <i class="fa-solid fa-circle-check"></i>
         </div>
-        <div class="modal-title">Approve Request</div>
+        <div class="modal-title" id="approveModalTitle">Approve Request</div>
       </div>
       <div class="modal-body">
-        <div class="modal-message">Are you sure you want to approve this request? It will be forwarded to the admin for final approval.</div>
+        <div class="modal-message" id="approveModalMessage">Are you sure you want to approve this request? It will be forwarded to the admin for final approval.</div>
         <div class="modal-detail" id="approveModalDetail"></div>
       </div>
       <div class="modal-footer">
@@ -124,10 +144,10 @@
         <div class="modal-icon danger">
           <i class="fa-solid fa-circle-xmark"></i>
         </div>
-        <div class="modal-title">Reject Request</div>
+        <div class="modal-title" id="rejectModalTitle">Reject Request</div>
       </div>
       <div class="modal-body">
-        <div class="modal-message">Are you sure you want to reject this request? This action cannot be undone.</div>
+        <div class="modal-message" id="rejectModalMessage">Are you sure you want to reject this request? This action cannot be undone.</div>
         <div class="modal-detail" id="rejectModalDetail"></div>
       </div>
       <div class="modal-footer">
@@ -141,9 +161,7 @@
   <div class="modal-overlay" id="alertModalOverlay">
     <div class="modal-box">
       <div class="modal-header">
-        <div class="modal-icon" id="alertModalIcon">
-          <i></i>
-        </div>
+        <div class="modal-icon" id="alertModalIcon"><i></i></div>
         <div class="modal-title" id="alertModalTitle"></div>
       </div>
       <div class="modal-body">
