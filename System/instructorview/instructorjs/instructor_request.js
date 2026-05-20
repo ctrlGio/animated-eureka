@@ -13,6 +13,11 @@ const instructorName = localStorage.getItem('username') || 'Instructor'
 const tbody          = document.querySelector('.request-table tbody')
 const statValues     = document.querySelectorAll('.stat-value')
 
+let _allRequests    = []
+let _pendingApprove = null
+let _pendingReject  = null
+let _isBulk         = false
+
 // ── Urgency ───────────────────────────────────────────────────────────────────
 function calcUrgency(dateStr) {
   if (!dateStr) return 'Low'
@@ -26,11 +31,8 @@ function calcUrgency(dateStr) {
   return 'Low'
 }
 
-const dateNeeded = r.date_needed || null
-const duration   = r.duration || null
-
 // ── Alert Modal ───────────────────────────────────────────────────────────────
-function showAlert({ type = 'error', title, message }) {
+function showAlert({ type = 'success', title, message }) {
   const overlay  = document.getElementById('alertModalOverlay')
   const icon     = document.getElementById('alertModalIcon')
   const iconEl   = icon.querySelector('i')
@@ -53,45 +55,83 @@ function closeAlert() {
   document.getElementById('alertModalOverlay').classList.remove('open')
 }
 
-// ── Confirm Modal ─────────────────────────────────────────────────────────────
-let _pendingApprove = null
-let _pendingReject  = null
-
-function showApproveModal(data) {
+// ── Approve Modal ─────────────────────────────────────────────────────────────
+function showApproveModal(data, bulk = false) {
   _pendingApprove = data
-  document.getElementById('approveModalDetail').innerHTML = `
-    <span><strong>Student:</strong> ${data.studentName}</span>
-    <span><strong>Item:</strong> ${data.itemRequested}</span>
-    <span><strong>Quantity:</strong> ${data.quantity}</span>
-  `
-  document.getElementById('approveModalOverlay').classList.add('open')
-}
+  _isBulk = bulk
 
-function showRejectModal(data) {
-  _pendingReject = data
-  document.getElementById('rejectModalDetail').innerHTML = `
-    <span><strong>Student:</strong> ${data.studentName}</span>
-    <span><strong>Item:</strong> ${data.itemRequested}</span>
-    <span><strong>Quantity:</strong> ${data.quantity}</span>
-  `
-  document.getElementById('rejectModalOverlay').classList.add('open')
+  const titleEl   = document.getElementById('approveModalTitle')
+  const msgEl     = document.getElementById('approveModalMessage')
+  const detailEl  = document.getElementById('approveModalDetail')
+  const confirmBtn = document.getElementById('approveConfirmBtn')
+
+  if (bulk) {
+    titleEl.textContent = `Approve ${data.length} Request${data.length > 1 ? 's' : ''}`
+    msgEl.textContent   = `You are about to approve ${data.length} request${data.length > 1 ? 's' : ''}. All will be forwarded to the admin for final approval.`
+    detailEl.innerHTML  = data.map(r =>
+      `<span><strong>${r.studentName}</strong> — ${r.itemRequested} ×${r.quantity}</span>`
+    ).join('')
+    confirmBtn.textContent = `Approve ${data.length}`
+  } else {
+    titleEl.textContent = 'Approve Request'
+    msgEl.textContent   = 'Are you sure you want to approve this request? It will be forwarded to the admin for final approval.'
+    detailEl.innerHTML  = `
+      <span><strong>Student:</strong> ${data.studentName}</span>
+      <span><strong>Item:</strong> ${data.itemRequested}</span>
+      <span><strong>Quantity:</strong> ${data.quantity}</span>
+    `
+    confirmBtn.textContent = 'Approve'
+  }
+
+  document.getElementById('approveModalOverlay').classList.add('open')
 }
 
 function closeApproveModal() {
   document.getElementById('approveModalOverlay').classList.remove('open')
   _pendingApprove = null
+  _isBulk = false
+}
+
+// ── Reject Modal ──────────────────────────────────────────────────────────────
+function showRejectModal(data, bulk = false) {
+  _pendingReject = data
+  _isBulk = bulk
+
+  const titleEl    = document.getElementById('rejectModalTitle')
+  const msgEl      = document.getElementById('rejectModalMessage')
+  const detailEl   = document.getElementById('rejectModalDetail')
+  const confirmBtn = document.getElementById('rejectConfirmBtn')
+
+  if (bulk) {
+    titleEl.textContent = `Reject ${data.length} Request${data.length > 1 ? 's' : ''}`
+    msgEl.textContent   = `You are about to reject ${data.length} request${data.length > 1 ? 's' : ''}. This action cannot be undone.`
+    detailEl.innerHTML  = data.map(r =>
+      `<span><strong>${r.studentName}</strong> — ${r.itemRequested} ×${r.quantity}</span>`
+    ).join('')
+    confirmBtn.textContent = `Reject ${data.length}`
+  } else {
+    titleEl.textContent = 'Reject Request'
+    msgEl.textContent   = 'Are you sure you want to reject this request? This action cannot be undone.'
+    detailEl.innerHTML  = `
+      <span><strong>Student:</strong> ${data.studentName}</span>
+      <span><strong>Item:</strong> ${data.itemRequested}</span>
+      <span><strong>Quantity:</strong> ${data.quantity}</span>
+    `
+    confirmBtn.textContent = 'Reject'
+  }
+
+  document.getElementById('rejectModalOverlay').classList.add('open')
 }
 
 function closeRejectModal() {
   document.getElementById('rejectModalOverlay').classList.remove('open')
   _pendingReject = null
+  _isBulk = false
 }
 
 // ── Load Requests ─────────────────────────────────────────────────────────────
-let _allRequests = []
-
 async function loadRequests() {
-  tbody.innerHTML = `<tr><td colspan="9" class="loading-cell">
+  tbody.innerHTML = `<tr><td colspan="10" class="loading-cell">
     <i class="fa-solid fa-spinner fa-spin"></i> Loading requests...
   </td></tr>`
 
@@ -101,7 +141,7 @@ async function loadRequests() {
     .order('created_at', { ascending: false })
 
   if (error) {
-    tbody.innerHTML = `<tr><td colspan="9" class="empty-cell">Failed to load requests.</td></tr>`
+    tbody.innerHTML = `<tr><td colspan="10" class="empty-cell">Failed to load requests.</td></tr>`
     console.error(error)
     return
   }
@@ -109,41 +149,41 @@ async function loadRequests() {
   _allRequests = data
   updateStats(data)
   applyFilter()
+  clearSelection()
 }
 
 function applyFilter() {
-  const filter = document.getElementById('dateFilter').value
-  const now = new Date()
-  now.setHours(0, 0, 0, 0)
+  const filter  = document.getElementById('dateFilter').value
+  const toLocal = d => new Date(d).toLocaleDateString('en-CA') // YYYY-MM-DD in local time
+
+  const now      = new Date()
+  const todayStr = now.toLocaleDateString('en-CA')
+
+  const weekAgo  = new Date(now)
+  weekAgo.setDate(now.getDate() - 7)
+  const weekAgoStr = weekAgo.toLocaleDateString('en-CA')
+
+  const monthAgo = new Date(now)
+  monthAgo.setMonth(now.getMonth() - 1)
+  const monthAgoStr = monthAgo.toLocaleDateString('en-CA')
 
   let filtered = _allRequests
 
   if (filter === 'today') {
-    filtered = _allRequests.filter(r => {
-      const d = new Date(r.created_at)
-      d.setHours(0, 0, 0, 0)
-      return d.getTime() === now.getTime()
-    })
+    filtered = _allRequests.filter(r => toLocal(r.created_at) === todayStr)
   } else if (filter === 'week') {
-    const weekAgo = new Date(now)
-    weekAgo.setDate(now.getDate() - 7)
-    filtered = _allRequests.filter(r => new Date(r.created_at) >= weekAgo)
+    filtered = _allRequests.filter(r => toLocal(r.created_at) >= weekAgoStr && toLocal(r.created_at) <= todayStr)
   } else if (filter === 'month') {
-    const monthAgo = new Date(now)
-    monthAgo.setMonth(now.getMonth() - 1)
-    filtered = _allRequests.filter(r => new Date(r.created_at) >= monthAgo)
+    filtered = _allRequests.filter(r => toLocal(r.created_at) >= monthAgoStr && toLocal(r.created_at) <= todayStr)
   }
 
   renderTable(filtered)
 }
 
-document.getElementById('dateFilter').addEventListener('change', applyFilter)
-
 function updateStats(data) {
   const pending  = data.filter(r => r.status === 'Pending').length
   const approved = data.filter(r => r.status === 'Instructor Approved').length
   const rejected = data.filter(r => r.status === 'Instructor Rejected').length
-
   if (statValues[0]) statValues[0].textContent = pending
   if (statValues[1]) statValues[1].textContent = approved
   if (statValues[2]) statValues[2].textContent = rejected
@@ -151,7 +191,7 @@ function updateStats(data) {
 
 function renderTable(data) {
   if (!data || data.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="9" class="empty-cell">No requests found.</td></tr>`
+    tbody.innerHTML = `<tr><td colspan="10" class="empty-cell">No requests found.</td></tr>`
     return
   }
 
@@ -160,7 +200,7 @@ function renderTable(data) {
     const date         = r.created_at ? new Date(r.created_at).toLocaleDateString('en-PH', {
       year: 'numeric', month: 'short', day: 'numeric'
     }) : '—'
-    const dateNeeded = r.date_needed || null
+    const dateNeeded   = r.date_needed || null
     const urgency      = calcUrgency(dateNeeded)
     const urgencyClass = urgency === 'High' ? 'urgency-high' : urgency === 'Medium' ? 'urgency-medium' : 'urgency-low'
     const isPending    = r.status === 'Pending'
@@ -170,7 +210,15 @@ function renderTable(data) {
     const safeDateNeeded  = (dateNeeded || '').replace(/'/g, "\\'")
 
     return `
-      <tr data-id="${r.id}">
+      <tr data-id="${r.id}" data-pending="${isPending}">
+        <td class="checkbox-col">
+          ${isPending ? `<input type="checkbox" class="row-checkbox" data-id="${r.id}" 
+            data-student-name="${safeStudentName}"
+            data-item="${safeItem}"
+            data-quantity="${r.quantity}"
+            data-student-id="${r.student_id}"
+            data-date-needed="${safeDateNeeded}">` : ''}
+        </td>
         <td>#${r.id}</td>
         <td>
           <div class="student-info">
@@ -199,6 +247,11 @@ function renderTable(data) {
       </tr>
     `
   }).join('')
+
+  // Attach checkbox listeners after render
+  document.querySelectorAll('.row-checkbox').forEach(cb => {
+    cb.addEventListener('change', updateBulkBar)
+  })
 }
 
 function getStatusClass(status) {
@@ -212,97 +265,138 @@ function getStatusClass(status) {
   }
 }
 
-// ── Approve ───────────────────────────────────────────────────────────────────
-window.handleApprove = (id, studentId, studentName, itemRequested, quantity, dateNeeded) => {
-  showApproveModal({ id, studentId, studentName, itemRequested, quantity, dateNeeded })
+// ── Selection & Bulk Bar ──────────────────────────────────────────────────────
+function getChecked() {
+  return [...document.querySelectorAll('.row-checkbox:checked')]
 }
 
+function updateBulkBar() {
+  const checked = getChecked()
+  const bar     = document.getElementById('bulkBar')
+  const countEl = document.getElementById('bulkCount')
+
+  if (checked.length > 0) {
+    bar.classList.add('visible')
+    countEl.textContent = `${checked.length} selected`
+  } else {
+    bar.classList.remove('visible')
+  }
+
+  // Sync select-all state
+  const allBoxes = document.querySelectorAll('.row-checkbox')
+  document.getElementById('selectAll').checked        = allBoxes.length > 0 && checked.length === allBoxes.length
+  document.getElementById('selectAll').indeterminate  = checked.length > 0 && checked.length < allBoxes.length
+}
+
+function clearSelection() {
+  document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = false)
+  const sa = document.getElementById('selectAll')
+  if (sa) { sa.checked = false; sa.indeterminate = false }
+  document.getElementById('bulkBar').classList.remove('visible')
+}
+
+function getSelectedData() {
+  return getChecked().map(cb => ({
+    id:          parseInt(cb.dataset.id),
+    studentId:   cb.dataset.studentId,
+    studentName: cb.dataset.studentName,
+    itemRequested: cb.dataset.item,
+    quantity:    parseInt(cb.dataset.quantity),
+    dateNeeded:  cb.dataset.dateNeeded
+  }))
+}
+
+// ── Single Approve/Reject ─────────────────────────────────────────────────────
+window.handleApprove = (id, studentId, studentName, itemRequested, quantity, dateNeeded) => {
+  showApproveModal({ id, studentId, studentName, itemRequested, quantity, dateNeeded }, false)
+}
+
+window.handleReject = (id, studentName, itemRequested, quantity) => {
+  showRejectModal({ id, studentName, itemRequested, quantity }, false)
+}
+
+// ── Confirm Approve ───────────────────────────────────────────────────────────
 async function confirmApprove() {
   if (!_pendingApprove) return
-  const { id, studentId, studentName, itemRequested, quantity, dateNeeded } = _pendingApprove
 
   const confirmBtn = document.getElementById('approveConfirmBtn')
   confirmBtn.disabled    = true
   confirmBtn.textContent = 'Approving...'
 
-  const row = document.querySelector(`tr[data-id="${id}"]`)
-  setRowLoading(row, true)
+  const items = _isBulk ? _pendingApprove : [_pendingApprove]
 
-  const { error: updateError } = await db
-    .from('studentrequests')
-    .update({ status: 'Instructor Approved', updated_at: new Date().toISOString() })
-    .eq('id', id)
+  for (const item of items) {
+    const { error: updateError } = await db
+      .from('studentrequests')
+      .update({ status: 'Instructor Approved', updated_at: new Date().toISOString() })
+      .eq('id', item.id)
 
-  if (updateError) {
-    setRowLoading(row, false)
-    confirmBtn.disabled    = false
-    confirmBtn.textContent = 'Approve'
-    closeApproveModal()
-    showAlert({ type: 'danger', title: 'Approval Failed', message: 'Failed to approve request. Please try again.' })
-    console.error(updateError)
-    return
-  }
+    if (updateError) {
+      console.error(`Failed to approve request ${item.id}:`, updateError)
+      continue
+    }
 
-  const urgency = calcUrgency(dateNeeded)
+    const urgency = calcUrgency(item.dateNeeded)
 
-  const { error: insertError } = await db
-    .from('adminrequisition_forms')
-    .insert({
-      requestor:      studentName,
+    await db.from('adminrequisition_forms').insert({
+      requestor:      item.studentName,
       professor:      instructorName,
-      item_requested: itemRequested,
-      quantity:       quantity,
-      date:           dateNeeded || new Date().toISOString().split('T')[0],
+      item_requested: item.itemRequested,
+      quantity:       item.quantity,
+      date:           item.dateNeeded || new Date().toISOString().split('T')[0],
       urgency:        urgency,
       status:         'Pending Admin Approval',
       created_at:     new Date().toISOString(),
       updated_at:     new Date().toISOString()
     })
-
-  if (insertError) {
-    console.error('Failed to forward to admin:', insertError)
   }
 
   confirmBtn.disabled    = false
-  confirmBtn.textContent = 'Approve'
+  confirmBtn.textContent = _isBulk ? `Approve ${items.length}` : 'Approve'
   closeApproveModal()
+
+  showAlert({
+    type:    'success',
+    title:   _isBulk ? `${items.length} Requests Approved` : 'Request Approved',
+    message: _isBulk
+      ? `${items.length} request${items.length > 1 ? 's have' : ' has'} been approved and forwarded to the admin.`
+      : 'The request has been approved and forwarded to the admin.'
+  })
+
   await loadRequests()
 }
 
-// ── Reject ────────────────────────────────────────────────────────────────────
-window.handleReject = (id, studentName, itemRequested, quantity) => {
-  showRejectModal({ id, studentName, itemRequested, quantity })
-}
-
+// ── Confirm Reject ────────────────────────────────────────────────────────────
 async function confirmReject() {
   if (!_pendingReject) return
-  const { id } = _pendingReject
 
   const confirmBtn = document.getElementById('rejectConfirmBtn')
   confirmBtn.disabled    = true
   confirmBtn.textContent = 'Rejecting...'
 
-  const row = document.querySelector(`tr[data-id="${id}"]`)
-  setRowLoading(row, true)
+  const items = _isBulk ? _pendingReject : [_pendingReject]
 
-  const { error } = await db
-    .from('studentrequests')
-    .update({ status: 'Instructor Rejected', updated_at: new Date().toISOString() })
-    .eq('id', id)
+  for (const item of items) {
+    const { error } = await db
+      .from('studentrequests')
+      .update({ status: 'Instructor Rejected', updated_at: new Date().toISOString() })
+      .eq('id', item.id)
 
-  if (error) {
-    setRowLoading(row, false)
-    confirmBtn.disabled    = false
-    confirmBtn.textContent = 'Reject'
-    closeRejectModal()
-    showAlert({ type: 'danger', title: 'Rejection Failed', message: 'Failed to reject request. Please try again.' })
-    console.error(error)
-    return
+    if (error) console.error(`Failed to reject request ${item.id}:`, error)
   }
 
   confirmBtn.disabled    = false
-  confirmBtn.textContent = 'Reject'
+  confirmBtn.textContent = _isBulk ? `Reject ${items.length}` : 'Reject'
   closeRejectModal()
+
+  showAlert({
+    type:    'danger',
+    title:   _isBulk ? `${items.length} Requests Rejected` : 'Request Rejected',
+    message: _isBulk
+      ? `${items.length} request${items.length > 1 ? 's have' : ' has'} been rejected.`
+      : 'The request has been rejected.'
+  })
+
   await loadRequests()
 }
 
@@ -317,6 +411,30 @@ function setRowLoading(row, loading) {
 }
 
 // ── Event Listeners ───────────────────────────────────────────────────────────
+document.getElementById('selectAll').addEventListener('change', function () {
+  document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = this.checked)
+  updateBulkBar()
+})
+
+document.getElementById('dateFilter').addEventListener('change', () => {
+  clearSelection()
+  applyFilter()
+})
+
+document.getElementById('bulkApproveBtn').addEventListener('click', () => {
+  const selected = getSelectedData()
+  if (selected.length === 0) return
+  showApproveModal(selected, true)
+})
+
+document.getElementById('bulkRejectBtn').addEventListener('click', () => {
+  const selected = getSelectedData()
+  if (selected.length === 0) return
+  showRejectModal(selected, true)
+})
+
+document.getElementById('bulkCancelBtn').addEventListener('click', clearSelection)
+
 document.getElementById('approveConfirmBtn').addEventListener('click', confirmApprove)
 document.getElementById('approveCancelBtn').addEventListener('click', closeApproveModal)
 document.getElementById('approveModalOverlay').addEventListener('click', e => {
