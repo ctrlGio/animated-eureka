@@ -55,7 +55,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const close = () => overlay.classList.remove('open')
 
-    // Replace buttons to clear old listeners
     const oldYes    = document.getElementById('reqConfirmYes')
     const oldCancel = document.getElementById('reqConfirmCancel')
     const newYes    = oldYes.cloneNode(true)
@@ -84,16 +83,61 @@ document.addEventListener('DOMContentLoaded', function () {
     if (vals[2]) vals[2].textContent = counts[2]
   }
 
-  // ── Load Table ────────────────────────────────────────────────────────────
+  // ── Load & Filter ─────────────────────────────────────────────────────────
+  let _allRequisitions = []
+
   async function loadRequisitions() {
     const { data, error } = await client
       .from('adminrequisition_forms')
       .select('*')
       .order('created_at', { ascending: false })
     if (error) { console.error('Error loading requisitions:', error); return }
-    renderTable(data)
+    _allRequisitions = data
+    applyFilters()
   }
 
+  function applyFilters() {
+    const statusVal  = document.getElementById('statusFilter').value
+    const urgencyVal = document.getElementById('urgencyFilter').value
+    const dateVal    = document.getElementById('dateFilter').value
+
+    const now = new Date()
+    now.setHours(0, 0, 0, 0)
+
+    let filtered = _allRequisitions
+
+    if (statusVal !== 'all') {
+      filtered = filtered.filter(r => r.status === statusVal)
+    }
+
+    if (urgencyVal !== 'all') {
+      filtered = filtered.filter(r => r.urgency === urgencyVal)
+    }
+
+    if (dateVal === 'today') {
+      filtered = filtered.filter(r => {
+        const d = new Date(r.created_at)
+        d.setHours(0, 0, 0, 0)
+        return d.getTime() === now.getTime()
+      })
+    } else if (dateVal === 'week') {
+      const weekAgo = new Date(now)
+      weekAgo.setDate(now.getDate() - 7)
+      filtered = filtered.filter(r => new Date(r.created_at) >= weekAgo)
+    } else if (dateVal === 'month') {
+      const monthAgo = new Date(now)
+      monthAgo.setMonth(now.getMonth() - 1)
+      filtered = filtered.filter(r => new Date(r.created_at) >= monthAgo)
+    }
+
+    renderTable(filtered)
+  }
+
+  document.getElementById('statusFilter').addEventListener('change', applyFilters)
+  document.getElementById('urgencyFilter').addEventListener('change', applyFilters)
+  document.getElementById('dateFilter').addEventListener('change', applyFilters)
+
+  // ── Render Table ──────────────────────────────────────────────────────────
   function renderTable(records) {
     const table   = document.querySelector('.requisition-table')
     const oldBody = table.querySelector('tbody')
@@ -135,7 +179,6 @@ document.addEventListener('DOMContentLoaded', function () {
             '<button class="reject-btn" onclick="rejectRequisition(' + r.id + ')" title="Reject"' + (!isPending ? ' disabled' : '') + '>' +
               '<i class="fa-solid fa-xmark"></i>' +
             '</button>' +
-            '</button>' +
           '</div></td>' +
         '</tr>'
       })
@@ -168,7 +211,6 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   async function doApprove(id, req) {
-    // 1. Find inventory item
     const { data: inventoryItem, error: invFetchErr } = await client
       .from('admininventory')
       .select('id, quantity, status')
@@ -181,14 +223,12 @@ document.addEventListener('DOMContentLoaded', function () {
       return
     }
 
-    // 2. Check stock
     if (inventoryItem.quantity < req.quantity) {
       showAlert({ type: 'warning', title: 'Insufficient Stock', message: 'Not enough stock to fulfill this requisition.',
         detail: '<strong>Available:</strong> ' + inventoryItem.quantity + '<br><strong>Requested:</strong> ' + req.quantity })
       return
     }
 
-    // 3. Deduct inventory
     const newQuantity = inventoryItem.quantity - req.quantity
     const newStatus   = newQuantity === 0 ? 'Borrowed' : 'Available'
 
@@ -203,7 +243,6 @@ document.addEventListener('DOMContentLoaded', function () {
       return
     }
 
-    // 4. Approve requisition
     const { error: approveErr } = await client
       .from('adminrequisition_forms')
       .update({ status: 'Approved', updated_at: new Date().toISOString() })
@@ -215,7 +254,6 @@ document.addEventListener('DOMContentLoaded', function () {
       return
     }
 
-    // 5. Create borrow record
     const { data: student } = await client
       .from('students')
       .select('student_id, year_level')

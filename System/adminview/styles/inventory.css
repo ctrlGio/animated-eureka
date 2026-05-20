@@ -622,3 +622,26 @@ tr:hover .qty-edit-icon {
 }
 
 .qty-cancel-btn:hover { background: #cbd5e1; }
+
+.inventory-table th:nth-child(3),
+.inventory-table td:nth-child(3),
+.inventory-table th:nth-child(4),
+.inventory-table td:nth-child(4),
+.inventory-table th:nth-child(5),
+.inventory-table td:nth-child(5) {
+  text-align: center;
+}
+
+.qty-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.qty-edit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}

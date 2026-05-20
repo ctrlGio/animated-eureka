@@ -5,76 +5,76 @@ document.addEventListener('DOMContentLoaded', function () {
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4cWFjamV0ZmJxd3dhY2lmeWh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0OTAyMDAsImV4cCI6MjA5NDA2NjIwMH0.EO9lMp3Nmg29JhIuuzEgM15nlRaQZKwQg6EkXMSTos4'
   const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
   function showAlert({ type = 'error', title, message, detail = null }) {
-  const overlay  = document.getElementById('alertModalOverlay')
-  const icon     = document.getElementById('alertModalIcon')
-  const iconEl   = icon.querySelector('i')
-  const titleEl  = document.getElementById('alertModalTitle')
-  const msgEl    = document.getElementById('alertModalMessage')
-  const detailEl = document.getElementById('alertModalDetail')
-  const closeBtn = document.getElementById('alertModalCloseBtn')
+    const overlay = document.getElementById('alertModalOverlay')
+    const icon = document.getElementById('alertModalIcon')
+    const iconEl = icon.querySelector('i')
+    const titleEl = document.getElementById('alertModalTitle')
+    const msgEl = document.getElementById('alertModalMessage')
+    const detailEl = document.getElementById('alertModalDetail')
+    const closeBtn = document.getElementById('alertModalCloseBtn')
 
-  icon.className   = `alert-modal-icon ${type}`
-  iconEl.className = type === 'error'   ? 'fa-solid fa-circle-xmark'
-                   : type === 'warning' ? 'fa-solid fa-triangle-exclamation'
-                   : 'fa-solid fa-circle-check'
+    icon.className = `alert-modal-icon ${type}`
+    iconEl.className = type === 'error' ? 'fa-solid fa-circle-xmark'
+      : type === 'warning' ? 'fa-solid fa-triangle-exclamation'
+        : 'fa-solid fa-circle-check'
 
-  titleEl.textContent = title
-  msgEl.textContent   = message
-  closeBtn.className  = `alert-modal-close-btn ${type}`
+    titleEl.textContent = title
+    msgEl.textContent = message
+    closeBtn.className = `alert-modal-close-btn ${type}`
 
-  if (detail) {
-    detailEl.innerHTML = detail
-    detailEl.classList.add('visible')
-  } else {
-    detailEl.innerHTML = ''
-    detailEl.classList.remove('visible')
+    if (detail) {
+      detailEl.innerHTML = detail
+      detailEl.classList.add('visible')
+    } else {
+      detailEl.innerHTML = ''
+      detailEl.classList.remove('visible')
+    }
+
+    overlay.classList.add('open')
   }
 
-  overlay.classList.add('open')
-}
+  function closeAlert() {
+    document.getElementById('alertModalOverlay').classList.remove('open')
+  }
 
-function closeAlert() {
-  document.getElementById('alertModalOverlay').classList.remove('open')
-}
+  function showConfirm({ type = 'delete', title, message, onConfirm }) {
+    const overlay = document.getElementById('confirmModalOverlay')
+    const icon = document.getElementById('confirmModalIcon')
+    const iconEl = icon.querySelector('i')
+    const titleEl = document.getElementById('confirmModalTitle')
+    const msgEl = document.getElementById('confirmModalMessage')
+    const confirmBtn = document.getElementById('confirmModalConfirmBtn')
+    const cancelBtn = document.getElementById('confirmModalCancelBtn')
 
-function showConfirm({ type = 'delete', title, message, onConfirm }) {
-  const overlay    = document.getElementById('confirmModalOverlay')
-  const icon       = document.getElementById('confirmModalIcon')
-  const iconEl     = icon.querySelector('i')
-  const titleEl    = document.getElementById('confirmModalTitle')
-  const msgEl      = document.getElementById('confirmModalMessage')
-  const confirmBtn = document.getElementById('confirmModalConfirmBtn')
-  const cancelBtn  = document.getElementById('confirmModalCancelBtn')
+    icon.className = `alert-modal-icon error`
+    iconEl.className = 'fa-solid fa-box-archive'
+    titleEl.textContent = title
+    msgEl.textContent = message
+    confirmBtn.textContent = 'Move to Archive'
+    confirmBtn.className = 'alert-modal-close-btn error'
 
-  icon.className   = `alert-modal-icon error`
-  iconEl.className = 'fa-solid fa-box-archive'
-  titleEl.textContent = title
-  msgEl.textContent   = message
-  confirmBtn.textContent = 'Move to Archive'
-  confirmBtn.className   = 'alert-modal-close-btn error'
+    overlay.classList.add('open')
 
-  overlay.classList.add('open')
+    const newConfirmBtn = confirmBtn.cloneNode(true)
+    confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn)
+    const newCancelBtn = cancelBtn.cloneNode(true)
+    cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn)
 
-  const newConfirmBtn = confirmBtn.cloneNode(true)
-  confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn)
-  const newCancelBtn = cancelBtn.cloneNode(true)
-  cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn)
+    newConfirmBtn.addEventListener('click', () => {
+      overlay.classList.remove('open')
+      onConfirm()
+    })
 
-  newConfirmBtn.addEventListener('click', () => {
-    overlay.classList.remove('open')
-    onConfirm()
+    newCancelBtn.addEventListener('click', () => overlay.classList.remove('open'))
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) overlay.classList.remove('open')
+    }, { once: true })
+  }
+
+  document.getElementById('alertModalCloseBtn').addEventListener('click', closeAlert)
+  document.getElementById('alertModalOverlay').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('alertModalOverlay')) closeAlert()
   })
-
-  newCancelBtn.addEventListener('click', () => overlay.classList.remove('open'))
-  overlay.addEventListener('click', (e) => {
-    if (e.target === overlay) overlay.classList.remove('open')
-  }, { once: true })
-}
-
-document.getElementById('alertModalCloseBtn').addEventListener('click', closeAlert)
-document.getElementById('alertModalOverlay').addEventListener('click', (e) => {
-  if (e.target === document.getElementById('alertModalOverlay')) closeAlert()
-})
 
   const openButton = document.getElementById('openButton')
   const container = document.getElementById('addButton')
@@ -169,7 +169,7 @@ document.getElementById('alertModalOverlay').addEventListener('click', (e) => {
       items.forEach(item => {
         const statusClass = item.status === 'Available' ? 'status-available'
           : item.status === 'Borrowed' ? 'status-borrowed'
-          : 'status-maintenance'
+            : 'status-maintenance'
 
         const categoryName = item.admincategories?.name || 'Unknown'
 
@@ -182,11 +182,11 @@ document.getElementById('alertModalOverlay').addEventListener('click', (e) => {
             <div class="qty-display" id="qty-display-${item.id}">
               <span class="qty-value">${item.quantity}</span>
               <button class="qty-edit-icon" onclick="startEditQty(${item.id}, ${item.quantity})" title="Edit quantity">
-              <i class="fa-solid fa-pen"></i>
+                <i class="fa-solid fa-pen"></i>
               </button>
-              </div> 
+            </div>
             <div class="qty-edit" id="qty-edit-${item.id}" style="display:none;">
-              <input type="number" class="qty-input" id="qty-input-${item.id}" value="${item.quantity}" min="0">
+              <input type="number" class="qty-input" id="qty-input-${item.id}" value="${item.quantity}" min="0" step="1">
               <div class="qty-actions">
                 <button class="qty-confirm-btn" onclick="saveQty(${item.id})" title="Save">
                   <i class="fa-solid fa-check"></i>
@@ -309,26 +309,26 @@ document.getElementById('alertModalOverlay').addEventListener('click', (e) => {
   }
 
   window.deleteItem = (id) => {
-  showConfirm({
-    type: 'delete',
-    title: 'Move to Archive',
-    message: 'Are you sure you want to move this item to the archive? You can restore it later.',
-    onConfirm: async () => {
-      const { error } = await client
-        .from('admininventory')
-        .update({ deleted_at: new Date().toISOString() })
-        .eq('id', id)
+    showConfirm({
+      type: 'delete',
+      title: 'Move to Archive',
+      message: 'Are you sure you want to move this item to the archive? You can restore it later.',
+      onConfirm: async () => {
+        const { error } = await client
+          .from('admininventory')
+          .update({ deleted_at: new Date().toISOString() })
+          .eq('id', id)
 
-      if (error) {
-        showAlert({ type: 'error', title: 'Archive Failed', message: 'Could not move this item to the archive.', detail: `<strong>Error:</strong> ${error.message}` })
-        return
+        if (error) {
+          showAlert({ type: 'error', title: 'Archive Failed', message: 'Could not move this item to the archive.', detail: `<strong>Error:</strong> ${error.message}` })
+          return
+        }
+
+        showAlert({ type: 'success', title: 'Moved to Archive', message: 'The item has been successfully moved to the archive.' })
+        loadInventory()
       }
-
-      showAlert({ type: 'success', title: 'Moved to Archive', message: 'The item has been successfully moved to the archive.' })
-      loadInventory()
-    }
-  })
-}
+    })
+  }
 
   window.openEdit = async (id) => {
     const { data, error } = await client

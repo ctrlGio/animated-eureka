@@ -161,6 +161,59 @@
       <button class="close-settings-btn" id="closeSettings">Close</button>
     </div>
   </div>
+
+<!-- Submit Confirmation Modal -->
+<div class="alert-modal-overlay" id="submitModalOverlay">
+  <div class="alert-modal-box submit-modal-box">
+    <div class="alert-modal-header">
+      <div class="alert-modal-icon success">
+        <i class="fa-solid fa-file-lines"></i>
+      </div>
+      <div class="alert-modal-title">Confirm Submission</div>
+    </div>
+    <div class="alert-modal-body">
+      <div class="alert-modal-message">You are about to submit a request for the following items:</div>
+      <div id="submitModalItemSummary" class="submit-modal-summary"></div>
+
+      <!-- Responsibility Checkbox -->
+      <div class="responsibility-box">
+        <label class="responsibility-label">
+          <input type="checkbox" id="responsibilityCheck">
+          <span>
+            I understand and accept that I am fully responsible for any 
+            <strong>loss, damage, or breakage</strong> of the borrowed items. 
+            I agree to replace or pay for any item that is damaged or not returned.
+          </span>
+        </label>
+      </div>
+    </div>
+    <div class="alert-modal-footer" style="gap: 10px;">
+      <button class="alert-modal-close-btn" id="submitModalCancelBtn"
+        style="background:#e2e8f0; color:#333;">Cancel</button>
+      <button class="alert-modal-close-btn success" id="submitModalConfirmBtn" disabled>
+        Submit Request
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Alert Modal (success / error / warning) -->
+<div class="alert-modal-overlay" id="alertModalOverlay">
+  <div class="alert-modal-box">
+    <div class="alert-modal-header">
+      <div class="alert-modal-icon" id="alertModalIcon"><i></i></div>
+      <div class="alert-modal-title" id="alertModalTitle"></div>
+    </div>
+    <div class="alert-modal-body">
+      <div class="alert-modal-message" id="alertModalMessage"></div>
+    </div>
+    <div class="alert-modal-footer">
+      <button class="alert-modal-close-btn" id="alertModalCloseBtn">Got it</button>
+    </div>
+  </div>
+</div>
+
+
   
 
   <script src="/System/studentview/studentjs/auth.js"></script>
