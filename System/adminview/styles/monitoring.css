@@ -383,3 +383,71 @@ body {
   transition: background 0.2s;
 }
 .req-confirm-cancel:hover { background: #e2e8f0; }
+
+/* ── Bulk action bar ─────────────────────────────── */
+.bulk-action-bar {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  background: #1e293b;
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  animation: slideDown 0.2s ease;
+}
+.bulk-action-bar.visible { display: flex; }
+@keyframes slideDown {
+  from { transform: translateY(-8px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+.bulk-selected-count {
+  font-size: 13px;
+  font-weight: 600;
+  flex: 1;
+}
+.bulk-approve-btn {
+  padding: 8px 16px;
+  background: #16a34a;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: opacity 0.2s;
+}
+.bulk-approve-btn:hover { opacity: 0.85; }
+.bulk-reject-btn {
+  padding: 8px 16px;
+  background: #dc2626;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: opacity 0.2s;
+}
+.bulk-reject-btn:hover { opacity: 0.85; }
+.bulk-clear-btn {
+  padding: 8px 12px;
+  background: transparent;
+  color: #94a3b8;
+  border: 1px solid #475569;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.bulk-clear-btn:hover { color: #fff; }
+
+/* Checkbox column */
+.checkbox-col { width: 40px; text-align: center !important; }
+.row-checkbox  { cursor: pointer; width: 15px; height: 15px; accent-color: #4361ee; }
