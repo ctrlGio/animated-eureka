@@ -26,8 +26,6 @@ function calcUrgency(dateStr) {
   return 'Low'
 }
 
-const dateNeeded = r.date_needed || null
-const duration   = r.duration || null
 
 // ── Alert Modal ───────────────────────────────────────────────────────────────
 function showAlert({ type = 'error', title, message }) {
