@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('bulkRejectBtn').addEventListener('click', () => {
     const ids = getSelectedIds()
     if (ids.length === 0) return
-    const pendingReqs = _allRequisitions.filter(r => ids.includes(r.id) && r.status === 'Pending Admin Approval')
+    const pendingReqs = _allRequisitions.filter(r => ids.includes(r.id) && r.status === 'Pending Admin Approval') 
     if (pendingReqs.length === 0) { showAlert({ type: 'warning', title: 'No Pending Selected', message: '' }); return } 
     //refix alert for when no pending requests
 
