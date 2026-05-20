@@ -72,17 +72,17 @@ document.getElementById('login-form').addEventListener('submit', async function 
 
   setLoading('login-btn', true, 'Sign In')
 
-  if (username.toLowerCase() === 'admin' && password === 'admin123') {
+  if (username.toUpperCase() === 'ADMIN001' && password === 'admin123') {
     localStorage.setItem('userRole', 'admin')
     localStorage.setItem('username', 'admin')
     window.location.href = '/System/adminview/admin_homepage.html'
     return
   }
 
-  if (username.toLowerCase() === 'instructor' && password === 'instructor123') {
+  if (username.toUpperCase() === 'INS001' && password === 'instructor123') {
     localStorage.setItem('userRole', 'instructor')
     localStorage.setItem('username', 'instructor')
-    window.location.href = '/System/instructorview/instructor_homepage.html'
+    window.location.href = '/System/instructorview/instructor_request.html'
     return
   }
 

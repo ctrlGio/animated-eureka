@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
   <link rel="stylesheet" href="styles/monitoring.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body class="dashboard-body">
   <div class="dashboard-wrapper">
     <aside class="sidebar">
@@ -26,7 +28,7 @@
         </div>
         <nav class="nav-menu">
           <a href="admin_homepage.html" class="nav-item"><i class="fa-solid fa-table-columns"></i> Dashboard</a>
-          <a href="inventory.html" class="nav-item"><i class="fa-solid fa-box-archive"></i> Inventory</a>
+          <a href="inventory.html" class="nav-item"><i class="fa-solid fa-box-open"></i> Inventory</a>
           <a href="monitoring.html" class="nav-item active"><i class="fa-solid fa-chart-line"></i> Monitoring</a>
           <a href="studentinfo.html" class="nav-item"><i class="fa-solid fa-user-group"></i> Student Information</a>
           <a href="archive.html" class="nav-item"><i class="fa-solid fa-clock-rotate-left"></i> Archive</a>
@@ -60,7 +62,32 @@
 
       <section class="requisition-grid">
         <div class="requisition-card">
-          <h4>Requisition Forms</h4>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h4 style="margin-bottom: 0;">Requisition Forms</h4>
+            <div style="display: flex; gap: 8px;">
+              <select id="statusFilter"
+                style="padding: 6px 12px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 13px; color: #333; outline: none; cursor: pointer; background: #f8fafc;">
+                <option value="all">All Statuses</option>
+                <option value="Pending Admin Approval">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Rejected">Rejected</option>
+              </select>
+              <select id="urgencyFilter"
+                style="padding: 6px 12px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 13px; color: #333; outline: none; cursor: pointer; background: #f8fafc;">
+                <option value="all">All Urgency</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+              <select id="dateFilter"
+                style="padding: 6px 12px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 13px; color: #333; outline: none; cursor: pointer; background: #f8fafc;">
+                <option value="all">All Time</option>
+                <option value="today">Today</option>
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+              </select>
+            </div>
+          </div>
           <table class="requisition-table">
             <thead>
               <tr class="requisition-table-header">
@@ -86,7 +113,7 @@
     <div class="settings-content">
       <h2><i class="fa-solid fa-gear"></i> Settings</h2>
       <p>Customize your experience</p>
-      <div class="settings-item">
+      <!--<div class="settings-item">
         <div class="settings-item-info">
           <strong>🌙 Dark Mode</strong>
           <span>Switch to dark theme</span>
@@ -95,7 +122,7 @@
           <input type="checkbox" id="darkModeToggle">
           <span class="toggle-slider"></span>
         </label>
-      </div>
+      </div> -->
       <div class="settings-item">
         <div class="settings-item-info">
           <strong>👤 Add Student Account</strong>
@@ -128,8 +155,10 @@
         <div class="form-group">
           <label>Password</label>
           <div style="position:relative;">
-            <input type="password" id="studentPassword" autocomplete="new-password" placeholder="Minimum 6 characters" style="padding-right:40px;">
-            <button type="button" id="togglePassword" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#888;font-size:15px;padding:0;">
+            <input type="password" id="studentPassword" autocomplete="new-password" placeholder="Minimum 6 characters"
+              style="padding-right:40px;">
+            <button type="button" id="togglePassword"
+              style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#888;font-size:15px;padding:0;">
               <i class="fa-solid fa-eye"></i>
             </button>
           </div>
@@ -192,4 +221,5 @@
   <script src="adminjs/settings.js"></script>
   <script src="adminjs/logout.js"></script>
 </body>
+
 </html>
