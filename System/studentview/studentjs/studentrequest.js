@@ -8,8 +8,9 @@ const studentName = localStorage.getItem('username')     || '—'
 const yearLevel   = localStorage.getItem('yearLevel')    || '—'
 
 const dateInput = document.getElementById('dateNeeded')
-const today = new Date()
-dateInput.min = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`
+const minDate   = new Date()
+minDate.setDate(minDate.getDate() + 2)
+dateInput.min = `${minDate.getFullYear()}-${String(minDate.getMonth() + 1).padStart(2, '0')}-${String(minDate.getDate()).padStart(2, '0')}`
 
 // ── Student Info ──────────────────────────────────────────────────────────────
 function fillStudentInfo() {
@@ -68,9 +69,17 @@ function getSelectedItemNames(excludeRow = null) {
   return names
 }
 
+function refreshAllSelects() {
+  document.querySelectorAll('.item-entry').forEach(row => {
+    const sel     = row.querySelector('.item-select')
+    const current = sel ? sel.value : ''
+    if (sel) sel.innerHTML = buildOptions(current, getSelectedItemNames(row))
+  })
+}
+
 function createItemRow(preselectedName = '') {
-  const row = document.createElement('div')
-  row.className = 'form-row items-row item-entry'
+  const row        = document.createElement('div')
+  row.className    = 'form-row items-row item-entry'
   const initialMax = preselectedName ? getMaxQty(preselectedName) : 1
 
   row.innerHTML = `
@@ -89,7 +98,7 @@ function createItemRow(preselectedName = '') {
 
   sel.addEventListener('change', () => {
     const max = getMaxQty(sel.value)
-    qty.max = max
+    qty.max   = max
     if (parseInt(qty.value) > max) qty.value = max
     refreshAllSelects()
   })
@@ -112,7 +121,7 @@ function updateRemoveButtons() {
 }
 
 function initItemRows() {
-  const container = document.getElementById('items-container')
+  const container  = document.getElementById('items-container')
   container.innerHTML = `
     <div class="items-header">
       <span class="items-header-label" style="flex: 3;">Item Name</span>
@@ -144,17 +153,74 @@ async function loadMyRequests() {
     return
   }
 
-  tbody.innerHTML = data.map(r =>
-    `<tr>
-      <td>${r.item_requested}</td>
-      <td>${r.quantity}</td>
-      <td>${r.reason || '—'}</td>
-      <td>${r.date_needed || '—'}</td>
-      <td>${r.duration || '—'}</td>
-      <td><span class="status-badge status-${r.status.toLowerCase().replace(/\s+/g, '-')}">${r.status}</span></td>
-      <td>${r.created_at ? r.created_at.split('T')[0] : '—'}</td>
-    </tr>`
-  ).join('')
+  // Group by request_group_id; rows without one are treated individually
+  const groups = {}
+  data.forEach(r => {
+    const key = r.request_group_id || `solo_${r.id}`
+    if (!groups[key]) groups[key] = []
+    groups[key].push(r)
+  })
+
+  tbody.innerHTML = Object.values(groups).map(rows => {
+    const first      = rows[0]
+    const dateStr    = first.created_at ? first.created_at.split('T')[0] : '—'
+    const isSingle   = rows.length === 1
+    const statusBadge = status => `<span class="status-badge status-${status.toLowerCase().replace(/\s+/g, '-')}">${status}</span>`
+
+    if (isSingle) {
+      const r = first
+      return `<tr>
+        <td>${r.item_requested}</td>
+        <td>${r.quantity}</td>
+        <td>${r.reason || '—'}</td>
+        <td>${r.date_needed || '—'}</td>
+        <td>${r.duration || '—'}</td>
+        <td>${statusBadge(r.status)}</td>
+        <td>${dateStr}</td>
+      </tr>`
+    }
+
+    // Multi-item group — show summary row + expandable sub-rows
+    const groupId    = first.request_group_id
+    const statuses   = [...new Set(rows.map(r => r.status))]
+    const displayStatus = statuses.length === 1 ? statuses[0] : 'Multiple'
+    const itemsSummary  = rows.map(r => `${r.item_requested} ×${r.quantity}`).join(', ')
+
+    return `
+      <tr class="group-summary-row" onclick="toggleGroup('${groupId}')">
+        <td>
+          <span class="group-toggle-icon" id="icon-${groupId}">▶</span>
+          <strong>${rows.length} items</strong>
+          <span class="group-items-preview">${itemsSummary}</span>
+        </td>
+        <td>—</td>
+        <td>${first.reason || '—'}</td>
+        <td>${first.date_needed || '—'}</td>
+        <td>${first.duration || '—'}</td>
+        <td>${statusBadge(displayStatus)}</td>
+        <td>${dateStr}</td>
+      </tr>
+      ${rows.map(r => `
+        <tr class="group-child-row hidden" data-group="${groupId}">
+          <td style="padding-left:2rem;">↳ ${r.item_requested}</td>
+          <td>${r.quantity}</td>
+          <td>—</td>
+          <td>${r.date_needed || '—'}</td>
+          <td>${r.duration || '—'}</td>
+          <td>${statusBadge(r.status)}</td>
+          <td>—</td>
+        </tr>
+      `).join('')}
+    `
+  }).join('')
+}
+
+function toggleGroup(groupId) {
+  const rows = document.querySelectorAll(`tr[data-group="${groupId}"]`)
+  const icon = document.getElementById(`icon-${groupId}`)
+  const isHidden = rows[0]?.classList.contains('hidden')
+  rows.forEach(r => r.classList.toggle('hidden', !isHidden))
+  if (icon) icon.textContent = isHidden ? '▼' : '▶'
 }
 
 // ── Alert Modal ───────────────────────────────────────────────────────────────
@@ -185,10 +251,10 @@ function closeAlert() {
 let _pendingInserts = null
 
 function showSubmitConfirm(inserts, itemSummary) {
-  _pendingInserts = inserts
-  document.getElementById('submitModalItemSummary').innerHTML = itemSummary
-  document.getElementById('responsibilityCheck').checked = false
-  document.getElementById('submitModalConfirmBtn').disabled = true
+  _pendingInserts  = inserts
+  document.getElementById('submitModalItemSummary').innerHTML         = itemSummary
+  document.getElementById('responsibilityCheck').checked              = false
+  document.getElementById('submitModalConfirmBtn').disabled           = true
   document.getElementById('submitModalOverlay').classList.add('open')
 }
 
@@ -200,9 +266,9 @@ function closeSubmitModal() {
 async function confirmSubmit() {
   if (!_pendingInserts) return
 
-  const confirmBtn = document.getElementById('submitModalConfirmBtn')
-  confirmBtn.disabled    = true
-  confirmBtn.textContent = 'Submitting...'
+  const confirmBtn         = document.getElementById('submitModalConfirmBtn')
+  confirmBtn.disabled      = true
+  confirmBtn.textContent   = 'Submitting...'
 
   const { error } = await client.from('studentrequests').insert(_pendingInserts)
 
@@ -232,28 +298,28 @@ async function handleSubmit(e) {
   const notes      = document.getElementById('notes').value.trim()
 
   const itemEntries = document.querySelectorAll('.item-entry')
-  const items = []
-  let valid = true
+  const items       = []
+  let valid         = true
 
   itemEntries.forEach(row => {
     const sel = row.querySelector('.item-select')
     const qty = row.querySelector('.item-qty')
 
     if (!sel.value) {
-      valid = false
+      valid              = false
       sel.style.borderColor = '#ef4444'
       return
     }
     sel.style.borderColor = ''
 
     const requestedQty = parseInt(qty.value) || 1
-    const maxQty = getMaxQty(sel.value)
+    const maxQty       = getMaxQty(sel.value)
     if (requestedQty > maxQty) {
-      valid = false
+      valid              = false
       qty.style.borderColor = '#ef4444'
       showAlert({
-        type: 'warning',
-        title: 'Quantity Exceeded',
+        type:    'warning',
+        title:   'Quantity Exceeded',
         message: `${sel.value} only has ${maxQty} available. Please reduce the quantity.`
       })
       return
@@ -264,27 +330,31 @@ async function handleSubmit(e) {
 
   if (!valid) return
 
-  const itemNames = items.map(i => i.name)
+  const itemNames     = items.map(i => i.name)
   const hasDuplicates = itemNames.some((name, idx) => itemNames.indexOf(name) !== idx)
   if (hasDuplicates) {
     showAlert({
-      type: 'warning',
-      title: 'Duplicate Items',
+      type:    'warning',
+      title:   'Duplicate Items',
       message: 'You have selected the same item more than once. Please combine them into a single row.'
     })
     return
   }
 
+  // ── Generate ONE group ID for this entire submission ──────────────────────
+  const groupId = crypto.randomUUID()
+
   const inserts = items.map(item => ({
-    student_id:     studentId,
-    student_name:   studentName,
-    year_level:     yearLevel,
-    item_requested: item.name,
-    quantity:       item.qty,
-    reason:         purpose + (notes ? ' — ' + notes : ''),
-    date_needed:    dateNeeded,
-    duration:       duration + ' day(s)',
-    status:         'Pending'
+    student_id:       studentId,
+    student_name:     studentName,
+    year_level:       yearLevel,
+    item_requested:   item.name,
+    quantity:         item.qty,
+    reason:           purpose + (notes ? ' — ' + notes : ''),
+    date_needed:      dateNeeded,
+    duration:         duration + ' day(s)',
+    status:           'Pending',
+    request_group_id: groupId   // ← same UUID on every row of this submission
   }))
 
   const itemSummary = items.map(item =>
@@ -300,6 +370,18 @@ async function handleSubmit(e) {
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async function () {
+
+  document.addEventListener('input', e => {
+    const el  = e.target
+    if (el.type !== 'number') return
+    const max = parseInt(el.max)
+    const min = parseInt(el.min) || 1
+    let val   = parseInt(el.value)
+    if (isNaN(val)) return
+    if (val > max) el.value = max
+    if (val < min) el.value = min
+  })
+
   fillStudentInfo()
   await loadEquipmentOptions()
   initItemRows()
