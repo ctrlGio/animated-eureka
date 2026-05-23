@@ -4,10 +4,30 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 let allItems = []
+let categoryMap = {} 
+
+async function loadCategories() {
+  const { data, error } = await client
+    .from('admincategories')  
+    .select('id, name')
+
+  if (error) {
+    console.error('Failed to load categories:', error)
+    return
+  }
+
+  categoryMap = {}
+  ;(data || []).forEach(cat => {
+    categoryMap[cat.id] = cat.name
+  })
+}
 
 async function loadEquipment() {
   const grid = document.querySelector('.equipment-grid')
   grid.innerHTML = `<p style="color:#888; padding: 20px;">Loading equipment...</p>`
+
+  // Load categories first so the map is ready
+  await loadCategories()
 
   const { data, error } = await client
     .from('admininventory')
@@ -37,13 +57,16 @@ function renderCards(items) {
     const badgeClass = available ? 'badge-available' : 'badge-unavailable'
     const badgeText  = available ? 'Available' : 'Unavailable'
 
+    // Look up the category name, fallback to the raw ID if not found
+    const categoryName = categoryMap[item.category_id] || item.category_id || '—'
+
     return `
       <div class="equipment-card">
         <div class="card-header">
           <h3>${item.item_name}</h3>
           <span class="badge ${badgeClass}">${badgeText}</span>
         </div>
-        <p class="category-label">Category ID: ${item.category_id || '—'}</p>
+        <p class="category-label">Category: ${categoryName}</p>
         <div class="card-footer">
           <div class="availability">
             <span class="label">In Stock</span>
@@ -71,10 +94,13 @@ function filterItems() {
   const category = document.querySelector('.category-filter').value
 
   const filtered = allItems.filter(item => {
-    const matchSearch   = item.item_name.toLowerCase().includes(search)
+    const matchSearch = item.item_name.toLowerCase().includes(search)
+
+    // Match against category NAME, not ID
+    const categoryName = categoryMap[item.category_id] || ''
     const matchCategory = category === 'All' || category === 'All Categories' || !category
       ? true
-      : String(item.category_id) === category
+      : categoryName === category
 
     return matchSearch && matchCategory
   })
