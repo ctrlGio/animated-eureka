@@ -354,7 +354,7 @@ async function handleSubmit(e) {
     date_needed:      dateNeeded,
     duration:         duration + ' day(s)',
     status:           'Pending',
-    request_group_id: groupId   // ← same UUID on every row of this submission
+    request_group_id: groupId   
   }))
 
   const itemSummary = items.map(item =>
