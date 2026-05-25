@@ -5,6 +5,11 @@ document.addEventListener('DOMContentLoaded', function () {
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4cWFjamV0ZmJxd3dhY2lmeWh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0OTAyMDAsImV4cCI6MjA5NDA2NjIwMH0.EO9lMp3Nmg29JhIuuzEgM15nlRaQZKwQg6EkXMSTos4'
   const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
+  // ── State ─────────────────────────────────────────────────────────────────
+  let _allRequisitions = []
+  let _groups          = {}       // groupKey → { groupKey, requestor, professor, date, urgency, items[] }
+  let _expandedGroups  = new Set()
+
   // ── Alert Modal ───────────────────────────────────────────────────────────
   function showAlert({ type = 'error', title, message, detail = null }) {
     const overlay  = document.getElementById('alertModalOverlay')
@@ -64,6 +69,41 @@ document.addEventListener('DOMContentLoaded', function () {
     overlay.addEventListener('click', e => { if (e.target === overlay) close() })
   }
 
+  // ── Group Key ─────────────────────────────────────────────────────────────
+  // Group rows that share the same requestor + professor + date
+  function makeGroupKey(row) {
+    return `${row.requestor}||${row.professor || ''}||${row.date || ''}`
+  }
+
+  // ── Build Groups ──────────────────────────────────────────────────────────
+  function buildGroups(data) {
+    _groups = {}
+    data.forEach(r => {
+      const key = makeGroupKey(r)
+      if (!_groups[key]) {
+        _groups[key] = {
+          groupKey:   key,
+          requestor:  r.requestor,
+          professor:  r.professor,
+          date:       r.date,
+          urgency:    r.urgency,
+          createdAt:  r.created_at,
+          items:      []
+        }
+      }
+      _groups[key].items.push(r)
+    })
+  }
+
+  // ── Group status helper ───────────────────────────────────────────────────
+  function groupStatus(items) {
+    const statuses = [...new Set(items.map(r => r.status))]
+    if (statuses.length === 1) return statuses[0]
+    // Mixed: if any pending, consider pending
+    if (statuses.includes('Pending Admin Approval')) return 'Pending Admin Approval'
+    return statuses[0]
+  }
+
   // ── Stats ─────────────────────────────────────────────────────────────────
   async function loadStats() {
     const statuses = ['Pending Admin Approval', 'Approved', 'Rejected']
@@ -80,8 +120,6 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ── Load & Filter ─────────────────────────────────────────────────────────
-  let _allRequisitions = []
-
   async function loadRequisitions() {
     const { data, error } = await client
       .from('adminrequisition_forms')
@@ -89,6 +127,7 @@ document.addEventListener('DOMContentLoaded', function () {
       .order('created_at', { ascending: false })
     if (error) { console.error('Error loading requisitions:', error); return }
     _allRequisitions = data
+    buildGroups(data)
     applyFilters()
   }
 
@@ -97,41 +136,213 @@ document.addEventListener('DOMContentLoaded', function () {
     const urgencyVal = document.getElementById('urgencyFilter').value
     const dateVal    = document.getElementById('dateFilter').value
 
-    const now = new Date()
-    now.setHours(0, 0, 0, 0)
+    const now = new Date(); now.setHours(0, 0, 0, 0)
 
-    let filtered = _allRequisitions
+    // Filter at the group level
+    let filteredGroups = Object.values(_groups)
 
-    if (statusVal !== 'all')  filtered = filtered.filter(r => r.status === statusVal)
-    if (urgencyVal !== 'all') filtered = filtered.filter(r => r.urgency === urgencyVal)
-
+    if (statusVal !== 'all') {
+      filteredGroups = filteredGroups.filter(g => groupStatus(g.items) === statusVal)
+    }
+    if (urgencyVal !== 'all') {
+      filteredGroups = filteredGroups.filter(g => g.urgency === urgencyVal)
+    }
     if (dateVal === 'today') {
-      filtered = filtered.filter(r => {
-        const d = new Date(r.created_at); d.setHours(0,0,0,0)
+      filteredGroups = filteredGroups.filter(g => {
+        const d = new Date(g.createdAt); d.setHours(0,0,0,0)
         return d.getTime() === now.getTime()
       })
     } else if (dateVal === 'week') {
       const weekAgo = new Date(now); weekAgo.setDate(now.getDate() - 7)
-      filtered = filtered.filter(r => new Date(r.created_at) >= weekAgo)
+      filteredGroups = filteredGroups.filter(g => new Date(g.createdAt) >= weekAgo)
     } else if (dateVal === 'month') {
       const monthAgo = new Date(now); monthAgo.setMonth(now.getMonth() - 1)
-      filtered = filtered.filter(r => new Date(r.created_at) >= monthAgo)
+      filteredGroups = filteredGroups.filter(g => new Date(g.createdAt) >= monthAgo)
     }
 
-    renderTable(filtered)
+    renderTable(filteredGroups)
   }
 
   document.getElementById('statusFilter').addEventListener('change', applyFilters)
   document.getElementById('urgencyFilter').addEventListener('change', applyFilters)
   document.getElementById('dateFilter').addEventListener('change', applyFilters)
 
+  // ── Toggle Detail Panel ───────────────────────────────────────────────────
+  window.toggleGroupDetail = function(groupKey) {
+    const safeKey    = CSS.escape(groupKey)
+    const detailRow  = document.getElementById('detail-row-' + groupKey.replace(/[^a-zA-Z0-9_-]/g, '_'))
+    const summaryRow = document.querySelector(`tr.group-summary-row[data-group-key="${groupKey}"]`)
+    const btn        = summaryRow?.querySelector('.btn-details-icon')
+    if (!detailRow) return
+
+    const isHidden = detailRow.classList.contains('hidden')
+    if (isHidden) {
+      _expandedGroups.add(groupKey)
+      detailRow.classList.remove('hidden')
+      summaryRow?.classList.add('expanded')
+      if (btn) { btn.classList.add('active'); btn.innerHTML = '<i class="fa-solid fa-chevron-up"></i>'; btn.title = 'Hide details' }
+    } else {
+      _expandedGroups.delete(groupKey)
+      detailRow.classList.add('hidden')
+      summaryRow?.classList.remove('expanded')
+      if (btn) { btn.classList.remove('active'); btn.innerHTML = '<i class="fa-regular fa-file-lines"></i>'; btn.title = 'View details' }
+    }
+  }
+
+  // ── Render Detail Panel ───────────────────────────────────────────────────
+  function renderGroupDetailPanel(g, isPending) {
+    const itemRows = g.items.map(item => {
+      const statusClass = item.status === 'Approved' ? 'status-approved'
+                        : item.status === 'Rejected' ? 'status-rejected'
+                        : 'status-pending'
+      return `
+        <tr class="detail-item-row">
+          <td>${item.item_requested || '—'}</td>
+          <td>${item.quantity ?? '—'}</td>
+          <td><span class="status-badge ${statusClass}">${item.status}</span></td>
+          ${isPending ? `<td class="detail-item-actions">
+            <button class="detail-btn approve-item" onclick="approveSingleItem(${item.id})">
+              <i class="fa-solid fa-check"></i> Approve
+            </button>
+            <button class="detail-btn reject-item" onclick="rejectSingleItem(${item.id})">
+              <i class="fa-solid fa-xmark"></i> Reject
+            </button>
+          </td>` : '<td></td>'}
+        </tr>`
+    }).join('')
+
+    return `
+      <div class="detail-panel">
+        <div class="detail-panel-header">
+          <div class="detail-meta">
+            <span><i class="fa-solid fa-user"></i> ${g.requestor}</span>
+            <span><i class="fa-solid fa-chalkboard-teacher"></i> Professor: ${g.professor || '—'}</span>
+            <span><i class="fa-solid fa-calendar"></i> Date Needed: ${g.date || '—'}</span>
+            <span><i class="fa-solid fa-triangle-exclamation"></i> Urgency: ${g.urgency || '—'}</span>
+          </div>
+        </div>
+        <table class="detail-items-table">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Quantity</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>${itemRows}</tbody>
+        </table>
+      </div>`
+  }
+
+  // ── Render Table ──────────────────────────────────────────────────────────
+  function renderTable(groups) {
+    const table   = document.querySelector('.requisition-table')
+    const oldBody = table.querySelector('tbody')
+    if (oldBody) oldBody.remove()
+
+    // Ensure select-all checkbox in thead
+    const thead = table.querySelector('thead tr')
+    if (thead && !thead.querySelector('th.checkbox-col')) {
+      thead.insertAdjacentHTML('afterbegin',
+        '<th class="checkbox-col"><input type="checkbox" id="selectAllCheckbox"></th>')
+    }
+
+    const tbody = document.createElement('tbody')
+
+    if (!groups || groups.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:20px;color:#888;">No requisition forms found.</td></tr>'
+      table.appendChild(tbody)
+      updateBulkBar()
+      return
+    }
+
+    const rows = []
+
+    groups.forEach((g, index) => {
+      const status      = groupStatus(g.items)
+      const statusClass = status === 'Approved' ? 'status-approved'
+                        : status === 'Rejected' ? 'status-rejected'
+                        : 'status-pending'
+
+      const validUrgency = ['High', 'Medium', 'Low'].includes(g.urgency)
+      const urgencyClass = g.urgency === 'High' ? 'urgency-high' : g.urgency === 'Medium' ? 'urgency-medium' : 'urgency-low'
+      const urgencyHtml  = validUrgency
+        ? `<span class="urgency-badge ${urgencyClass}">${g.urgency}</span>`
+        : '<span style="color:#888;">—</span>'
+
+      const isPending  = status === 'Pending Admin Approval'
+      const isSingle   = g.items.length === 1
+      const safeKey    = g.groupKey.replace(/[^a-zA-Z0-9_-]/g, '_')
+      const isExpanded = _expandedGroups.has(g.groupKey)
+
+      const itemSummary = isSingle
+        ? `${g.items[0].item_requested} ×${g.items[0].quantity}`
+        : `${g.items.length} items — ${g.items.map(i => i.item_requested).join(', ')}`
+
+      // ── Summary row ─────────────────────────────────────────────────────
+      rows.push(`
+        <tr class="group-summary-row ${isExpanded ? 'expanded' : ''}" data-group-key="${g.groupKey}">
+          <td class="checkbox-col">
+            ${isPending ? `<input type="checkbox" class="row-checkbox" data-group-key="${g.groupKey}">` : ''}
+          </td>
+          <td>#${index + 1}${g.items.length > 1 ? `<span class="group-badge">+${g.items.length - 1}</span>` : ''}</td>
+          <td>${g.requestor || '—'}</td>
+          <td>${g.professor || '—'}</td>
+          <td class="item-summary-cell">
+            <span class="item-summary-text">${itemSummary}</span>
+          </td>
+          <td>${g.date || '—'}</td>
+          <td>${urgencyHtml}</td>
+          <td><span class="status-badge ${statusClass}">${status}</span></td>
+          <td class="details-col">
+            <button class="btn-details-icon ${isExpanded ? 'active' : ''}"
+                    onclick="toggleGroupDetail('${g.groupKey}')"
+                    title="${isExpanded ? 'Hide details' : 'View details'}">
+              <i class="${isExpanded ? 'fa-solid fa-chevron-up' : 'fa-regular fa-file-lines'}"></i>
+            </button>
+          </td>
+          <td>
+            <div class="actions-cell">
+              ${isPending ? `
+                <button class="approve-btn" onclick="approveGroup('${g.groupKey}')" title="Approve all"><i class="fa-solid fa-check"></i></button>
+                <button class="reject-btn"  onclick="rejectGroup('${g.groupKey}')"  title="Reject all"><i class="fa-solid fa-xmark"></i></button>
+              ` : `<span style="font-size:12px;color:#94a3b8;font-style:italic;">${status}</span>`}
+            </div>
+          </td>
+        </tr>`)
+
+      // ── Detail panel row ─────────────────────────────────────────────────
+      rows.push(`
+        <tr class="group-detail-row ${isExpanded ? '' : 'hidden'}"
+            data-group-key="${g.groupKey}" id="detail-row-${safeKey}">
+          <td colspan="11" class="detail-panel-cell">
+            ${renderGroupDetailPanel(g, isPending)}
+          </td>
+        </tr>`)
+    })
+
+    tbody.innerHTML = rows.join('')
+    table.appendChild(tbody)
+
+    // Re-attach checkbox listeners
+    document.querySelectorAll('.row-checkbox').forEach(cb =>
+      cb.addEventListener('change', updateBulkBar))
+
+    updateBulkBar()
+  }
+
   // ── Bulk action bar ───────────────────────────────────────────────────────
-  function getSelectedIds() {
-    return Array.from(document.querySelectorAll('.row-checkbox:checked')).map(cb => parseInt(cb.value))
+  function getChecked() {
+    return [...document.querySelectorAll('.row-checkbox:checked')]
+  }
+
+  function getSelectedGroups() {
+    return getChecked().map(cb => _groups[cb.dataset.groupKey]).filter(Boolean)
   }
 
   function updateBulkBar() {
-    const selected = getSelectedIds()
+    const selected = getChecked()
     const bar      = document.getElementById('bulkActionBar')
     const count    = document.getElementById('bulkSelectedCount')
     if (selected.length > 0) {
@@ -141,88 +352,178 @@ document.addEventListener('DOMContentLoaded', function () {
       bar.classList.remove('visible')
     }
 
-    // update select-all checkbox state
-    const allBoxes = document.querySelectorAll('.row-checkbox')
+    const allBoxes  = document.querySelectorAll('.row-checkbox')
     const selectAll = document.getElementById('selectAllCheckbox')
     if (selectAll) {
-      selectAll.checked = allBoxes.length > 0 && selected.length === allBoxes.length
+      selectAll.checked       = allBoxes.length > 0 && selected.length === allBoxes.length
       selectAll.indeterminate = selected.length > 0 && selected.length < allBoxes.length
     }
   }
 
-  // select all
+  function clearSelection() {
+    document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = false)
+    const sa = document.getElementById('selectAllCheckbox')
+    if (sa) { sa.checked = false; sa.indeterminate = false }
+    document.getElementById('bulkActionBar').classList.remove('visible')
+  }
+
+  // Select all
   document.addEventListener('change', function(e) {
     if (e.target.id === 'selectAllCheckbox') {
       document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = e.target.checked)
       updateBulkBar()
     }
-    if (e.target.classList.contains('row-checkbox')) {
-      updateBulkBar()
-    }
+    if (e.target.classList.contains('row-checkbox')) updateBulkBar()
   })
 
-  // bulk approve
+  // Bulk approve
   document.getElementById('bulkApproveBtn').addEventListener('click', () => {
-    const ids = getSelectedIds()
-    if (ids.length === 0) return
-    const pendingReqs = _allRequisitions.filter(r => ids.includes(r.id) && r.status === 'Pending Admin Approval')
-    if (pendingReqs.length === 0) { showAlert({ type: 'warning', title: 'No Pending Selected', message: '' }); return }
+    const selected = getSelectedGroups()
+    if (!selected.length) return
+
+    const pendingGroups = selected.filter(g => groupStatus(g.items) === 'Pending Admin Approval')
+    if (!pendingGroups.length) {
+      showAlert({ type: 'warning', title: 'No Pending Selected', message: 'All selected requests are already actioned.' })
+      return
+    }
 
     showConfirm({
       type:     'approve',
-      title:    'Bulk Approve',
+      title:    `Bulk Approve (${pendingGroups.length} request${pendingGroups.length > 1 ? 's' : ''})`,
       subtitle: 'Approve all selected pending requests?',
-      details:  '<div class="req-detail-row"><span>Requests to approve</span><strong>' + pendingReqs.length + '</strong></div>' +
-                pendingReqs.map(r => '<div class="req-detail-row"><span>' + r.requestor + '</span><strong>' + r.item_requested + ' ×' + r.quantity + '</strong></div>').join(''),
-      onConfirm: () => doBulkApprove(pendingReqs)
+      details:
+        `<div class="req-detail-row"><span>Requests to approve</span><strong>${pendingGroups.length}</strong></div>` +
+        pendingGroups.map(g =>
+          `<div class="req-detail-row"><span>${g.requestor}</span><strong>${g.items.length} item(s)</strong></div>`
+        ).join(''),
+      onConfirm: () => doBulkApprove(pendingGroups)
     })
   })
 
-  // bulk reject
+  // Bulk reject
   document.getElementById('bulkRejectBtn').addEventListener('click', () => {
-    const ids = getSelectedIds()
-    if (ids.length === 0) return
-    const pendingReqs = _allRequisitions.filter(r => ids.includes(r.id) && r.status === 'Pending Admin Approval') 
-    if (pendingReqs.length === 0) { showAlert({ type: 'warning', title: 'No Pending Selected', message: '' }); return } 
-    //refix alert for when no pending requests
+    const selected = getSelectedGroups()
+    if (!selected.length) return
+
+    const pendingGroups = selected.filter(g => groupStatus(g.items) === 'Pending Admin Approval')
+    if (!pendingGroups.length) {
+      showAlert({ type: 'warning', title: 'No Pending Selected', message: 'All selected requests are already actioned.' })
+      return
+    }
 
     showConfirm({
       type:     'reject',
-      title:    'Bulk Reject',
+      title:    `Bulk Reject (${pendingGroups.length} request${pendingGroups.length > 1 ? 's' : ''})`,
       subtitle: 'Reject all selected pending requests?',
-      details:  '<div class="req-detail-row"><span>Requests to reject</span><strong>' + pendingReqs.length + '</strong></div>' +
-                pendingReqs.map(r => '<div class="req-detail-row"><span>' + r.requestor + '</span><strong>' + r.item_requested + ' ×' + r.quantity + '</strong></div>').join(''),
-      onConfirm: () => doBulkReject(pendingReqs.map(r => r.id))
+      details:
+        `<div class="req-detail-row"><span>Requests to reject</span><strong>${pendingGroups.length}</strong></div>` +
+        pendingGroups.map(g =>
+          `<div class="req-detail-row"><span>${g.requestor}</span><strong>${g.items.length} item(s)</strong></div>`
+        ).join(''),
+      onConfirm: () => doBulkReject(pendingGroups)
     })
   })
 
-  // clear selection
-  document.getElementById('bulkClearBtn').addEventListener('click', () => {
-    document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = false)
-    const selectAll = document.getElementById('selectAllCheckbox')
-    if (selectAll) { selectAll.checked = false; selectAll.indeterminate = false }
-    updateBulkBar()
-  })
+  // Clear
+  document.getElementById('bulkClearBtn').addEventListener('click', clearSelection)
 
-  async function doBulkApprove(reqs) {
+  // ── Approve a whole group ─────────────────────────────────────────────────
+  window.approveGroup = async function(groupKey) {
+    const g = _groups[groupKey]
+    if (!g) return
+
+    showConfirm({
+      type:     'approve',
+      title:    'Approve Request',
+      subtitle: 'Approve all items in this request?',
+      details:
+        `<div class="req-detail-row"><span>Requestor</span><strong>${g.requestor}</strong></div>` +
+        `<div class="req-detail-row"><span>Professor</span><strong>${g.professor || '—'}</strong></div>` +
+        `<div class="req-detail-row"><span>Date Needed</span><strong>${g.date || '—'}</strong></div>` +
+        g.items.map(i =>
+          `<div class="req-detail-row"><span>${i.item_requested}</span><strong>×${i.quantity}</strong></div>`
+        ).join(''),
+      onConfirm: () => doApproveGroup(g)
+    })
+  }
+
+  // ── Reject a whole group ──────────────────────────────────────────────────
+  window.rejectGroup = async function(groupKey) {
+    const g = _groups[groupKey]
+    if (!g) return
+
+    showConfirm({
+      type:     'reject',
+      title:    'Reject Request',
+      subtitle: 'Reject all items in this request?',
+      details:
+        `<div class="req-detail-row"><span>Requestor</span><strong>${g.requestor}</strong></div>` +
+        `<div class="req-detail-row"><span>Professor</span><strong>${g.professor || '—'}</strong></div>` +
+        g.items.map(i =>
+          `<div class="req-detail-row"><span>${i.item_requested}</span><strong>×${i.quantity}</strong></div>`
+        ).join(''),
+      onConfirm: () => doRejectGroup(g.items.map(i => i.id))
+    })
+  }
+
+  // ── Approve a single item from the detail panel ───────────────────────────
+  window.approveSingleItem = async function(id) {
+    const row = _allRequisitions.find(r => r.id === id)
+    if (!row) return
+
+    showConfirm({
+      type:     'approve',
+      title:    'Approve Item',
+      subtitle: 'Approve this individual item?',
+      details:
+        `<div class="req-detail-row"><span>Item</span><strong>${row.item_requested}</strong></div>` +
+        `<div class="req-detail-row"><span>Quantity</span><strong>${row.quantity}</strong></div>`,
+      onConfirm: () => doApproveItems([row])
+    })
+  }
+
+  // ── Reject a single item from the detail panel ────────────────────────────
+  window.rejectSingleItem = async function(id) {
+    const row = _allRequisitions.find(r => r.id === id)
+    if (!row) return
+
+    showConfirm({
+      type:     'reject',
+      title:    'Reject Item',
+      subtitle: 'Reject this individual item?',
+      details:
+        `<div class="req-detail-row"><span>Item</span><strong>${row.item_requested}</strong></div>` +
+        `<div class="req-detail-row"><span>Quantity</span><strong>${row.quantity}</strong></div>`,
+      onConfirm: () => doRejectItems([id])
+    })
+  }
+
+  // ── Core approve logic (list of row objects) ──────────────────────────────
+  async function doApproveItems(rows) {
     let successCount = 0
     let failCount    = 0
 
-    for (const req of reqs) {
+    for (const req of rows) {
       // Check inventory
-      const { data: inv } = await client.from('admininventory').select('id, quantity, status').ilike('item_name', req.item_requested).maybeSingle()
+      const { data: inv } = await client
+        .from('admininventory').select('id, quantity, status')
+        .ilike('item_name', req.item_requested).maybeSingle()
+
       if (!inv || inv.quantity < req.quantity) { failCount++; continue }
 
-      // Deduct inventory
       const newQty    = inv.quantity - req.quantity
       const newStatus = newQty === 0 ? 'Borrowed' : 'Available'
-      await client.from('admininventory').update({ quantity: newQty, status: newStatus, updated_at: new Date().toISOString() }).eq('id', inv.id)
+      await client.from('admininventory')
+        .update({ quantity: newQty, status: newStatus, updated_at: new Date().toISOString() })
+        .eq('id', inv.id)
 
-      // Approve
-      await client.from('adminrequisition_forms').update({ status: 'Approved', updated_at: new Date().toISOString() }).eq('id', req.id)
+      await client.from('adminrequisition_forms')
+        .update({ status: 'Approved', updated_at: new Date().toISOString() })
+        .eq('id', req.id)
 
       // Create borrow record
-      const { data: student } = await client.from('students').select('student_id, year_level').ilike('student_name', req.requestor).maybeSingle()
+      const { data: student } = await client.from('students')
+        .select('student_id, year_level').ilike('student_name', req.requestor).maybeSingle()
       const borrowDate = req.date || new Date().toISOString().split('T')[0]
       const due = new Date(borrowDate); due.setDate(due.getDate() + 7)
 
@@ -240,143 +541,72 @@ document.addEventListener('DOMContentLoaded', function () {
       successCount++
     }
 
-    document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = false)
-    updateBulkBar()
     loadRequisitions(); loadStats()
 
     if (failCount > 0) {
-      showAlert({ type: 'warning', title: 'Partial Success',
-        message: successCount + ' approved, ' + failCount + ' skipped due to insufficient stock.' })
-    }
-  }
-
-  async function doBulkReject(ids) {
-    for (const id of ids) {
-      await client.from('adminrequisition_forms').update({ status: 'Rejected', updated_at: new Date().toISOString() }).eq('id', id)
-    }
-    document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = false)
-    updateBulkBar()
-    loadRequisitions(); loadStats()
-  }
-
-  // ── Render Table ──────────────────────────────────────────────────────────
-  function renderTable(records) {
-    const table   = document.querySelector('.requisition-table')
-    const oldBody = table.querySelector('tbody')
-    if (oldBody) oldBody.remove()
-
-    // Update select-all in thead
-    const thead = table.querySelector('thead tr')
-    if (thead && !thead.querySelector('th.checkbox-col')) {
-      thead.insertAdjacentHTML('afterbegin', '<th class="checkbox-col" style="width:40px;"><input type="checkbox" id="selectAllCheckbox"></th>')
-    }
-
-    const tbody = document.createElement('tbody')
-
-    if (!records || records.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:20px;color:#888;">No requisition forms found.</td></tr>'
-    } else {
-      records.forEach((r, index) => {
-        const status = r.status || 'Pending Admin Approval'
-        const statusClass = status === 'Approved' ? 'status-approved'
-                          : status === 'Rejected' ? 'status-rejected'
-                          : 'status-pending'
-
-        const validUrgency = ['High', 'Medium', 'Low'].includes(r.urgency)
-        const urgencyClass = r.urgency === 'High' ? 'urgency-high' : r.urgency === 'Medium' ? 'urgency-medium' : 'urgency-low'
-        const urgencyHtml  = validUrgency
-          ? '<span class="urgency-badge ' + urgencyClass + '">' + r.urgency + '</span>'
-          : '<span style="color:#888;">—</span>'
-
-        const isPending = status === 'Pending Admin Approval'
-
-        tbody.innerHTML +=
-          '<tr data-id="' + r.id + '">' +
-            '<td class="checkbox-col"><input type="checkbox" class="row-checkbox" value="' + r.id + '"></td>' +
-            '<td>#' + (index + 1) + '</td>' +
-            '<td>' + (r.requestor || '—') + '</td>' +
-            '<td>' + (r.professor || '—') + '</td>' +
-            '<td>' + (r.item_requested || '—') + '</td>' +
-            '<td>' + (r.quantity ?? '—') + '</td>' +
-            '<td>' + (r.date || '—') + '</td>' +
-            '<td>' + urgencyHtml + '</td>' +
-            '<td><span class="status-badge ' + statusClass + '">' + status + '</span></td>' +
-            '<td><div class="actions-cell">' +
-              '<button class="approve-btn" onclick="approveRequisition(' + r.id + ')" title="Approve"' + (!isPending ? ' disabled' : '') + '><i class="fa-solid fa-check"></i></button>' +
-              '<button class="reject-btn"  onclick="rejectRequisition(' + r.id + ')"  title="Reject"'  + (!isPending ? ' disabled' : '') + '><i class="fa-solid fa-xmark"></i></button>' +
-            '</div></td>' +
-          '</tr>'
+      showAlert({
+        type: 'warning', title: 'Partial Success',
+        message: `${successCount} approved, ${failCount} skipped due to insufficient stock.`
       })
     }
-    table.appendChild(tbody)
-    updateBulkBar()
   }
 
-  // ── Single Approve ────────────────────────────────────────────────────────
-  window.approveRequisition = async (id) => {
-    const { data: req } = await client.from('adminrequisition_forms').select('*').eq('id', id).maybeSingle()
-    if (!req) { showAlert({ type: 'error', title: 'Not Found', message: 'Could not load requisition details.' }); return }
-
-    showConfirm({
-      type:     'approve',
-      title:    'Approve Requisition',
-      subtitle: 'Are you sure you want to approve this request?',
-      details:
-        '<div class="req-detail-row"><span>Requestor</span><strong>'   + req.requestor     + '</strong></div>' +
-        '<div class="req-detail-row"><span>Professor</span><strong>'   + (req.professor || '—') + '</strong></div>' +
-        '<div class="req-detail-row"><span>Item</span><strong>'        + req.item_requested + '</strong></div>' +
-        '<div class="req-detail-row"><span>Quantity</span><strong>'    + req.quantity       + '</strong></div>' +
-        '<div class="req-detail-row"><span>Date Needed</span><strong>' + (req.date || '—') + '</strong></div>',
-      onConfirm: () => doApprove(id, req)
-    })
+  async function doApproveGroup(g) {
+    // Keep expanded after reload
+    _expandedGroups.add(g.groupKey)
+    await doApproveItems(g.items.filter(i => i.status === 'Pending Admin Approval'))
   }
 
-  async function doApprove(id, req) {
-    const { data: inv, error: invErr } = await client.from('admininventory').select('id, quantity, status').ilike('item_name', req.item_requested).maybeSingle()
-    if (invErr || !inv) { showAlert({ type: 'error', title: 'Item Not Found', message: 'Item not in inventory.', detail: '<strong>Item:</strong> ' + req.item_requested }); return }
-    if (inv.quantity < req.quantity) { showAlert({ type: 'warning', title: 'Insufficient Stock', message: 'Not enough stock.', detail: '<strong>Available:</strong> ' + inv.quantity + '<br><strong>Requested:</strong> ' + req.quantity }); return }
+  async function doBulkApprove(groups) {
+    for (const g of groups) {
+      _expandedGroups.add(g.groupKey)
+      await doApproveItems(g.items.filter(i => i.status === 'Pending Admin Approval'))
+    }
+    clearSelection()
+  }
 
-    const newQty = inv.quantity - req.quantity
-    await client.from('admininventory').update({ quantity: newQty, status: newQty === 0 ? 'Borrowed' : 'Available', updated_at: new Date().toISOString() }).eq('id', inv.id)
+  // ── Core reject logic ─────────────────────────────────────────────────────
+  async function doRejectItems(ids) {
+    for (const id of ids) {
+      // Get the requisition row so we know what item/qty to restore
+      const row = _allRequisitions.find(r => r.id === id)
 
-    const { error: approveErr } = await client.from('adminrequisition_forms').update({ status: 'Approved', updated_at: new Date().toISOString() }).eq('id', id)
-    if (approveErr) { showAlert({ type: 'error', title: 'Approval Failed', message: 'Could not update status.', detail: '<strong>Error:</strong> ' + approveErr.message }); return }
+      await client.from('adminrequisition_forms')
+        .update({ status: 'Rejected', updated_at: new Date().toISOString() })
+        .eq('id', id)
 
-    const { data: student } = await client.from('students').select('student_id, year_level').ilike('student_name', req.requestor).maybeSingle()
-    const borrowDate = req.date || new Date().toISOString().split('T')[0]
-    const due = new Date(borrowDate); due.setDate(due.getDate() + 7)
+      // Restore quantity back to inventory
+      if (row) {
+        const { data: inv } = await client
+          .from('admininventory')
+          .select('id, quantity')
+          .ilike('item_name', row.item_requested)
+          .maybeSingle()
 
-    const { error: borrowErr } = await client.from('adminborrows').insert([{
-      student_id: student ? student.student_id : 'N/A', student_name: req.requestor,
-      year_level: student ? student.year_level : 'N/A', item_borrowed: req.item_requested,
-      quantity: req.quantity, borrow_date: borrowDate, due_date: due.toISOString().split('T')[0], status: 'Active'
-    }])
-    if (borrowErr) { showAlert({ type: 'warning', title: 'Borrow Record Failed', message: 'Approved but borrow record failed.', detail: '<strong>Error:</strong> ' + borrowErr.message }) }
-
+        if (inv) {
+          const restoredQty = inv.quantity + row.quantity
+          await client
+            .from('admininventory')
+            .update({
+              quantity:   restoredQty,
+              status:     'Available',
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', inv.id)
+        }
+      }
+    }
     loadRequisitions(); loadStats()
   }
 
-  // ── Single Reject ─────────────────────────────────────────────────────────
-  window.rejectRequisition = async (id) => {
-    const { data: req } = await client.from('adminrequisition_forms').select('requestor, item_requested, quantity, professor').eq('id', id).maybeSingle()
-    showConfirm({
-      type:     'reject',
-      title:    'Reject Requisition',
-      subtitle: 'Are you sure you want to reject this request?',
-      details: req
-        ? '<div class="req-detail-row"><span>Requestor</span><strong>' + req.requestor + '</strong></div>' +
-          '<div class="req-detail-row"><span>Professor</span><strong>' + (req.professor || '—') + '</strong></div>' +
-          '<div class="req-detail-row"><span>Item</span><strong>' + req.item_requested + '</strong></div>' +
-          '<div class="req-detail-row"><span>Quantity</span><strong>' + req.quantity + '</strong></div>'
-        : '',
-      onConfirm: () => doReject(id)
-    })
+  async function doRejectGroup(ids) {
+    await doRejectItems(ids)
   }
 
-  async function doReject(id) {
-    const { error } = await client.from('adminrequisition_forms').update({ status: 'Rejected', updated_at: new Date().toISOString() }).eq('id', id)
-    if (error) { showAlert({ type: 'error', title: 'Rejection Failed', message: 'Could not reject.', detail: '<strong>Error:</strong> ' + error.message }); return }
-    loadRequisitions(); loadStats()
+  async function doBulkReject(groups) {
+    const ids = groups.flatMap(g => g.items.map(i => i.id))
+    await doRejectItems(ids)
+    clearSelection()
   }
 
   loadStats()
