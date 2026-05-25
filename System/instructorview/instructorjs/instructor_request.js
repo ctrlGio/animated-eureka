@@ -775,7 +775,26 @@ async function confirmReject() {
         .from('studentrequests')
         .update({ status: 'Instructor Rejected', updated_at: new Date().toISOString() })
         .eq('id', item.id)
-      if (error) console.error(`Failed to reject item ${item.id}:`, error)
+      if (error) { console.error(`Failed to reject item ${item.id}:`, error); continue }
+
+      // Restore quantity back to inventory
+      const { data: inv } = await db
+        .from('admininventory')
+        .select('id, quantity')
+        .ilike('item_name', item.item_requested)
+        .maybeSingle()
+
+      if (inv) {
+        const restoredQty = inv.quantity + item.quantity
+        await db
+          .from('admininventory')
+          .update({
+            quantity:   restoredQty,
+            status:     'Available',
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', inv.id)
+      }
     }
   }
 

@@ -270,22 +270,64 @@ async function confirmSubmit() {
   confirmBtn.disabled      = true
   confirmBtn.textContent   = 'Submitting...'
 
+  // 1. Insert the requests
   const { error } = await client.from('studentrequests').insert(_pendingInserts)
 
-  confirmBtn.disabled    = false
-  confirmBtn.textContent = 'Submit Request'
-
   if (error) {
+    confirmBtn.disabled    = false
+    confirmBtn.textContent = 'Submit Request'
     closeSubmitModal()
     showAlert({ type: 'error', title: 'Submission Failed', message: 'Failed to submit: ' + error.message })
     return
   }
 
+  // 2. Deduct quantities from inventory
+  const deductionErrors = []
+  for (const insert of _pendingInserts) {
+    const itemName    = insert.item_requested
+    const qtyToDeduct = insert.quantity
+
+    // Fetch current quantity
+    const { data: inventoryData, error: fetchError } = await client
+      .from('admininventory')
+      .select('id, quantity')
+      .eq('item_name', itemName)
+      .single()
+
+    if (fetchError || !inventoryData) {
+      deductionErrors.push(itemName)
+      continue
+    }
+
+    const newQty   = Math.max(0, inventoryData.quantity - qtyToDeduct)
+    const newStatus = newQty === 0 ? 'Unavailable' : 'Available'
+
+    const { error: updateError } = await client
+      .from('admininventory')
+      .update({ quantity: newQty, status: newStatus })
+      .eq('id', inventoryData.id)
+
+    if (updateError) deductionErrors.push(itemName)
+  }
+
+  confirmBtn.disabled    = false
+  confirmBtn.textContent = 'Submit Request'
   closeSubmitModal()
-  showAlert({ type: 'success', title: 'Request Submitted', message: 'Your request has been submitted and is now pending approval.' })
+
+  if (deductionErrors.length > 0) {
+    showAlert({
+      type:    'warning',
+      title:   'Partial Success',
+      message: `Request submitted, but inventory could not be updated for: ${deductionErrors.join(', ')}. Please notify an admin.`
+    })
+  } else {
+    showAlert({ type: 'success', title: 'Request Submitted', message: 'Your request has been submitted and is now pending approval.' })
+  }
+
   document.getElementById('requestForm').reset()
   initItemRows()
   loadMyRequests()
+  await loadEquipmentOptions() // Refresh the dropdowns to reflect new quantities
 }
 
 // ── Form Submit ───────────────────────────────────────────────────────────────
