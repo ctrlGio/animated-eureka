@@ -3,7 +3,7 @@ const { createClient } = supabase
 const SUPABASE_URL      = 'https://pxqacjetfbqwwacifyhv.supabase.co'
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4cWFjamV0ZmJxd3dhY2lmeWh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0OTAyMDAsImV4cCI6MjA5NDA2NjIwMH0.EO9lMp3Nmg29JhIuuzEgM15nlRaQZKwQg6EkXMSTos4'
 
-const db             = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 if (localStorage.getItem('userRole') !== 'instructor') {
   window.location.replace('/System/homepage/loginpage.html')
@@ -181,7 +181,6 @@ function closeRejectModal() {
   _pendingDeleteItemId   = null
   _pendingDeleteGroupKey = null
   _pendingDeleteItemName = null
-  // Restore default button label in case delete mode changed it
   document.getElementById('rejectConfirmBtn').textContent = 'Reject'
 }
 
@@ -260,12 +259,8 @@ function applyFilter() {
 }
 
 function updateStats(data) {
-  const pending  = Object.values(_groups).filter(g => g.items.every(r => r.status === 'Pending')).length
-  const approved = Object.values(_groups).filter(g => g.items.every(r => r.status === 'Instructor Approved')).length
-  const rejected = Object.values(_groups).filter(g => g.items.every(r => r.status === 'Instructor Rejected')).length
+  const pending = Object.values(_groups).filter(g => g.items.every(r => r.status === 'Pending')).length
   if (statValues[0]) statValues[0].textContent = pending
-  if (statValues[1]) statValues[1].textContent = approved
-  if (statValues[2]) statValues[2].textContent = rejected
 }
 
 // ── Render Table ──────────────────────────────────────────────────────────────
@@ -292,7 +287,6 @@ function renderTable(groups) {
 
     const safeKey = g.groupKey.replace(/[^a-zA-Z0-9_-]/g, '_')
 
-    // ── Summary row ───────────────────────────────────────────────────────────
     rows.push(`
       <tr class="group-summary-row ${isExpanded ? 'expanded' : ''}" data-group-key="${g.groupKey}">
         <td class="checkbox-col">
@@ -332,7 +326,6 @@ function renderTable(groups) {
       </tr>
     `)
 
-    // ── Detail panel row (collapsible) ────────────────────────────────────────
     rows.push(`
       <tr class="group-detail-row ${isExpanded ? '' : 'hidden'}" data-group-key="${g.groupKey}" id="detail-row-${safeKey}">
         <td colspan="10" class="detail-panel-cell">
@@ -344,18 +337,17 @@ function renderTable(groups) {
 
   tbody.innerHTML = rows.join('')
 
-  // Re-attach checkbox listeners
   document.querySelectorAll('.row-checkbox').forEach(cb => {
     cb.addEventListener('change', updateBulkBar)
   })
 }
 
 function renderGroupDetailPanel(g, isPending) {
-  const safeKey      = g.groupKey.replace(/[^a-zA-Z0-9_-]/g, '_')
-  const takenNames   = g.items.map(i => i.item_requested)
+  const safeKey    = g.groupKey.replace(/[^a-zA-Z0-9_-]/g, '_')
+  const takenNames = g.items.map(i => i.item_requested)
 
   const itemRows = g.items.map(item => {
-    const maxQty     = getInventoryMax(item.item_requested)
+    const maxQty      = getInventoryMax(item.item_requested)
     const editExclude = takenNames.filter(n => n !== item.item_requested)
     const editOptions = buildInventoryOptions(editExclude, item.item_requested)
 
@@ -405,7 +397,7 @@ function renderGroupDetailPanel(g, isPending) {
           <span><i class="fa-solid fa-user"></i> ${g.studentName} (${g.studentId})</span>
           <span><i class="fa-solid fa-calendar"></i> Needed: ${g.dateNeeded || '—'}</span>
           <span><i class="fa-solid fa-clock"></i> Duration: ${g.duration || '—'}</span>
-          <span><i class="fa-solid fa-note-sticky"></i> Reason: ${g.reason || '—'}</span>
+          <span><i class="fa-solid fa-note-sticky"></i> Purpose: ${g.reason || '—'}</span>
         </div>
       </div>
 
@@ -455,13 +447,13 @@ window.stepQty = function(inputId, delta) {
 }
 
 window.onAddSelectChange = function(safeKey) {
-  const sel    = document.getElementById(`new-item-name-${safeKey}`)
-  const qtyEl  = document.getElementById(`new-item-qty-${safeKey}`)
+  const sel   = document.getElementById(`new-item-name-${safeKey}`)
+  const qtyEl = document.getElementById(`new-item-qty-${safeKey}`)
   if (!sel || !qtyEl) return
-  const opt    = sel.options[sel.selectedIndex]
-  const max    = opt ? (parseInt(opt.dataset.max) || 1) : 1
-  qtyEl.max    = max
-  qtyEl.value  = 1
+  const opt   = sel.options[sel.selectedIndex]
+  const max   = opt ? (parseInt(opt.dataset.max) || 1) : 1
+  qtyEl.max   = max
+  qtyEl.value = 1
 }
 
 window.onEditSelectChange = function(itemId) {
@@ -508,15 +500,15 @@ window.toggleGroupDetail = function(groupKey) {
 
 // ── Edit Item ─────────────────────────────────────────────────────────────────
 window.startEditItem = function(itemId, maxQty) {
-  document.getElementById(`name-${itemId}`).style.display  = 'none'
-  document.getElementById(`qty-${itemId}`).style.display   = 'none'
+  document.getElementById(`name-${itemId}`).style.display = 'none'
+  document.getElementById(`qty-${itemId}`).style.display  = 'none'
 
-  const nameSelect    = document.getElementById(`name-input-${itemId}`)
+  const nameSelect = document.getElementById(`name-input-${itemId}`)
   nameSelect.style.display = ''
   nameSelect.classList.remove('hidden')
   nameSelect.onchange = () => onEditSelectChange(itemId)
 
-  const stepper       = document.getElementById(`qty-stepper-${itemId}`)
+  const stepper = document.getElementById(`qty-stepper-${itemId}`)
   stepper.style.display = 'inline-flex'
   stepper.classList.remove('hidden')
 
@@ -529,8 +521,8 @@ window.startEditItem = function(itemId, maxQty) {
 }
 
 window.cancelEditItem = function(itemId) {
-  document.getElementById(`name-${itemId}`).style.display  = ''
-  document.getElementById(`qty-${itemId}`).style.display   = ''
+  document.getElementById(`name-${itemId}`).style.display = ''
+  document.getElementById(`qty-${itemId}`).style.display  = ''
 
   const nameSelect = document.getElementById(`name-input-${itemId}`)
   nameSelect.style.display = 'none'
@@ -555,16 +547,16 @@ window.saveEditItem = async function(itemId, groupKey) {
     return
   }
 
-  const saveBtn      = document.getElementById(`save-btn-${itemId}`)
-  saveBtn.disabled   = true
-  saveBtn.innerHTML  = '<i class="fa-solid fa-spinner fa-spin"></i>'
+  const saveBtn     = document.getElementById(`save-btn-${itemId}`)
+  saveBtn.disabled  = true
+  saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'
 
   const { error } = await db
     .from('studentrequests')
     .update({ item_requested: newName, quantity: newQty, updated_at: new Date().toISOString() })
     .eq('id', itemId)
 
-  saveBtn.disabled  = false
+  saveBtn.disabled = false
 
   if (error) {
     saveBtn.innerHTML = '<i class="fa-solid fa-check"></i> Save'
@@ -580,19 +572,16 @@ window.saveEditItem = async function(itemId, groupKey) {
 window.deleteItem = function(itemId, groupKey, itemName, itemQty) {
   const group = _groups[groupKey]
 
-  // Guard: must have more than 1 item (check both cached group and the fact the button exists)
   if (group && group.items.length <= 1) {
     showAlert({ type: 'warning', title: 'Cannot Delete', message: 'A request must have at least one item. Reject the request instead.' })
     return
   }
 
-  // Store pending delete state
   _deleteItemMode        = true
   _pendingDeleteItemId   = itemId
   _pendingDeleteGroupKey = groupKey
   _pendingDeleteItemName = itemName
 
-  // Re-purpose the reject modal for delete confirmation
   document.getElementById('rejectModalTitle').textContent   = 'Remove Item'
   document.getElementById('rejectModalMessage').textContent = 'Are you sure you want to remove this item from the request? This cannot be undone.'
   document.getElementById('rejectModalDetail').innerHTML    = `<span><strong>${itemName}</strong> ×${itemQty}</span>`
@@ -665,6 +654,9 @@ window.handleGroupReject = function(groupKey) {
 }
 
 // ── Confirm Approve ───────────────────────────────────────────────────────────
+// FIX: passes group_id to adminrequisition_forms so the admin side
+//      can group items correctly instead of falling back to
+//      requestor + professor + date (which merges unrelated submissions).
 async function confirmApprove() {
   if (!_pendingApprove) return
 
@@ -675,6 +667,11 @@ async function confirmApprove() {
   const groups = _isBulk ? _pendingApprove : [_pendingApprove]
 
   for (const g of groups) {
+    // Generate one shared group_id for all items in this submission.
+    // Re-use the existing request_group_id from studentrequests if available
+    // so the same logical batch keeps the same ID end-to-end.
+    const adminGroupId = g.groupId || crypto.randomUUID()
+
     for (const item of g.items) {
       const { error } = await db
         .from('studentrequests')
@@ -683,6 +680,7 @@ async function confirmApprove() {
 
       if (error) { console.error(`Failed to approve item ${item.id}:`, error); continue }
 
+      // ── KEY FIX: include group_id so admin monitoring groups correctly ──
       await db.from('adminrequisition_forms').insert({
         requestor:      g.studentName,
         professor:      instructorName,
@@ -691,6 +689,7 @@ async function confirmApprove() {
         date:           g.dateNeeded || new Date().toISOString().split('T')[0],
         urgency:        calcUrgency(g.dateNeeded),
         status:         'Pending Admin Approval',
+        group_id:       adminGroupId,           // ← THE FIX
         created_at:     new Date().toISOString(),
         updated_at:     new Date().toISOString()
       })
@@ -713,27 +712,21 @@ async function confirmApprove() {
 
 // ── Confirm Reject ────────────────────────────────────────────────────────────
 async function confirmReject() {
-  // Handle delete-item mode (reuses the reject modal)
   if (_deleteItemMode) {
     const confirmBtn = document.getElementById('rejectConfirmBtn')
     confirmBtn.disabled    = true
     confirmBtn.textContent = 'Removing...'
 
-    // Capture before closeRejectModal() nulls them
     const groupKey = _pendingDeleteGroupKey
     const itemId   = Number(_pendingDeleteItemId)
 
-    // Try to find cached item to add student_id filter (helps satisfy RLS policies)
     const group  = _groups[groupKey]
     const cached = group?.items.find(i => Number(i.id) === itemId)
-    console.log('[deleteItem] id:', itemId, 'groupKey:', groupKey, 'student_id:', cached?.student_id)
 
     let query = db.from('studentrequests').delete({ count: 'exact' }).eq('id', itemId)
     if (cached?.student_id) query = query.eq('student_id', cached.student_id)
 
     const { error, count } = await query
-
-    console.log('[deleteItem] error:', error, 'count:', count)
 
     confirmBtn.disabled    = false
     confirmBtn.textContent = 'Remove'
@@ -747,8 +740,8 @@ async function confirmReject() {
     if (count === 0) {
       closeRejectModal()
       showAlert({
-        type: 'warning',
-        title: 'Delete Blocked',
+        type:    'warning',
+        title:   'Delete Blocked',
         message: 'Row Level Security (RLS) is preventing this delete. In Supabase, go to Table Editor → studentrequests → RLS Policies and add a DELETE policy for the anon role.'
       })
       return

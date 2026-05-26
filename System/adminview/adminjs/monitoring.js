@@ -1,13 +1,13 @@
 document.addEventListener('DOMContentLoaded', function () {
 
   const { createClient } = supabase
-  const SUPABASE_URL = 'https://pxqacjetfbqwwacifyhv.supabase.co'
+  const SUPABASE_URL     = 'https://pxqacjetfbqwwacifyhv.supabase.co'
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB4cWFjamV0ZmJxd3dhY2lmeWh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0OTAyMDAsImV4cCI6MjA5NDA2NjIwMH0.EO9lMp3Nmg29JhIuuzEgM15nlRaQZKwQg6EkXMSTos4'
   const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
   // ── State ─────────────────────────────────────────────────────────────────
   let _allRequisitions = []
-  let _groups          = {}       // groupKey → { groupKey, requestor, professor, date, urgency, items[] }
+  let _groups          = {}   // groupKey → { groupKey, requestor, professor, date, urgency, items[] }
   let _expandedGroups  = new Set()
 
   // ── Alert Modal ───────────────────────────────────────────────────────────
@@ -70,8 +70,11 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ── Group Key ─────────────────────────────────────────────────────────────
-  // Group rows that share the same requestor + professor + date
+  // Use group_id (set by instructor when forwarding) so each student submission
+  // is always its own group, even if same requestor + professor + date.
   function makeGroupKey(row) {
+    if (row.group_id) return row.group_id
+    // Fallback for old rows that predate the group_id column
     return `${row.requestor}||${row.professor || ''}||${row.date || ''}`
   }
 
@@ -82,13 +85,13 @@ document.addEventListener('DOMContentLoaded', function () {
       const key = makeGroupKey(r)
       if (!_groups[key]) {
         _groups[key] = {
-          groupKey:   key,
-          requestor:  r.requestor,
-          professor:  r.professor,
-          date:       r.date,
-          urgency:    r.urgency,
-          createdAt:  r.created_at,
-          items:      []
+          groupKey:  key,
+          requestor: r.requestor,
+          professor: r.professor,
+          date:      r.date,
+          urgency:   r.urgency,
+          createdAt: r.created_at,
+          items:     []
         }
       }
       _groups[key].items.push(r)
@@ -99,7 +102,6 @@ document.addEventListener('DOMContentLoaded', function () {
   function groupStatus(items) {
     const statuses = [...new Set(items.map(r => r.status))]
     if (statuses.length === 1) return statuses[0]
-    // Mixed: if any pending, consider pending
     if (statuses.includes('Pending Admin Approval')) return 'Pending Admin Approval'
     return statuses[0]
   }
@@ -138,7 +140,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const now = new Date(); now.setHours(0, 0, 0, 0)
 
-    // Filter at the group level
     let filteredGroups = Object.values(_groups)
 
     if (statusVal !== 'all') {
@@ -149,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     if (dateVal === 'today') {
       filteredGroups = filteredGroups.filter(g => {
-        const d = new Date(g.createdAt); d.setHours(0,0,0,0)
+        const d = new Date(g.createdAt); d.setHours(0, 0, 0, 0)
         return d.getTime() === now.getTime()
       })
     } else if (dateVal === 'week') {
@@ -168,8 +169,7 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('dateFilter').addEventListener('change', applyFilters)
 
   // ── Toggle Detail Panel ───────────────────────────────────────────────────
-  window.toggleGroupDetail = function(groupKey) {
-    const safeKey    = CSS.escape(groupKey)
+  window.toggleGroupDetail = function (groupKey) {
     const detailRow  = document.getElementById('detail-row-' + groupKey.replace(/[^a-zA-Z0-9_-]/g, '_'))
     const summaryRow = document.querySelector(`tr.group-summary-row[data-group-key="${groupKey}"]`)
     const btn        = summaryRow?.querySelector('.btn-details-icon')
@@ -241,7 +241,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const oldBody = table.querySelector('tbody')
     if (oldBody) oldBody.remove()
 
-    // Ensure select-all checkbox in thead
     const thead = table.querySelector('thead tr')
     if (thead && !thead.querySelector('th.checkbox-col')) {
       thead.insertAdjacentHTML('afterbegin',
@@ -280,7 +279,6 @@ document.addEventListener('DOMContentLoaded', function () {
         ? `${g.items[0].item_requested} ×${g.items[0].quantity}`
         : `${g.items.length} items — ${g.items.map(i => i.item_requested).join(', ')}`
 
-      // ── Summary row ─────────────────────────────────────────────────────
       rows.push(`
         <tr class="group-summary-row ${isExpanded ? 'expanded' : ''}" data-group-key="${g.groupKey}">
           <td class="checkbox-col">
@@ -312,7 +310,6 @@ document.addEventListener('DOMContentLoaded', function () {
           </td>
         </tr>`)
 
-      // ── Detail panel row ─────────────────────────────────────────────────
       rows.push(`
         <tr class="group-detail-row ${isExpanded ? '' : 'hidden'}"
             data-group-key="${g.groupKey}" id="detail-row-${safeKey}">
@@ -325,7 +322,6 @@ document.addEventListener('DOMContentLoaded', function () {
     tbody.innerHTML = rows.join('')
     table.appendChild(tbody)
 
-    // Re-attach checkbox listeners
     document.querySelectorAll('.row-checkbox').forEach(cb =>
       cb.addEventListener('change', updateBulkBar))
 
@@ -367,8 +363,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('bulkActionBar').classList.remove('visible')
   }
 
-  // Select all
-  document.addEventListener('change', function(e) {
+  document.addEventListener('change', function (e) {
     if (e.target.id === 'selectAllCheckbox') {
       document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = e.target.checked)
       updateBulkBar()
@@ -424,11 +419,10 @@ document.addEventListener('DOMContentLoaded', function () {
     })
   })
 
-  // Clear
   document.getElementById('bulkClearBtn').addEventListener('click', clearSelection)
 
   // ── Approve a whole group ─────────────────────────────────────────────────
-  window.approveGroup = async function(groupKey) {
+  window.approveGroup = async function (groupKey) {
     const g = _groups[groupKey]
     if (!g) return
 
@@ -448,7 +442,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ── Reject a whole group ──────────────────────────────────────────────────
-  window.rejectGroup = async function(groupKey) {
+  window.rejectGroup = async function (groupKey) {
     const g = _groups[groupKey]
     if (!g) return
 
@@ -467,7 +461,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ── Approve a single item from the detail panel ───────────────────────────
-  window.approveSingleItem = async function(id) {
+  window.approveSingleItem = async function (id) {
     const row = _allRequisitions.find(r => r.id === id)
     if (!row) return
 
@@ -483,7 +477,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ── Reject a single item from the detail panel ────────────────────────────
-  window.rejectSingleItem = async function(id) {
+  window.rejectSingleItem = async function (id) {
     const row = _allRequisitions.find(r => r.id === id)
     if (!row) return
 
@@ -498,34 +492,51 @@ document.addEventListener('DOMContentLoaded', function () {
     })
   }
 
-  // ── Core approve logic (list of row objects) ──────────────────────────────
+  // ── Core approve logic ────────────────────────────────────────────────────
+  // NOTE: Quantity is already deducted from inventory when the student submits
+  // the request. So on approval we ONLY update the status and create the borrow
+  // record — we do NOT deduct inventory again.
   async function doApproveItems(rows) {
     let successCount = 0
     let failCount    = 0
 
     for (const req of rows) {
-      // Check inventory
-      const { data: inv } = await client
-        .from('admininventory').select('id, quantity, status')
-        .ilike('item_name', req.item_requested).maybeSingle()
+      // Only act on items still pending
+      if (req.status !== 'Pending Admin Approval') continue
 
-      if (!inv || inv.quantity < req.quantity) { failCount++; continue }
-
-      const newQty    = inv.quantity - req.quantity
-      const newStatus = newQty === 0 ? 'Borrowed' : 'Available'
-      await client.from('admininventory')
-        .update({ quantity: newQty, status: newStatus, updated_at: new Date().toISOString() })
-        .eq('id', inv.id)
-
-      await client.from('adminrequisition_forms')
+      // Update requisition status to Approved
+      const { error } = await client
+        .from('adminrequisition_forms')
         .update({ status: 'Approved', updated_at: new Date().toISOString() })
         .eq('id', req.id)
 
+      if (error) { failCount++; continue }
+
+      // Update inventory status only (quantity was already reduced on submit)
+      const { data: inv } = await client
+        .from('admininventory')
+        .select('id, quantity')
+        .ilike('item_name', req.item_requested)
+        .maybeSingle()
+
+      if (inv) {
+        const newStatus = inv.quantity === 0 ? 'Borrowed' : 'Available'
+        await client
+          .from('admininventory')
+          .update({ status: newStatus, updated_at: new Date().toISOString() })
+          .eq('id', inv.id)
+      }
+
       // Create borrow record
-      const { data: student } = await client.from('students')
-        .select('student_id, year_level').ilike('student_name', req.requestor).maybeSingle()
+      const { data: student } = await client
+        .from('students')
+        .select('student_id, year_level')
+        .ilike('student_name', req.requestor)
+        .maybeSingle()
+
       const borrowDate = req.date || new Date().toISOString().split('T')[0]
-      const due = new Date(borrowDate); due.setDate(due.getDate() + 7)
+      const due        = new Date(borrowDate)
+      due.setDate(due.getDate() + 7)
 
       await client.from('adminborrows').insert([{
         student_id:    student ? student.student_id : 'N/A',
@@ -541,18 +552,19 @@ document.addEventListener('DOMContentLoaded', function () {
       successCount++
     }
 
-    loadRequisitions(); loadStats()
+    await loadRequisitions()
+    await loadStats()
 
     if (failCount > 0) {
       showAlert({
-        type: 'warning', title: 'Partial Success',
-        message: `${successCount} approved, ${failCount} skipped due to insufficient stock.`
+        type:    'warning',
+        title:   'Partial Success',
+        message: `${successCount} approved, ${failCount} failed to update.`
       })
     }
   }
 
   async function doApproveGroup(g) {
-    // Keep expanded after reload
     _expandedGroups.add(g.groupKey)
     await doApproveItems(g.items.filter(i => i.status === 'Pending Admin Approval'))
   }
@@ -566,37 +578,42 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ── Core reject logic ─────────────────────────────────────────────────────
+  // On rejection we restore the quantity that was deducted on submission.
   async function doRejectItems(ids) {
     for (const id of ids) {
-      // Get the requisition row so we know what item/qty to restore
       const row = _allRequisitions.find(r => r.id === id)
 
-      await client.from('adminrequisition_forms')
+      // Only act on items still pending
+      if (!row || row.status !== 'Pending Admin Approval') continue
+
+      // Update requisition status to Rejected
+      await client
+        .from('adminrequisition_forms')
         .update({ status: 'Rejected', updated_at: new Date().toISOString() })
         .eq('id', id)
 
-      // Restore quantity back to inventory
-      if (row) {
-        const { data: inv } = await client
-          .from('admininventory')
-          .select('id, quantity')
-          .ilike('item_name', row.item_requested)
-          .maybeSingle()
+      // Restore the quantity that was deducted when student submitted
+      const { data: inv } = await client
+        .from('admininventory')
+        .select('id, quantity')
+        .ilike('item_name', row.item_requested)
+        .maybeSingle()
 
-        if (inv) {
-          const restoredQty = inv.quantity + row.quantity
-          await client
-            .from('admininventory')
-            .update({
-              quantity:   restoredQty,
-              status:     'Available',
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', inv.id)
-        }
+      if (inv) {
+        const restoredQty = inv.quantity + row.quantity
+        await client
+          .from('admininventory')
+          .update({
+            quantity:   restoredQty,
+            status:     'Available',
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', inv.id)
       }
     }
-    loadRequisitions(); loadStats()
+
+    await loadRequisitions()
+    await loadStats()
   }
 
   async function doRejectGroup(ids) {
@@ -609,6 +626,7 @@ document.addEventListener('DOMContentLoaded', function () {
     clearSelection()
   }
 
+  // ── Init ──────────────────────────────────────────────────────────────────
   loadStats()
   loadRequisitions()
 })
